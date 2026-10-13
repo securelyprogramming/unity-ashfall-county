@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "id": "ashfall-county",
+  "title": "Ashfall County",
+  "mode": "ashfall-county",
+  "genre": "zombie-survival",
+  "brief": "Scavenge a flooded rural county, rescue stranded neighbors and hold an evacuation safehouse.",
+  "seed": 101,
+  "difficulty": 1,
+  "repository": "https://github.com/securelyprogramming/unity-ashfall-county",
+  "folder": "unity-ashfall-county",
+  "engine": "Unity",
+  "engineVersion": "6000.6.0f1",
+  "project": "Game",
+  "targetPlatforms": [
+    "Windows",
+    "macOS",
+    "Linux"
+  ],
+  "storeTarget": "Steam premium PC",
+  "players": "1–4 LAN cooperative players; local solo campaign",
+  "accent": "#bd673e",
+  "setting": "county",
+  "enemy": "zombie",
+  "cast": [
+    {
+      "name": "Mara Vale",
+      "role": "paramedic"
+    },
+    {
+      "name": "Jonah Reed",
+      "role": "mechanic"
+    },
+    {
+      "name": "Ada Pike",
+      "role": "radio operator"
+    }
+  ],
+  "chapters": [
+    {
+      "number": 1,
+      "title": "The Last Pharmacy",
+      "story": "Mara reaches a shuttered pharmacy with one promise: nobody leaves the county alone.",
+      "layoutSeed": 101
+    },
+    {
+      "number": 2,
+      "title": "The Waterline",
+      "story": "Ada hears families beyond the flooded road. Supplies must reach the refuge before dusk.",
+      "layoutSeed": 274
+    },
+    {
+      "number": 3,
+      "title": "County Evacuation",
+      "story": "Jonah can start the convoy if the safehouse holds long enough to gather every survivor.",
+      "layoutSeed": 447
+    }
+  ],
+  "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+  "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+}

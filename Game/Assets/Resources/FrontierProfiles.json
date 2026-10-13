@@ -1,0 +1,736 @@
+{
+  "games": [
+    {
+      "schemaVersion": 1,
+      "id": "ashfall-county",
+      "title": "Ashfall County",
+      "mode": "ashfall-county",
+      "genre": "zombie-survival",
+      "brief": "Scavenge a flooded rural county, rescue stranded neighbors and hold an evacuation safehouse.",
+      "seed": 101,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-ashfall-county",
+      "folder": "unity-ashfall-county",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#bd673e",
+      "setting": "county",
+      "enemy": "zombie",
+      "cast": [
+        {
+          "name": "Mara Vale",
+          "role": "paramedic"
+        },
+        {
+          "name": "Jonah Reed",
+          "role": "mechanic"
+        },
+        {
+          "name": "Ada Pike",
+          "role": "radio operator"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "The Last Pharmacy",
+          "story": "Mara reaches a shuttered pharmacy with one promise: nobody leaves the county alone.",
+          "layoutSeed": 101
+        },
+        {
+          "number": 2,
+          "title": "The Waterline",
+          "story": "Ada hears families beyond the flooded road. Supplies must reach the refuge before dusk.",
+          "layoutSeed": 274
+        },
+        {
+          "number": 3,
+          "title": "County Evacuation",
+          "story": "Jonah can start the convoy if the safehouse holds long enough to gather every survivor.",
+          "layoutSeed": 447
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "dead-orbit",
+      "title": "Dead Orbit",
+      "mode": "dead-orbit",
+      "genre": "space-survival",
+      "brief": "Seal hull breaches, conserve oxygen and restore an uplink while infected crew hunt through a failing station.",
+      "seed": 138,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-dead-orbit",
+      "folder": "unity-dead-orbit",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#55bdce",
+      "setting": "space",
+      "enemy": "space-zombie",
+      "cast": [
+        {
+          "name": "Nia Sol",
+          "role": "systems engineer"
+        },
+        {
+          "name": "Tomas Venn",
+          "role": "medic"
+        },
+        {
+          "name": "ECHO",
+          "role": "station archivist"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "Cold Dock",
+          "story": "Nia wakes to a station full of open airlocks and a voice asking her to preserve the crew manifest.",
+          "layoutSeed": 138
+        },
+        {
+          "number": 2,
+          "title": "The Quiet Ring",
+          "story": "The quiet ring still has breathable air, but every repair brings the infected closer.",
+          "layoutSeed": 311
+        },
+        {
+          "number": 3,
+          "title": "Last Transmission",
+          "story": "The escape pod can carry the survivors only after the uplink tells home where to look.",
+          "layoutSeed": 484
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "skyhold-siege",
+      "title": "Skyhold Siege",
+      "mode": "skyhold-siege",
+      "genre": "tower-survival",
+      "brief": "Collect materials, stack and reinforce a vertical refuge, and defend its core against escalating waves.",
+      "seed": 175,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-skyhold-siege",
+      "folder": "unity-skyhold-siege",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#c9a957",
+      "setting": "tower",
+      "enemy": "raider",
+      "cast": [
+        {
+          "name": "Orin Moss",
+          "role": "towerwright"
+        },
+        {
+          "name": "Tala Flint",
+          "role": "scout"
+        },
+        {
+          "name": "Kes",
+          "role": "storm keeper"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "Foundations in the Fog",
+          "story": "Orin inherits a broken sky-core and a valley disappearing beneath ash.",
+          "layoutSeed": 175
+        },
+        {
+          "number": 2,
+          "title": "Above the Ash",
+          "story": "Tala marks the approaches. Higher floors buy time, but unsupported towers will not stand.",
+          "layoutSeed": 348
+        },
+        {
+          "number": 3,
+          "title": "The Last Beacon",
+          "story": "The last beacon needs a refuge tall and strong enough for the storm crossing.",
+          "layoutSeed": 521
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "rift-runners",
+      "title": "Rift Runners",
+      "mode": "rift-runners",
+      "genre": "build-and-battle",
+      "brief": "An original arena game: collect salvage, build cover and ramps, and outlast bots inside a shrinking rift.",
+      "seed": 212,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-rift-runners",
+      "folder": "unity-rift-runners",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#b178de",
+      "setting": "arena",
+      "enemy": "bot",
+      "cast": [
+        {
+          "name": "Jax Vale",
+          "role": "scrap runner"
+        },
+        {
+          "name": "Rin Kade",
+          "role": "arena mechanic"
+        },
+        {
+          "name": "Aster",
+          "role": "rift navigator"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "Scrap Circuit",
+          "story": "Jax enters the circuit to win safe passage for a stranded salvage crew.",
+          "layoutSeed": 212
+        },
+        {
+          "number": 2,
+          "title": "Moving Horizon",
+          "story": "The horizon is moving. Rin teaches the runners to turn scrap into routes and cover.",
+          "layoutSeed": 385
+        },
+        {
+          "number": 3,
+          "title": "The Rift Crown",
+          "story": "Aster can close the rift after the final trial proves who can bring the crew through.",
+          "layoutSeed": 558
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "thornvale",
+      "title": "Thornvale",
+      "mode": "thornvale",
+      "genre": "forest-rpg",
+      "brief": "Gather healing herbs, rescue woodland residents and break the thorn curse through combat and village quests.",
+      "seed": 249,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-thornvale",
+      "folder": "unity-thornvale",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#74a867",
+      "setting": "forest",
+      "enemy": "wolf",
+      "cast": [
+        {
+          "name": "Elowen",
+          "role": "ranger"
+        },
+        {
+          "name": "Bramble",
+          "role": "forest keeper"
+        },
+        {
+          "name": "Fen",
+          "role": "village healer"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "The Hollow Path",
+          "story": "Elowen follows a missing child into a wood that has forgotten the paths home.",
+          "layoutSeed": 249
+        },
+        {
+          "number": 2,
+          "title": "Roots Remember",
+          "story": "Fen needs herbs from the old shrines. Bramble remembers why the roots turned against the village.",
+          "layoutSeed": 422
+        },
+        {
+          "number": 3,
+          "title": "Heart of the Thorns",
+          "story": "The elder treant guards a wounded heart; saving Thornvale takes a healer as well as a blade.",
+          "layoutSeed": 595
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "havenfall-coalition",
+      "title": "Havenfall Coalition",
+      "mode": "havenfall-coalition",
+      "genre": "community-survival",
+      "brief": "Build a shared refuge, gather medicine and food, rescue survivors and defend the community with LAN friends.",
+      "seed": 286,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-havenfall-coalition",
+      "folder": "unity-havenfall-coalition",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#bb795e",
+      "setting": "community",
+      "enemy": "zombie",
+      "cast": [
+        {
+          "name": "Leah Ward",
+          "role": "refuge leader"
+        },
+        {
+          "name": "Malik Stone",
+          "role": "field medic"
+        },
+        {
+          "name": "June Bell",
+          "role": "builder"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "A Place to Stay",
+          "story": "Leah opens a refuge to whoever can reach it. A home begins with food, medicine and a defended door.",
+          "layoutSeed": 286
+        },
+        {
+          "number": 2,
+          "title": "Supply Lines",
+          "story": "Malik risks a supply route while June turns the refuge into something worth defending.",
+          "layoutSeed": 459
+        },
+        {
+          "number": 3,
+          "title": "The Coalition",
+          "story": "The final evacuation call is a choice: abandon the refuge or make it safe for everyone still coming.",
+          "layoutSeed": 632
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "emberwake-rebuilders",
+      "title": "Emberwake Rebuilders",
+      "mode": "emberwake-rebuilders",
+      "genre": "dungeon-rebuilding",
+      "brief": "Recover dungeon relics and spend them on homes, a clinic and the hearth of a damaged settlement.",
+      "seed": 323,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-emberwake-rebuilders",
+      "folder": "unity-emberwake-rebuilders",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#dd8b45",
+      "setting": "dungeon",
+      "enemy": "sentinel",
+      "cast": [
+        {
+          "name": "Sera Dawn",
+          "role": "relic seeker"
+        },
+        {
+          "name": "Ollin",
+          "role": "stonemason"
+        },
+        {
+          "name": "Mira",
+          "role": "hearth keeper"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "A Hearth in Ruins",
+          "story": "Sera finds the village preserved in embers. Ollin asks for relics with which to rebuild homes.",
+          "layoutSeed": 323
+        },
+        {
+          "number": 2,
+          "title": "Stones with Names",
+          "story": "Each recovered stone carries a name; Mira refuses to let repairs become another empty monument.",
+          "layoutSeed": 496
+        },
+        {
+          "number": 3,
+          "title": "The Returning Light",
+          "story": "The ember lord holds the last light. Returning it will give the settlement a future beyond the dungeon.",
+          "layoutSeed": 669
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "fjordbound",
+      "title": "Fjordbound",
+      "mode": "fjordbound",
+      "genre": "viking-adventure",
+      "brief": "Gather timber and provisions, recover raid caches and defend a fjord settlement before the longship departs.",
+      "seed": 360,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-fjordbound",
+      "folder": "unity-fjordbound",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#77aabd",
+      "setting": "fjord",
+      "enemy": "raider",
+      "cast": [
+        {
+          "name": "Astrid Rune",
+          "role": "shieldbearer"
+        },
+        {
+          "name": "Eirik Holt",
+          "role": "shipwright"
+        },
+        {
+          "name": "Liv",
+          "role": "lore keeper"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "The Broken Longship",
+          "story": "Astrid returns to a broken longship and a settlement waiting for winter.",
+          "layoutSeed": 360
+        },
+        {
+          "number": 2,
+          "title": "Stormward Shore",
+          "story": "Eirik needs timber and the stores lost on the stormward shore, where raiders now camp.",
+          "layoutSeed": 533
+        },
+        {
+          "number": 3,
+          "title": "Oath of the Fjord",
+          "story": "Liv calls the clan to keep its oath: defend the homes before chasing glory across the fjord.",
+          "layoutSeed": 706
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "gatebreakers-guild",
+      "title": "Gatebreakers Guild",
+      "mode": "gatebreakers-guild",
+      "genre": "cooperative-trap-defense",
+      "brief": "Place spike traps, barricades and bolt towers, then fight orc waves together to protect the portal.",
+      "seed": 397,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-gatebreakers-guild",
+      "folder": "unity-gatebreakers-guild",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#a4b862",
+      "setting": "fortress",
+      "enemy": "orc",
+      "cast": [
+        {
+          "name": "Pip Ember",
+          "role": "trapwright"
+        },
+        {
+          "name": "Bora",
+          "role": "gate knight"
+        },
+        {
+          "name": "Tess",
+          "role": "alchemist"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "The Guild Gate",
+          "story": "Pip opens the guild workshop just as the first gate fractures. Bora needs traps that survive more than a demonstration.",
+          "layoutSeed": 397
+        },
+        {
+          "number": 2,
+          "title": "Two Roads to Trouble",
+          "story": "Two roads bring two waves. Tess asks the guild to trade isolated heroics for a planned defense.",
+          "layoutSeed": 570
+        },
+        {
+          "number": 3,
+          "title": "The Breach",
+          "story": "The breach will seal only if the portal stands through the last assault.",
+          "layoutSeed": 743
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "market-day",
+      "title": "Market Day",
+      "mode": "market-day",
+      "genre": "retail-management",
+      "brief": "Restock three departments, guide impatient shoppers and run checkout accurately through escalating market days.",
+      "seed": 434,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-market-day",
+      "folder": "unity-market-day",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#e3b579",
+      "setting": "market",
+      "enemy": "customer",
+      "cast": [
+        {
+          "name": "Noor Patel",
+          "role": "shopkeeper"
+        },
+        {
+          "name": "Ed Bell",
+          "role": "delivery driver"
+        },
+        {
+          "name": "Suki",
+          "role": "market organizer"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "Opening Morning",
+          "story": "Noor inherits a little shop and an empty shelf on the busiest morning of the year.",
+          "layoutSeed": 434
+        },
+        {
+          "number": 2,
+          "title": "The Festival Rush",
+          "story": "Ed keeps deliveries moving while the festival brings shoppers who will not wait forever.",
+          "layoutSeed": 607
+        },
+        {
+          "number": 3,
+          "title": "A Market for Everyone",
+          "story": "Suki asks the market to serve the whole neighborhood without forgetting the people behind the queue.",
+          "layoutSeed": 780
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "hearth-rush",
+      "title": "Hearth Rush",
+      "mode": "hearth-rush",
+      "genre": "cooperative-cooking",
+      "brief": "Fetch ingredients, chop and cook the correct recipes, plate orders and wash dishes before diners lose patience.",
+      "seed": 471,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-hearth-rush",
+      "folder": "unity-hearth-rush",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#d58d68",
+      "setting": "kitchen",
+      "enemy": "customer",
+      "cast": [
+        {
+          "name": "Mina Cole",
+          "role": "chef"
+        },
+        {
+          "name": "Theo",
+          "role": "prep cook"
+        },
+        {
+          "name": "Rosa",
+          "role": "host"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "First Service",
+          "story": "Mina opens a kitchen with recipes saved from her grandmother and one reliable pan.",
+          "layoutSeed": 471
+        },
+        {
+          "number": 2,
+          "title": "The Traveling Table",
+          "story": "Rosa welcomes a traveling festival. Theo must keep the prep bench ahead of the tickets.",
+          "layoutSeed": 644
+        },
+        {
+          "number": 3,
+          "title": "Hearth for the Town",
+          "story": "The town arrives for a meal that cannot be made by one pair of hands.",
+          "layoutSeed": 817
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    },
+    {
+      "schemaVersion": 1,
+      "id": "stormline-express",
+      "title": "Stormline Express",
+      "mode": "stormline-express",
+      "genre": "cooperative-train-rescue",
+      "brief": "Repair track and radio faults, manage boiler pressure, collect supplies and rescue passengers along a storm route.",
+      "seed": 508,
+      "difficulty": 1,
+      "repository": "https://github.com/securelyprogramming/unity-stormline-express",
+      "folder": "unity-stormline-express",
+      "engine": "Unity",
+      "engineVersion": "6000.6.0f1",
+      "project": "Game",
+      "targetPlatforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "storeTarget": "Steam premium PC",
+      "players": "1–4 LAN cooperative players; local solo campaign",
+      "accent": "#6cadd0",
+      "setting": "railway",
+      "enemy": "raider",
+      "cast": [
+        {
+          "name": "Ada Rail",
+          "role": "engineer"
+        },
+        {
+          "name": "Bo Finch",
+          "role": "conductor"
+        },
+        {
+          "name": "Lark",
+          "role": "signal keeper"
+        }
+      ],
+      "chapters": [
+        {
+          "number": 1,
+          "title": "The Broken Signal",
+          "story": "Ada takes the relief train into a storm after the town radio goes quiet.",
+          "layoutSeed": 508
+        },
+        {
+          "number": 2,
+          "title": "Pressure and Rain",
+          "story": "Bo counts stranded passengers while the boiler leaks and the rails begin to buckle.",
+          "layoutSeed": 681
+        },
+        {
+          "number": 3,
+          "title": "The Last Platform",
+          "story": "Lark lights the final platform. The crew must bring both train and people through the storm.",
+          "layoutSeed": 854
+        }
+      ],
+      "status": "development; build, gameplay, physical controller, multi-machine LAN and Steam release acceptance tracked separately",
+      "inspiration": "Original characters, names, story and code; genre references are design inspiration only."
+    }
+  ]
+}

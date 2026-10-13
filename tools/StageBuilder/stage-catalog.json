@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "slug": "ashfall-county",
+  "title": "Ashfall County",
+  "engine": "Unity",
+  "projectPath": "unity-ashfall-county/Game",
+  "galleryRoot": "_Workspace",
+  "isConcept": false,
+  "status": "development-prototype-previews-pending",
+  "stages": [
+    {
+      "id": "frontier-chapter-1",
+      "title": "Chapter 1: The Last Pharmacy",
+      "kind": "development-campaign-reference",
+      "managedBy": "frontier-workbench-v1",
+      "images": {},
+      "notes": [
+        "Mara reaches a shuttered pharmacy with one promise: nobody leaves the county alone.",
+        "This is an authored campaign reference. A native preview is connected only after its matching report and image hashes verify."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/ContentSource/campaign.json",
+        "unity-ashfall-county/Game/Assets/Frontier/Core/Chapters.cs",
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/Art/FrontierWorldView.cs"
+      ]
+    },
+    {
+      "id": "frontier-chapter-2",
+      "title": "Chapter 2: The Waterline",
+      "kind": "development-campaign-reference",
+      "managedBy": "frontier-workbench-v1",
+      "images": {},
+      "notes": [
+        "Ada hears families beyond the flooded road. Supplies must reach the refuge before dusk.",
+        "This is an authored campaign reference. A native preview is connected only after its matching report and image hashes verify."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/ContentSource/campaign.json",
+        "unity-ashfall-county/Game/Assets/Frontier/Core/Chapters.cs",
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/Art/FrontierWorldView.cs"
+      ]
+    },
+    {
+      "id": "frontier-chapter-3",
+      "title": "Chapter 3: County Evacuation",
+      "kind": "development-campaign-reference",
+      "managedBy": "frontier-workbench-v1",
+      "images": {},
+      "notes": [
+        "Jonah can start the convoy if the safehouse holds long enough to gather every survivor.",
+        "This is an authored campaign reference. A native preview is connected only after its matching report and image hashes verify."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/ContentSource/campaign.json",
+        "unity-ashfall-county/Game/Assets/Frontier/Core/Chapters.cs",
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/Art/FrontierWorldView.cs"
+      ]
+    }
+  ],
+  "runtimeBoundary": "Native captures are references to the standalone development prototype. Workbench workshop edits are separate planning drafts until a runtime adapter is implemented. Physical input, cross-machine LAN, Windows/Linux and Steam release acceptance are tracked separately.",
+  "updated": "2026-10-13"
+}

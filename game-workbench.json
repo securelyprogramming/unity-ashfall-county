@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "ashfall-county",
+  "title": "Ashfall County",
+  "engine": "Unity",
+  "family": "Zombie survival",
+  "projectPath": "Game",
+  "gameType": "3d-game",
+  "description": "Scavenge supplies, rescue neighbours from infected, and repair an evacuation beacon. Three-chapter development prototype; controller, multiplayer, platform and Steam release acceptance are tracked separately.",
+  "links": {
+    "repository": "https://github.com/securelyprogramming/unity-ashfall-county",
+    "websiteRepository": null,
+    "website": null,
+    "jira": null
+  },
+  "builder": {
+    "openScript": null,
+    "guide": "unity-ashfall-county/tools/StageBuilder/README.md"
+  },
+  "catalog": "unity-ashfall-county/tools/StageBuilder/stage-catalog.json"
+}

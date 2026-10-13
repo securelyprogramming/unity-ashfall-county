@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "source_type": "unitypackage-selection",
+  "archive_sha256": "1f2f9a8c6b5fa3b0a2400a9c501053bc23502f0767ef8442590fccdc1f0c648c",
+  "licence_state": "User reports bundle purchased; original source archive present. Supplied documentation has no explicit licence text; retain entitlement privately and confirm before release. No package code imported.",
+  "files": [
+    {
+      "source_path": "Assets/Animpic Studio/Spline Builder Plugin/Scenes/FencePresentation/Models/SM_StoneFoot.fbx",
+      "relative_path": "SplineBuilderFooting/SM_StoneFoot.fbx",
+      "resourcePath": "LicensedFrontier/SplineBuilderFooting/SM_StoneFoot",
+      "role": "footing",
+      "pack": "Spline Builder Plugin",
+      "publisher": "Animpic Studio",
+      "size": 105788,
+      "sha256": "a110d940730657b896d229f3c1d7ec729323673a9ba4126bb71d273ee28349e4"
+    },
+    {
+      "source_path": "Assets/Animpic Studio/Spline Builder Plugin/Scenes/FencePresentation/Models/SM_StoneFootConnector.fbx",
+      "relative_path": "SplineBuilderFooting/SM_StoneFootConnector.fbx",
+      "resourcePath": "LicensedFrontier/SplineBuilderFooting/SM_StoneFootConnector",
+      "role": "footingConnector",
+      "pack": "Spline Builder Plugin",
+      "publisher": "Animpic Studio",
+      "size": 156364,
+      "sha256": "25168fe06062c8e0fdfba12ca5c32138cdbea94f8df3f138d39adda17e15f6f3"
+    },
+    {
+      "source_path": "Assets/Animpic Studio/Spline Builder Plugin/Scenes/FencePresentation/Models/Polygon_Texture2.png",
+      "relative_path": "SplineBuilderFooting/Polygon_Texture2.png",
+      "resourcePath": "LicensedFrontier/SplineBuilderFooting/Polygon_Texture2",
+      "role": "footingPalette",
+      "pack": "Spline Builder Plugin",
+      "publisher": "Animpic Studio",
+      "size": 82411,
+      "sha256": "1af7a17ccd0df06088204661a2fb0598d5a4b39146f0b805df42a2c9368fa77f"
+    }
+  ],
+  "source_archive": "Spline_Builder_Plugin.unitypackage"
+}

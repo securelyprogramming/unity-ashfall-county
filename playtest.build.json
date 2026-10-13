@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "engine": "Unity",
+  "engine_version": "6000.6.0f1",
+  "project": "Game",
+  "profiles": {
+    "macos": {
+      "builder": "command",
+      "project": "Game",
+      "command": [
+        "python3",
+        "{repository}/tools/playtest/build.py",
+        "--platform",
+        "macos",
+        "--output",
+        "{output}"
+      ],
+      "launch": {
+        "app_path": "Game.app"
+      }
+    },
+    "windows": {
+      "builder": "command",
+      "project": "Game",
+      "command": [
+        "python",
+        "{repository}/tools/playtest/build.py",
+        "--platform",
+        "windows",
+        "--output",
+        "{output}"
+      ],
+      "launch": {
+        "executable": "Game.exe"
+      }
+    },
+    "linux": {
+      "builder": "command",
+      "project": "Game",
+      "command": [
+        "python3",
+        "{repository}/tools/playtest/build.py",
+        "--platform",
+        "linux",
+        "--output",
+        "{output}"
+      ],
+      "launch": {
+        "executable": "Game.x86_64"
+      }
+    }
+  }
+}
