@@ -131,6 +131,7 @@ namespace Mayo.Frontier.Presentation
             if (mode == "campaign") yield return Campaign();
             else if (mode == "read") yield return IndependentRead();
             else if (mode == "visual") yield return Visual();
+            else if (mode == "ui-regression") yield return ResidentUiRegression();
             else if (mode == "lan-host") yield return LanHost();
             else if (mode == "lan-client") yield return LanClient();
             else throw new ArgumentException("Unknown -frontier-qa mode: " + mode);
@@ -146,6 +147,112 @@ namespace Mayo.Frontier.Presentation
             var button = FindButton(prefix);
             Require("production UI button available: " + prefix, button != null && button.interactable);
             button.onClick.Invoke();
+        }
+
+        TMPro.TMP_Text VisibleText(Func<TMPro.TMP_Text, bool> predicate)
+        {
+            return game.UI.GetComponentsInChildren<TMPro.TMP_Text>(false).FirstOrDefault(text => text.gameObject.activeInHierarchy && predicate(text));
+        }
+
+        IEnumerator MoveUiPlayer(float x, float z)
+        {
+            // Production directional intent and authoritative ticks only; no teleport or grants.
+            int steps = 0;
+            Player player = game.State.players.Find(p => p.id == game.LocalPlayerId);
+            while (Simulation.Distance(player.x, player.z, x, z) > 1.4f && steps++ < 600)
+            {
+                float dx = x - player.x, dz = z - player.z, distance = Simulation.Distance(player.x, player.z, x, z);
+                var moved = game.Send(new Command { kind = "move", x = dx / distance, z = dz / distance }, false);
+                Require("UI reproduction movement remains authoritative", moved.accepted && !player.dead);
+                game.Rules.Tick(.1f); game.RefreshNativeState();
+                if (steps % 8 == 0) yield return null;
+            }
+            game.Send(new Command { kind = "move" }, false);
+            Require("UI reproduction reaches the requested location through movement", Simulation.Distance(player.x, player.z, x, z) <= 1.4f);
+            yield return null;
+        }
+
+        IEnumerator UiControllerBack(string expectedScreen, string expectedPhase)
+        {
+            InputSystem.QueueStateEvent(pad, new GamepadState()); yield return null; yield return new WaitForSecondsRealtime(.2f);
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.East)); yield return null;
+            Require("resident menu East resolves the real Cancel binding", game.Gameplay.FindAction("Cancel").WasPressedThisFrame());
+            game.ReadNativeInput();
+            Require("resident menu back returns to " + expectedScreen, game.ScreenName == expectedScreen && game.State.phase == expectedPhase);
+            InputSystem.QueueStateEvent(pad, new GamepadState()); yield return null;
+        }
+
+        IEnumerator OpenResidentChooser()
+        {
+            if (game.ScreenName == "play") { Click("Actions"); yield return null; }
+            if (game.ScreenName == "actions") { Click("Resident roles"); yield return null; }
+            Require("Actions opens a visible resident list", game.ScreenName == "residents" && FindButton("Resident 1") != null);
+            Click("Resident 1"); yield return null;
+            Require("resident list opens a reachable role chooser", game.ScreenName == "resident-role" && FindButton("Assign guard") != null && FindButton("Assign scavenger") != null);
+        }
+
+        IEnumerator ResidentUiRegression()
+        {
+            Require("resident UI regression runs the actual Havenfall project", game.Profile.id == "havenfall-coalition");
+            Click(game.Progress.completedMask == 0 ? "Begin campaign" : "Continue campaign"); yield return null;
+            Click("Enter chapter"); yield return null;
+            Require("resident UI reproduction starts a real campaign chapter", game.SessionStarted && game.ScreenName == "play" && game.State.phase == "active");
+            driver = new PlaytestDriver(game.Rules, continueCampaign: false);
+            int steps = 0;
+            while (!game.State.tasks.Any(task => task.kind == "resident" && task.status == "complete") && !driver.Done && steps++ < 3000)
+            {
+                driver.Tick(.1f); game.RefreshNativeState();
+                if (steps % 8 == 0) yield return null;
+            }
+            Require("a resident is rescued through production gameplay before assignment", driver.FailureReason == "" && game.State.tasks.Any(task => task.kind == "resident" && task.status == "complete"), driver.FailureReason);
+            TaskState resident = game.State.tasks.First(task => task.kind == "resident" && task.status == "complete");
+            Structure centre = game.State.structures.First(structure => structure.kind == "community");
+            yield return MoveUiPlayer(centre.x, centre.z);
+            Player player = game.State.players.Find(p => p.id == game.LocalPlayerId);
+            Require("assignment reproduction is inside the real community radius", Simulation.Distance(player.x, player.z, centre.x, centre.z) <= Simulation.InteractionRange);
+            Click("Actions"); yield return null;
+            Require("opening solo Actions uses the production paused state", game.ScreenName == "actions" && game.State.phase == "paused");
+            yield return Capture("resident-actions-before-list", true);
+            // This assertion is expected to fail in the unmodified production baseline.
+            Require("Actions exposes a human-accessible Resident roles control", FindButton("Resident roles") != null);
+            yield return OpenResidentChooser();
+            float pausedAt = game.State.elapsed;
+            Click("Assign guard"); yield return null; yield return new WaitForSecondsRealtime(.2f);
+            Require("real guard button assigns the completed resident without closing or unpausing the chooser", resident.item == "guard" && game.ScreenName == "resident-role" && game.State.phase == "paused");
+            Require("guard assignment does not advance the paused simulation clock", Mathf.Approximately(game.State.elapsed, pausedAt));
+            Require("guard acknowledgement is visible in current-role TMP text", VisibleText(text => text.text.StartsWith("Current role:", StringComparison.Ordinal) && text.text.IndexOf("guard", StringComparison.OrdinalIgnoreCase) >= 0) != null);
+            yield return Capture("resident-guard");
+            pad = InputSystem.AddDevice<Gamepad>("FrontierQA Resident UI Gamepad");
+            Require("resident chooser has the real uGUI input module", EventSystem.current != null && EventSystem.current.GetComponent<InputSystemUIInputModule>() != null);
+            UnityEngine.UI.Button guard = FindButton("Assign guard");
+            EventSystem.current.SetSelectedGameObject(guard.gameObject);
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.DpadDown));
+            float deadline = Time.realtimeSinceStartup + .7f;
+            while (EventSystem.current.currentSelectedGameObject == guard.gameObject && Time.realtimeSinceStartup < deadline) yield return null;
+            Require("virtual D-pad reaches the actual scavenger choice", EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.name.StartsWith("Assign scavenger", StringComparison.Ordinal));
+            InputSystem.QueueStateEvent(pad, new GamepadState()); yield return null;
+            InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.South));
+            deadline = Time.realtimeSinceStartup + .7f;
+            while (resident.item != "scavenger" && Time.realtimeSinceStartup < deadline) yield return null;
+            Require("virtual South submits the actual scavenger callback", resident.item == "scavenger" && game.ScreenName == "resident-role" && game.State.phase == "paused");
+            InputSystem.QueueStateEvent(pad, new GamepadState()); yield return null; yield return new WaitForSecondsRealtime(.2f);
+            Require("scavenger acknowledgement updates visible current-role TMP text", VisibleText(text => text.text.StartsWith("Current role:", StringComparison.Ordinal) && text.text.IndexOf("scavenger", StringComparison.OrdinalIgnoreCase) >= 0) != null);
+            yield return Capture("resident-scavenger");
+            yield return UiControllerBack("residents", "paused");
+            yield return UiControllerBack("actions", "paused");
+            yield return UiControllerBack("play", "active");
+            int wood = player.wood, metal = player.metal;
+            for (int tick = 0; tick < 202; tick++) { game.Rules.Tick(.05f); game.RefreshNativeState(); if (tick % 16 == 0) yield return null; }
+            Require("UI-assigned scavenger produces actual community resources", player.wood > wood && player.metal > metal);
+            // A separate rejection edge uses legal movement away from the centre, not a fixture teleport.
+            yield return MoveUiPlayer(centre.x + 6, centre.z);
+            yield return OpenResidentChooser(); pausedAt = game.State.elapsed;
+            Click("Assign guard"); yield return null; yield return new WaitForSecondsRealtime(.2f);
+            Require("out-of-range assignment preserves role, chooser and solo pause", resident.item == "scavenger" && game.ScreenName == "resident-role" && game.State.phase == "paused" && Mathf.Approximately(game.State.elapsed, pausedAt));
+            Require("authoritative rejection reason is visible to the player", game.Notice.Contains("community centre") && VisibleText(text => text.gameObject.name == "Notice" && text.text == game.Notice) != null, game.Notice);
+            yield return Capture("resident-range-rejection");
+            InputSystem.RemoveDevice(pad); pad = null;
+            report.commandCount = driver.CommandCount + game.CommandsAccepted;
         }
 
         IEnumerator Campaign()
@@ -355,7 +462,9 @@ namespace Mayo.Frontier.Presentation
         {
             game.ChapterChoice = 1; game.Host();
             Require("native host starts its real LAN lobby", game.IsNetworked && !game.IsClient && game.ScreenName == "lobby");
-            game.BeginChapter();
+            TMPro.TMP_Text lobbyStatus = VisibleText(text => text.text.StartsWith("LAN host", StringComparison.Ordinal));
+            Require("initial visible lobby count matches the host", lobbyStatus != null && lobbyStatus.text == game.ConnectionLabel && lobbyStatus.text.Contains("0 / 3 guests"));
+            yield return Capture("lobby-before-join");
             float deadline = Time.realtimeSinceStartup + 60;
             Player guest = null;
             while (guest == null && Time.realtimeSinceStartup < deadline)
@@ -365,6 +474,10 @@ namespace Mayo.Frontier.Presentation
                 game.RefreshNativeState(); guest = game.State.players.FirstOrDefault(p => p.id > 0 && p.connected); yield return null;
             }
             Require("independent native client joins authoritative host", guest != null && game.Rules.ConnectedCount() == 2);
+            yield return new WaitForSecondsRealtime(.25f);
+            yield return Capture("lobby-after-join");
+            Require("visible lobby count updates after a guest joins without reopening the menu", lobbyStatus != null && lobbyStatus.gameObject.activeInHierarchy && lobbyStatus.text == game.ConnectionLabel && lobbyStatus.text.Contains("1 / 3 guests"), "rendered=" + (lobbyStatus == null ? "missing" : lobbyStatus.text) + "; expected=" + game.ConnectionLabel);
+            game.BeginChapter();
             int guestId = guest.id; float startX = guest.x, startZ = guest.z;
             var pause = game.Send(new Command { kind = "pause" }, false);
             Require("host cannot pause a party with an admitted client", !pause.accepted && game.State.phase == "active");
@@ -385,9 +498,15 @@ namespace Mayo.Frontier.Presentation
             Require("native authority rejects an unknown resource-grant command", !unknown.accepted && unknown.reason.Contains("Unknown command"));
             Require("invalid native command cannot grant or spend resources", guest.coins == coins && guest.wood == wood && guest.metal == metal && guest.food == food);
             game.UI.RefreshHUD(); yield return Capture("lan-host", true);
+            game.Show("lobby"); yield return null;
+            TMPro.TMP_Text departureStatus = VisibleText(text => text.text.StartsWith("LAN host", StringComparison.Ordinal));
+            Require("departure reproduction displays a live occupied lobby", guest.connected && departureStatus != null && departureStatus.text.Contains("1 / 3 guests"));
             deadline = Time.realtimeSinceStartup + 25;
             while (guest.connected && Time.realtimeSinceStartup < deadline) { TickHost(); yield return null; }
             Require("forbidden client command causes host disconnect", !guest.connected && game.Rules.ConnectedCount() == 1);
+            yield return new WaitForSecondsRealtime(.25f);
+            Require("visible lobby count updates after disconnect without reopening the menu", departureStatus != null && departureStatus.gameObject.activeInHierarchy && departureStatus.text == game.ConnectionLabel && departureStatus.text.Contains("0 / 3 guests"));
+            yield return Capture("lobby-after-departure");
             report.commandCount = game.CommandsAccepted; report.localPlayerId = 0;
         }
 

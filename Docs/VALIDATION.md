@@ -1,5 +1,7 @@
 # Native development validation — 2026-10-13
 
+Latest rebuilt-source retest: **112 native checks passed**, including three campaign chapters and a separate-process save/settings reload, with zero runtime errors. All 19 runtime C# hashes matched the actual app build before and after testing. See [latest native evidence](ValidationReports/native-retest-20261013.json). Earlier same-day evidence below is retained as history.
+
 Unity 6000.6.0f1 built this project as a macOS development app outside Git. The build succeeded with zero errors and one upstream TMP shader deprecation warning. 98 native campaign checks completed all three chapters through 860 production commands; 14 separate-process reload checks passed. Runtime errors: **0**. The native player restored saved chapter unlocks, preferences and the remapped Interact binding after restarting.
 
 The probe exercises the real uGUI menus and Input System with a virtual gamepad, confirms solo pause, checks corrupt-save backup recovery, and captures native gameplay. This does not establish physical controller ergonomics.

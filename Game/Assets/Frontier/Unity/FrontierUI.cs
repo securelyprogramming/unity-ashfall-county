@@ -16,6 +16,7 @@ namespace Mayo.Frontier.Presentation
         FrontierGame game;Canvas canvas;RectTransform root,menu,menuRoot,hud;
         LanRoom[] foundRooms=new LanRoom[0];TMP_FontAsset font;
         TMP_Text hudTitle,hudObjective,hudVitals,hudResources,hudContext,hudMessage,hudNetwork;
+        TMP_Text menuNotice,lobbyStatus,residentRoleStatus;int selectedResidentId;
         UnityEngine.UI.Image healthFill;
         readonly List<UnityEngine.UI.Button> buttons=new List<UnityEngine.UI.Button>();
         string previous="title",menuBack="title";Color accent;
@@ -58,18 +59,18 @@ namespace Mayo.Frontier.Presentation
         }
         float row;
         void Button(string label,Action action){SmallButton(menu,label,28,row,548,42,action);row+=50;}
-        void Paragraph(string value,float height=65){Text("Paragraph",menu,value,28,row,548,height,19,new Color(.8f,.86f,.86f));row+=height+10;}
+        TMP_Text Paragraph(string value,float height=65){var text=Text("Paragraph",menu,value,28,row,548,height,19,new Color(.8f,.86f,.86f));row+=height+10;return text;}
         public void Show(string screen)
         {
             if(screen=="options"||screen=="controls"||screen=="credits")if(previous!="options"&&previous!="controls"&&previous!="credits")menuBack=previous=="pause"?"pause":"title";
-            previous=screen;var oldMenu=menuRoot;buttons.RemoveAll(b=>b==null||(oldMenu!=null&&b.transform.IsChildOf(oldMenu)));if(oldMenu!=null)Destroy(oldMenu.gameObject);menuRoot=null;hud.gameObject.SetActive(screen=="play");
+            previous=screen;menuNotice=lobbyStatus=residentRoleStatus=null;var oldMenu=menuRoot;buttons.RemoveAll(b=>b==null||(oldMenu!=null&&b.transform.IsChildOf(oldMenu)));if(oldMenu!=null)Destroy(oldMenu.gameObject);menuRoot=null;hud.gameObject.SetActive(screen=="play");
             if(screen=="play"){menu=null;EventSystem.current?.SetSelectedGameObject(null);return;}
             var shade=Panel("MenuShade",root,new Color(.008f,.025f,.03f,.38f));Stretch(shade);menuRoot=shade;menu=shade;
             var box=Panel("MenuCard",shade,new Color(.025f,.065f,.075f,.97f));Place(box,54,44,604,812);menu=box;
             Text("Eyebrow",menu,screen=="title"?game.Profile.genre.Replace('-',' ').ToUpperInvariant():screen.ToUpperInvariant(),28,23,548,24,15,accent,FontStyles.Bold);
             Text("GameTitle",menu,game.Profile.title,28,62,548,105,42,Color.white,FontStyles.Bold);row=178;
-            if(screen=="title")Title();else if(screen=="story")Story();else if(screen=="pause")Pause();else if(screen=="result")Result();else if(screen=="options")Options();else if(screen=="controls")Controls();else if(screen=="credits")Credits();else if(screen=="journal")Journal();else if(screen=="actions")Actions();else if(screen=="lan"||screen=="connecting"||screen=="lobby")Lan(screen);else if(screen=="new")ConfirmNew();else if(screen=="rooms")Rooms();
-            Text("Notice",menu,game.Notice,28,742,548,52,16,accent);
+            if(screen=="title")Title();else if(screen=="story")Story();else if(screen=="pause")Pause();else if(screen=="result")Result();else if(screen=="options")Options();else if(screen=="controls")Controls();else if(screen=="credits")Credits();else if(screen=="journal")Journal();else if(screen=="actions")Actions();else if(screen=="residents")Residents();else if(screen=="resident-role")ResidentRole();else if(screen=="lan"||screen=="connecting"||screen=="lobby")Lan(screen);else if(screen=="new")ConfirmNew();else if(screen=="rooms")Rooms();
+            menuNotice=Text("Notice",menu,game.Notice,28,742,548,52,16,accent);
             var first=buttons.FirstOrDefault(b=>b!=null&&b.transform.IsChildOf(menu));if(first!=null)EventSystem.current?.SetSelectedGameObject(first.gameObject);
         }
         void Title()
@@ -104,11 +105,35 @@ namespace Mayo.Frontier.Presentation
             else if(game.Profile.id=="hearth-rush")foreach(string s in new[]{"stew","fish","bread"}){string option=s;Button("Pantry recipe: "+option,()=>game.SelectInteraction(option));}
             else if(game.Profile.id=="stormline-express"){Button("Engine: load wood as fuel",()=>game.SelectInteraction("fuel"));Button("Engine: start / stop",()=>game.SelectInteraction(""));}
             if(game.Profile.id!="market-day"&&game.Profile.id!="hearth-rush")foreach(string s in new[]{"bandage","ammo","upgrade"}){string option=s;Button("Craft: "+option,()=>game.SelectCraft(option));}
+            if(game.Profile.id=="havenfall-coalition")Button("Resident roles",()=>game.Show("residents"));
             Button("Return to play",game.Resume);
+        }
+        void Residents()
+        {
+            Paragraph("Rescued residents can guard the refuge or gather supplies. Assign roles while standing at the community centre.",90);
+            var residents=game.State.tasks.Where(task=>task.kind=="resident").OrderBy(task=>task.id).ToArray();
+            bool rescued=false;
+            for(int index=0;index<residents.Length;index++)if(residents[index].status=="complete")
+            {
+                rescued=true;var resident=residents[index];int target=resident.id;
+                Button("Resident "+(index+1)+" / "+(string.IsNullOrEmpty(resident.item)?"unassigned":resident.item),()=>{selectedResidentId=target;game.Show("resident-role");});
+            }
+            if(!rescued)Paragraph("No residents rescued yet. Clear infected near a resident and interact with 1 food to bring them home.",100);
+            Button("Back to actions",()=>game.Show("actions"));Button("Return to play",game.Resume);
+        }
+        void ResidentRole()
+        {
+            var resident=game.State.tasks.Find(task=>task.id==selectedResidentId&&task.kind=="resident"&&task.status=="complete");
+            if(resident==null){Paragraph("Rescue this resident before assigning a role.",90);Button("Back to residents",()=>game.Show("residents"));return;}
+            Paragraph("Stand at the community centre to assign a role. Guards defend nearby threats; scavengers bring timber and metal every 10 seconds.",115);
+            residentRoleStatus=Paragraph("Current role: "+(string.IsNullOrEmpty(resident.item)?"unassigned":resident.item),50);
+            int target=resident.id;
+            Button("Assign guard",()=>game.AssignResident(target,"guard"));Button("Assign scavenger",()=>game.AssignResident(target,"scavenger"));
+            Button("Back to residents",()=>game.Show("residents"));Button("Return to play",game.Resume);
         }
         void Lan(string screen)
         {
-            if(screen=="lobby"){Paragraph(game.ConnectionLabel,50);Paragraph(CurrentChapter().story,125);Paragraph("Everyone shares this chapter's objectives, supplies and threats. The host starts the expedition; leaving a menu during LAN play does not pause teammates.",130);if(!game.IsClient)Button("Begin expedition",game.BeginChapter);Button("Leave LAN",game.BackToTitle);return;}
+            if(screen=="lobby"){lobbyStatus=Paragraph(game.ConnectionLabel,50);Paragraph(CurrentChapter().story,125);Paragraph("Everyone shares this chapter's objectives, supplies and threats. The host starts the expedition; leaving a menu during LAN play does not pause teammates.",130);if(!game.IsClient)Button("Begin expedition",game.BeginChapter);Button("Leave LAN",game.BackToTitle);return;}
             if(screen=="connecting"){Paragraph("Connecting to "+game.HostAddress+":"+game.Port+"…",100);Button("Cancel",game.BackToTitle);return;}
             Paragraph("1-4 players on the same LAN. Host authority keeps shared objectives and resource spending consistent.",90);Button("Host LAN campaign",game.Host);Button("Find nearby hosts",()=>{game.Notice="Searching for hosts…";game.ScanRooms(rooms=>{foundRooms=rooms;game.Show("rooms");});});
             Paragraph("Host IPv4: "+game.HostAddress,40);
@@ -119,6 +144,9 @@ namespace Mayo.Frontier.Presentation
         static string Friendly(string value){return CultureInfo.InvariantCulture.TextInfo.ToTitleCase(value.Replace('-',' '));}
         public void RefreshHUD()
         {
+            if(menuNotice!=null)menuNotice.text=game.Notice;
+            if(lobbyStatus!=null)lobbyStatus.text=game.ConnectionLabel;
+            if(residentRoleStatus!=null){var resident=game.State?.tasks.Find(task=>task.id==selectedResidentId&&task.kind=="resident"&&task.status=="complete");residentRoleStatus.text="Current role: "+(resident==null?"unavailable":string.IsNullOrEmpty(resident.item)?"unassigned":resident.item);}
             if(game.State==null)return;var state=game.State;var player=state.players.Find(p=>p.id==game.LocalPlayerId);
             hudTitle.text=game.Profile.title+" / "+CurrentChapter().title;hudObjective.text=state.objective;hudNetwork.text=game.ConnectionLabel;
             if(player==null){hudVitals.text="Waiting for player…";return;}
@@ -131,7 +159,7 @@ namespace Mayo.Frontier.Presentation
             foreach(var pickup in state.pickups)if(pickup.active){float d=Simulation.Distance(player.x,player.z,pickup.x,pickup.z);if(d<distance){distance=d;nearest="Collect "+pickup.amount+" "+pickup.kind;}}
             hudContext.text=nearest==""?"Progress "+state.progress+" / "+state.goal+"   |   "+Mathf.CeilToInt(state.remaining)+"s remaining":"E / A: "+nearest;
         }
-        public void Back(){if(previous=="options"||previous=="controls"||previous=="credits")game.Show(menuBack);else if(previous=="pause"||previous=="journal"||previous=="actions")game.Resume();else if(previous=="rooms")game.Show("lan");else game.BackToTitle();}
+        public void Back(){if(previous=="options"||previous=="controls"||previous=="credits")game.Show(menuBack);else if(previous=="resident-role")game.Show("residents");else if(previous=="residents")game.Show("actions");else if(previous=="pause"||previous=="journal"||previous=="actions")game.Resume();else if(previous=="rooms")game.Show("lan");else game.BackToTitle();}
         public int ActiveMenuButtonCount {get{return buttons.Count(b=>b!=null&&menu!=null&&b.transform.IsChildOf(menu));}}
     }
 }

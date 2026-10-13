@@ -133,6 +133,18 @@ namespace Mayo.Frontier.Presentation
         public void SelectBuild(string option){buildChoice=option;Notice="Build selected: "+option;Resume();}
         public void SelectInteraction(string option){interactionChoice=option;Notice="Interaction selected: "+(option==""?"default":option);Resume();}
         public void SelectCraft(string option){craftChoice=option;Notice="Craft selected: "+option;Resume();}
+        public void AssignResident(int targetId,string role)
+        {
+            bool restorePause=!IsNetworked&&State?.phase=="paused";
+            if(restorePause){var resumed=Send(new Command{kind="pause"},false);if(!resumed.accepted){Notice=resumed.reason;UI.RefreshHUD();return;}}
+            try
+            {
+                var result=Send(new Command{kind="assign",targetId=targetId,option=role});
+                if(IsClient)Notice=result.accepted?"Role request sent to host. Current role updates after approval; return to the community centre if unchanged.":result.reason;
+            }
+            finally{if(restorePause&&!IsNetworked&&State?.phase=="active")Send(new Command{kind="pause"},false);}
+            UI.RefreshHUD();
+        }
         public void BackToTitle(){Disconnect();Rules=new Simulation(Profile.Rules());State=Rules.State;Show("title");}
         public void NewCampaign(){Progress.unlocked=1;Progress.completedMask=0;Store.Save(Progress);ChapterChoice=1;StartSolo();}
         public void Host()
