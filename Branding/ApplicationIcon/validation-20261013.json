@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-13",
+  "gameId": "ashfall-county",
+  "engine": "Unity",
+  "status": "passed",
+  "scope": "Application icon source inputs and platform adapter wiring; native live-icon acceptance is recorded separately.",
+  "artKind": "original-vector",
+  "approvedSourcePreserved": true,
+  "sourceInputs": [
+    {
+      "path": "Game/Assets/Editor/Branding/GameAppIcon.png",
+      "sha256": "20912419979323478dd0e4866afd7261214545be1a3caaed4ac038b02b1ac847"
+    },
+    {
+      "path": "Game/Assets/Editor/GameApplicationIconBuildHook.cs",
+      "sha256": "2aa0cd0c1b901547137f48e919f1cc321deb110deca9ba85394412ebe4856c78"
+    }
+  ],
+  "formatChecks": {
+    "png1024": true,
+    "ico16And256": true,
+    "icns1024": true,
+    "uniqueIdentityAcross55Games": true
+  },
+  "sharedContracts": {
+    "passed": 911,
+    "includesGameMakerWrapperFixtures": true,
+    "includesResourceMutationRejection": true
+  },
+  "unityApiCompilationSample": {
+    "versions": [
+      "6000.3.8f1",
+      "6000.6.0f1"
+    ],
+    "warningsAsErrors": true,
+    "passed": true
+  },
+  "sourceBuildExamples": {
+    "Unity": "Asteroids64 fresh Mac build emitted matching artwork; all default/Standalone slots verified before build.",
+    "Unreal": "Afterlight fixed-source Mac build emitted approved containment artwork via the project Xcode catalog; live OS selection is separately verified."
+  },
+  "remainingAcceptance": [
+    "Final Mac live OS icon and signature acceptance belongs to the aggregate packaging report.",
+    "Native Windows/Linux builds and desktop integration require those target hosts.",
+    "Store capsule graphics and release certification are separate."
+  ]
+}

@@ -282,6 +282,7 @@ namespace Mayo.Frontier.Presentation
             CheckCorruptPair();
             game.Show("title"); yield return null; Click("Controls"); yield return null;
             Require("controls screen is reachable", game.ScreenName == "controls" && game.UI.ActiveMenuButtonCount >= 1);
+            Require("controls screen reflects the saved keyboard override", VisibleText(text=>text.text.Contains("INTERACT: F / South"))!=null);
             game.Show("title"); yield return null; Click("Credits"); yield return null;
             Require("credits screen is reachable", game.ScreenName == "credits" && game.UI.ActiveMenuButtonCount >= 1);
             game.Show("title"); yield return null; Click(game.Progress.completedMask == 0 ? "Begin campaign" : "Continue campaign"); yield return null;
@@ -297,6 +298,7 @@ namespace Mayo.Frontier.Presentation
             driver = new PlaytestDriver(simulation);
             var captured = new HashSet<int>(); var finished = new HashSet<int>();
             int shownChapter = 1;
+            yield return ServiceChoices();
             while (!driver.Done)
             {
                 for (int step = 0; step < 8 && !driver.Done; step++)
@@ -309,6 +311,7 @@ namespace Mayo.Frontier.Presentation
                 {
                     shownChapter = game.State.chapter; game.Show("story");
                     yield return Capture("story" + shownChapter); game.BeginChapter();
+                    yield return ServiceChoices();
                 }
                 if (game.State.elapsed >= 12 && captured.Add(game.State.chapter))
                 {
@@ -335,6 +338,25 @@ namespace Mayo.Frontier.Presentation
             Require("same-process progression round-trip", saved.unlocked == 3 && saved.completedMask == 7);
             game.Show("result"); yield return Capture("finale");
             Require("rendered world has player and gameplay entities", game.View.VisibleEntityCount > 1);
+            if(game.Profile.id=="market-day"||game.Profile.id=="hearth-rush")
+            {
+                game.Show("actions");yield return null;
+                Click(game.Profile.id=="market-day"?"Supplier stock: produce":"Pantry recipe: bread");
+                Require("chapter-three service choice is selected through its real button",game.InteractionChoice==(game.Profile.id=="market-day"?"produce":"bread"));
+                game.ChapterChoice=1;game.StartSolo();yield return null;
+                Require("revisiting chapter one resets a later unlocked service choice",game.State.chapter==1&&game.InteractionChoice==""&&game.ScreenName=="story");
+                Require("revisiting keeps earned campaign unlocks",game.Progress.unlocked==3&&game.Progress.completedMask==7);
+            }
+        }
+
+        IEnumerator ServiceChoices()
+        {
+            if(game.Profile.id!="market-day"&&game.Profile.id!="hearth-rush")yield break;
+            game.OpenPanel("actions");yield return null;
+            string prefix=game.Profile.id=="market-day"?"Supplier stock: ":"Pantry recipe: ";
+            int choices=game.UI.GetComponentsInChildren<Button>(false).Count(button=>button.gameObject.activeInHierarchy&&button.name.StartsWith(prefix,StringComparison.Ordinal));
+            Require("service Actions offers only the chapter's unlocked choices",choices==game.State.chapter,"chapter="+game.State.chapter+" choices="+choices);
+            game.Resume();yield return null;
         }
 
         IEnumerator VirtualController()
@@ -557,10 +579,39 @@ namespace Mayo.Frontier.Presentation
             return Path.Combine(Path.GetDirectoryName(capturePath), Path.GetFileNameWithoutExtension(capturePath) + "-" + kind + ".png");
         }
 
+        void CheckGameplayHud(string moment)
+        {
+            string[] modes = { "ashfall-county", "dead-orbit", "skyhold-siege", "rift-runners", "thornvale", "havenfall-coalition", "emberwake-rebuilders", "fjordbound", "gatebreakers-guild", "market-day", "hearth-rush", "stormline-express" };
+            string[] words = { "Neighbours rescued", "Breaches sealed", "Tower height", "Rivals defeated", "Shrines restored", "Residents rescued", "Homes rebuilt", "Plunder banked", "Invaders remaining", "Customers served", "Dishes served", "Passengers rescued" };
+            int index = Array.IndexOf(modes, game.Profile.id);
+            var progress = VisibleText(text => text.name == "Progress");
+            var context = VisibleText(text => text.name == "Context");
+            var bindings = VisibleText(text => text.name == "Bindings");
+            var inventory = VisibleText(text => text.name == "Resources");
+            Require("native HUD exposes genre-specific live progress: " + moment, index >= 0 && progress != null && progress.text.Contains(words[index]));
+            if (game.Profile.id != "skyhold-siege" && game.Profile.id != "gatebreakers-guild")
+                Require("native HUD progress reflects authoritative counters: " + moment, progress.text.Contains(game.State.progress + " / " + game.State.goal));
+            Require("native progress stays visible alongside interaction context: " + moment, context != null && progress.gameObject.activeInHierarchy && context.gameObject.activeInHierarchy);
+            Require("native chapter timer stays visible: " + moment, VisibleText(text => text.name == "ChapterClock" && text.text.Contains("Chapter " + game.State.chapter + " / 3") && text.text.Contains(":")) != null);
+            Require("native HUD uses the current saved interaction binding: " + moment, bindings != null && bindings.text.Contains(game.Gameplay.FindAction("Interact").GetBindingDisplayString(0) + " / South interact"));
+            if (game.Profile.id == "market-day" || game.Profile.id == "hearth-rush")
+                Require("service HUD shows hands instead of combat supplies: " + moment, inventory != null && !inventory.text.Contains("Ammo") && !inventory.text.Contains("Timber") && !bindings.text.Contains("attack") && !bindings.text.Contains("build") && !bindings.text.Contains("craft"));
+            foreach (string name in new[] { "Title", "Objective", "Progress", "ChapterClock", "Vitals", "Resources", "Context", "Situation", "Bindings" })
+            {
+                var label = VisibleText(text => text.name == name);
+                Require("native HUD label is visible: " + name + " / " + moment, label != null && !string.IsNullOrEmpty(label.text));
+                label.ForceMeshUpdate();
+                var corners = new Vector3[4]; label.rectTransform.GetWorldCorners(corners);
+                bool inside = corners.All(corner => corner.x >= -.5f && corner.y >= -.5f && corner.x <= Screen.width + .5f && corner.y <= Screen.height + .5f);
+                Require("native HUD label fits its viewport: " + name + " / " + moment, inside && !label.isTextOverflowing, label.text);
+            }
+        }
+
         IEnumerator Capture(string kind, bool primary = false)
         {
             string path = CaptureFile(kind, primary); if (path == "") yield break;
             game.UI.RefreshHUD(); yield return new WaitForEndOfFrame();
+            if(game.ScreenName=="play")CheckGameplayHud(kind);
             DateTime old = File.Exists(path) ? File.GetLastWriteTimeUtc(path) : DateTime.MinValue;
             ScreenCapture.CaptureScreenshot(path, 1);
             float end = Time.realtimeSinceStartup + 12; long previous = -1; int stable = 0;

@@ -15,7 +15,7 @@ namespace Mayo.Frontier.Presentation
     {
         FrontierGame game;Canvas canvas;RectTransform root,menu,menuRoot,hud;
         LanRoom[] foundRooms=new LanRoom[0];TMP_FontAsset font;
-        TMP_Text hudTitle,hudObjective,hudVitals,hudResources,hudContext,hudMessage,hudNetwork;
+        TMP_Text hudTitle,hudObjective,hudProgress,hudClock,hudVitals,hudResources,hudContext,hudSituation,hudMessage,hudBindings,hudNetwork;
         TMP_Text menuNotice,lobbyStatus,residentRoleStatus;int selectedResidentId;
         UnityEngine.UI.Image healthFill;
         readonly List<UnityEngine.UI.Button> buttons=new List<UnityEngine.UI.Button>();
@@ -28,16 +28,21 @@ namespace Mayo.Frontier.Presentation
             var scaler=go.GetComponent<UnityEngine.UI.CanvasScaler>();scaler.uiScaleMode=UnityEngine.UI.CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1440,900);scaler.matchWidthOrHeight=1;
             if(EventSystem.current==null){var es=new GameObject("EventSystem",typeof(EventSystem),typeof(InputSystemUIInputModule));es.GetComponent<InputSystemUIInputModule>().AssignDefaultActions();}
             hud=Panel("HUD",root,new Color(0,0,0,0));Stretch(hud);
-            var top=Panel("Header",hud,new Color(.025f,.05f,.065f,.94f));Horizontal(top,24,24,22,112);
+            var top=Panel("Header",hud,new Color(.025f,.05f,.065f,.94f));Horizontal(top,24,24,22,136);
             hudTitle=Text("Title",top,game.Profile.title,20,12,900,30,24,accent,FontStyles.Bold);hudObjective=Text("Objective",top,"",20,47,1000,54,18,Color.white);
             Horizontal(hudTitle.rectTransform,20,390,12,30);Horizontal(hudObjective.rectTransform,20,390,47,54);
+            hudProgress=Text("Progress",top,"",20,103,1000,24,17,accent,FontStyles.Bold);Horizontal(hudProgress.rectTransform,20,390,103,24);
             hudNetwork=Text("Network",top,"Solo campaign",1030,12,340,30,15,new Color(.72f,.83f,.86f));Right(hudNetwork.rectTransform,20,12,340,30);
             var bar=Panel("HealthBackground",top,new Color(.15f,.22f,.24f));Right(bar,34,53,310,18);healthFill=Panel("HealthFill",bar,new Color(.49f,.78f,.62f)).GetComponent<UnityEngine.UI.Image>();Stretch(healthFill.rectTransform);
             hudVitals=Text("Vitals",top,"",1040,77,330,22,14,Color.white);Right(hudVitals.rectTransform,20,77,330,22);
+            hudClock=Text("ChapterClock",top,"",1040,105,330,22,16,Color.white);Right(hudClock.rectTransform,20,105,330,22);
             var bottom=Panel("Status",hud,new Color(.025f,.05f,.065f,.94f));Bottom(bottom,24,24,24,116);
-            hudResources=Text("Resources",bottom,"",18,10,900,26,17,accent);hudMessage=Text("Message",bottom,"",18,44,1000,52,17,Color.white);
-            Horizontal(hudResources.rectTransform,18,350,10,26);Horizontal(hudMessage.rectTransform,18,350,44,52);
-            hudContext=Text("Context",hud,"",28,687,1100,58,18,new Color(.9f,.92f,.86f));Bottom(hudContext.rectTransform,28,28,155,58);
+            hudResources=Text("Resources",bottom,"",18,10,900,26,17,accent);hudMessage=Text("Message",bottom,"",18,40,1000,32,15,Color.white);
+            Horizontal(hudResources.rectTransform,18,350,10,26);Horizontal(hudMessage.rectTransform,18,350,40,32);
+            hudBindings=Text("Bindings",bottom,"",18,76,1000,36,14,new Color(.72f,.83f,.86f));Horizontal(hudBindings.rectTransform,18,350,76,36);
+            var context=Panel("Interaction",hud,new Color(.025f,.05f,.065f,.92f));Bottom(context,24,24,151,66);
+            hudContext=Text("Context",context,"",18,8,1300,26,18,Color.white);Horizontal(hudContext.rectTransform,18,18,8,26);
+            hudSituation=Text("Situation",context,"",18,37,1300,22,16,new Color(.72f,.83f,.86f));Horizontal(hudSituation.rectTransform,18,18,37,22);
             var actions=SmallButton(bottom,"Actions",1050,14,145,38,()=>game.OpenPanel("actions"));Right(actions.GetComponent<RectTransform>(),176,14,145,38);var journalButton=SmallButton(bottom,"Journal",1208,14,145,38,()=>game.OpenPanel("journal"));Right(journalButton.GetComponent<RectTransform>(),18,14,145,38);var pauseButton=SmallButton(bottom,"Pause",1208,62,145,36,()=>game.OpenPanel("pause"));Right(pauseButton.GetComponent<RectTransform>(),18,62,145,36);
         }
         static void Stretch(RectTransform rect){rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;}
@@ -89,7 +94,24 @@ namespace Mayo.Frontier.Presentation
             foreach(string action in new[]{"Interact","Attack","Build","Craft"}){string name=action;Button("Rebind "+name+": "+game.Gameplay.FindAction(name).GetBindingDisplayString(0),()=>game.Rebind(name));}
             Button("Restore default bindings",game.RestoreBindings);Button("Back",()=>game.Show(menuBack));
         }
-        void Controls(){Paragraph("MOVE: WASD / left stick\nAIM: mouse / right stick\nINTERACT: E / A (south)\nATTACK: left mouse / right trigger / X (west)\nBUILD: B / left bumper\nCRAFT: Q / right bumper\nPAUSE: Escape / Start\nJOURNAL: J / Select\nMENUS: arrows, D-pad or left stick; Enter / A confirms. B (east) goes back.",330);Paragraph("Choose structures, recipes and shop stock in the Actions menu. LAN discovery and the IP keypad can be used with a controller.",95);Button("Back",()=>game.Show(menuBack));}
+        string Binding(string action,string controller){return game.Gameplay.FindAction(action).GetBindingDisplayString(0)+" / "+controller;}
+        string PlayBindings()
+        {
+            string hints=Binding("Interact","South")+" interact";
+            if(!FrontierHud.IsService(game.Profile.id))hints+="   |   "+Binding("Attack","RT / West")+" attack";
+            if(FrontierHud.HasBuilding(game.Profile.id))hints+="   |   "+Binding("Build","LB")+" build";
+            if(!FrontierHud.IsService(game.Profile.id))hints+="   |   "+Binding("Craft","RB")+" craft";
+            return hints;
+        }
+        void Controls()
+        {
+            string controls="MOVE: WASD / left stick\nAIM: mouse / right stick\nINTERACT: "+Binding("Interact","South");
+            if(!FrontierHud.IsService(game.Profile.id))controls+="\nATTACK: "+Binding("Attack","right trigger / West");
+            if(FrontierHud.HasBuilding(game.Profile.id))controls+="\nBUILD: "+Binding("Build","left bumper");
+            if(!FrontierHud.IsService(game.Profile.id))controls+="\nCRAFT: "+Binding("Craft","right bumper");
+            controls+="\nPAUSE: Escape / Start\nJOURNAL: J / Select\nMENUS: arrows, D-pad or left stick; Enter / South confirms. East goes back.";
+            Paragraph(controls,330);Paragraph("Choose structures, recipes and shop stock in the Actions menu. LAN discovery and the IP keypad can be used with a controller.",95);Button("Back",()=>game.Show(menuBack));
+        }
         void Credits(){Paragraph("Original game design, characters, story and source\nMayo Games",95);Paragraph("Original stylized character and environment kit. Selected purchased assets are credited in each project's asset manifest. Existing purchases remain private source dependencies.",130);Paragraph("Liberation Sans / SIL Open Font License\nUnity runtime and Input System\nLAN host authority and local progression",100);Button("Back",()=>game.Show(menuBack));}
         void Journal(){Paragraph(CurrentChapter().title+"\n"+CurrentChapter().story,132);Paragraph("YOUR CREW\n"+string.Join("\n",game.Profile.cast.Select(c=>c.name+" - "+c.role)),118);Paragraph(game.State?.objective??game.Profile.brief,100);Paragraph(Guide(),115);Button("Return to play",game.Resume);}
         string Guide()
@@ -98,11 +120,11 @@ namespace Mayo.Frontier.Presentation
         }
         void Actions()
         {
-            Paragraph("Choose what B/LB, Q/RB or your next interaction does. Return to play to use it near a valid target.",80);
+            Paragraph("Choose your structure, recipe or supplies. Return to play and use the displayed control near a valid target.",80);
             string[] builds=game.Profile.id=="skyhold-siege"?new[]{"tower","barricade"}:game.Profile.id=="gatebreakers-guild"?new[]{"spike-trap","barricade","bolt-tower"}:game.Profile.id=="rift-runners"?new[]{"barrier","ramp"}:game.Profile.id=="havenfall-coalition"?new[]{"barricade","clinic"}:game.Profile.id=="emberwake-rebuilders"?new[]{"home"}:new string[0];
             foreach(string choice in builds){string option=choice;Button("Build: "+Friendly(option),()=>game.SelectBuild(option));}
-            if(game.Profile.id=="market-day")foreach(string s in new[]{"groceries","tools","produce"}){string option=s;Button("Supplier stock: "+option,()=>game.SelectInteraction(option));}
-            else if(game.Profile.id=="hearth-rush")foreach(string s in new[]{"stew","fish","bread"}){string option=s;Button("Pantry recipe: "+option,()=>game.SelectInteraction(option));}
+            if(game.Profile.id=="market-day")foreach(string s in new[]{"groceries","tools","produce"}){string option=s;if(game.State.structures.Exists(station=>station.kind=="shelf-"+option))Button("Supplier stock: "+option,()=>game.SelectInteraction(option));}
+            else if(game.Profile.id=="hearth-rush")foreach(string s in new[]{"stew","fish","bread"}.Take(game.State.chapter)){string option=s;Button("Pantry recipe: "+option,()=>game.SelectInteraction(option));}
             else if(game.Profile.id=="stormline-express"){Button("Engine: load wood as fuel",()=>game.SelectInteraction("fuel"));Button("Engine: start / stop",()=>game.SelectInteraction(""));}
             if(game.Profile.id!="market-day"&&game.Profile.id!="hearth-rush")foreach(string s in new[]{"bandage","ammo","upgrade"}){string option=s;Button("Craft: "+option,()=>game.SelectCraft(option));}
             if(game.Profile.id=="havenfall-coalition")Button("Resident roles",()=>game.Show("residents"));
@@ -148,16 +170,14 @@ namespace Mayo.Frontier.Presentation
             if(lobbyStatus!=null)lobbyStatus.text=game.ConnectionLabel;
             if(residentRoleStatus!=null){var resident=game.State?.tasks.Find(task=>task.id==selectedResidentId&&task.kind=="resident"&&task.status=="complete");residentRoleStatus.text="Current role: "+(resident==null?"unavailable":string.IsNullOrEmpty(resident.item)?"unassigned":resident.item);}
             if(game.State==null)return;var state=game.State;var player=state.players.Find(p=>p.id==game.LocalPlayerId);
-            hudTitle.text=game.Profile.title+" / "+CurrentChapter().title;hudObjective.text=state.objective;hudNetwork.text=game.ConnectionLabel;
+            hudTitle.text=game.Profile.title+" / "+CurrentChapter().title;hudObjective.text=FrontierHud.Goal(state);hudProgress.text=FrontierHud.Progress(state);hudNetwork.text=game.ConnectionLabel;
+            hudClock.text=FrontierHud.Clock(state.remaining)+" left   |   Chapter "+state.chapter+" / 3";hudClock.color=state.remaining<=30?new Color(1,.68f,.45f):Color.white;
             if(player==null){hudVitals.text="Waiting for player…";return;}
-            healthFill.rectTransform.anchorMax=new Vector2(Mathf.Clamp01(player.hp/player.maxHp),1);hudVitals.text="HP "+Mathf.CeilToInt(player.hp)+(game.Profile.id=="dead-orbit"?"   O2 "+Mathf.CeilToInt(player.oxygen):"   Base "+Mathf.CeilToInt(state.baseHealth));
-            hudResources.text="Food "+player.food+"   Timber "+player.wood+"   Metal "+player.metal+"   Coins "+player.coins+"   Ammo "+player.ammo+(player.carried!=""?"   Carrying "+player.carried.Replace(':',' '):"");
-            hudMessage.text=(string.IsNullOrEmpty(game.Notice)?state.message:game.Notice)+"\nE / A interact   |   LMB / RT attack   |   B / LB build   |   Q / RB craft";
-            string nearest="";float distance=2.5f;
-            foreach(var task in state.tasks)if(task.status=="open"){float d=Simulation.Distance(player.x,player.z,task.x,task.z);if(d<distance){distance=d;nearest=task.label+(task.kind=="order"?" / "+Mathf.CeilToInt(task.remaining)+"s":"");}}
-            foreach(var structure in state.structures)if(structure.hp>0){float d=Simulation.Distance(player.x,player.z,structure.x,structure.z);if(d<distance){distance=d;nearest=Friendly(structure.kind)+(structure.stock>0?" / stock "+structure.stock:"")+(structure.item!=""?" / "+structure.item+" "+structure.progress.ToString("0.0")+"s":"");}}
-            foreach(var pickup in state.pickups)if(pickup.active){float d=Simulation.Distance(player.x,player.z,pickup.x,pickup.z);if(d<distance){distance=d;nearest="Collect "+pickup.amount+" "+pickup.kind;}}
-            hudContext.text=nearest==""?"Progress "+state.progress+" / "+state.goal+"   |   "+Mathf.CeilToInt(state.remaining)+"s remaining":"E / A: "+nearest;
+            bool service=FrontierHud.IsService(state.mode);float fill=service?(float)state.progress/Mathf.Max(1,state.goal):player.hp/Mathf.Max(1,player.maxHp);
+            healthFill.rectTransform.anchorMax=new Vector2(Mathf.Clamp01(fill),1);healthFill.color=!service&&fill<.3f?new Color(.93f,.48f,.34f):accent;
+            hudVitals.text=FrontierHud.Vitals(state,player);hudResources.text=FrontierHud.Inventory(state,player);
+            hudMessage.text=string.IsNullOrEmpty(game.Notice)?"Actions chooses your next recipe, supplies or equipment. Journal has the full field guide.":game.Notice;
+            hudBindings.text=PlayBindings();hudContext.text=FrontierHud.Context(state,player,game.InteractionChoice,Binding("Interact","South"));hudSituation.text=FrontierHud.Situation(state);
         }
         public void Back(){if(previous=="options"||previous=="controls"||previous=="credits")game.Show(menuBack);else if(previous=="resident-role")game.Show("residents");else if(previous=="residents")game.Show("actions");else if(previous=="pause"||previous=="journal"||previous=="actions")game.Resume();else if(previous=="rooms")game.Show("lan");else game.BackToTitle();}
         public int ActiveMenuButtonCount {get{return buttons.Count(b=>b!=null&&menu!=null&&b.transform.IsChildOf(menu));}}

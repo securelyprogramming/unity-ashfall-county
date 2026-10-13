@@ -35,7 +35,7 @@ public static class PrepareFrontier
         // Input System owns both gameplay and menus. The selected template already
         // supplies its pinned packages; no manifest rewrite is needed.
         var settings=new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/ProjectSettings.asset")[0]);var input=settings.FindProperty("activeInputHandler");if(input!=null){input.intValue=1;settings.ApplyModifiedPropertiesWithoutUndo();}
-        PrepareIcon(profile.accent);AssetDatabase.SaveAssets();Debug.Log("FRONTIER_PREPARED "+profile.id);
+        GameApplicationIconBuildHook.Apply();AssetDatabase.SaveAssets();Debug.Log("FRONTIER_PREPARED "+profile.id);
     }
     static void PreparePaidFootings()
     {
@@ -49,12 +49,6 @@ public static class PrepareFrontier
             var source=AssetDatabase.LoadAssetAtPath<GameObject>(path);var instance=(GameObject)PrefabUtility.InstantiatePrefab(source);foreach(var renderer in instance.GetComponentsInChildren<Renderer>(true))renderer.sharedMaterials=Enumerable.Repeat(material,Mathf.Max(1,renderer.sharedMaterials.Length)).ToArray();
             PrefabUtility.SaveAsPrefabAsset(instance,"Assets/Resources/LicensedFrontier/SplineBuilderFooting/"+name+"_Prepared.prefab");UnityEngine.Object.DestroyImmediate(instance);
         }
-    }
-    static void PrepareIcon(string color)
-    {
-        string path="Assets/Resources/FrontierIcon.png";ColorUtility.TryParseHtmlString(color,out var accent);var texture=new Texture2D(128,128,TextureFormat.RGBA32,false);var pixels=new Color[128*128];
-        for(int y=0;y<128;y++)for(int x=0;x<128;x++){float dx=Math.Abs(x-64),dy=Math.Abs(y-64);bool gem=dx*.9f+dy<50;bool centre=dx*.8f+dy<25;pixels[y*128+x]=gem?(centre?new Color(.93f,.94f,.85f):accent):new Color(.025f,.065f,.075f,1);}
-        texture.SetPixels(pixels);texture.Apply();File.WriteAllBytes(path,texture.EncodeToPNG());UnityEngine.Object.DestroyImmediate(texture);AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceUpdate);var icon=AssetDatabase.LoadAssetAtPath<Texture2D>(path);PlayerSettings.SetIcons(UnityEditor.Build.NamedBuildTarget.Unknown,new[]{icon},IconKind.Any);
     }
     static void PrepareAudio()
     {

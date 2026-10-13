@@ -1,0 +1,69 @@
+{
+  "art": {
+    "accent": "#f18c5c",
+    "kind": "original-vector",
+    "motif": "Burned county watchtower",
+    "provenance": "Repository-native SVG authored for this game; no paid source artwork.",
+    "sourceSha256": "20912419979323478dd0e4866afd7261214545be1a3caaed4ac038b02b1ac847"
+  },
+  "assets": {
+    "icon-128.png": {
+      "bytes": 16204,
+      "sha256": "855d38e4af2562fd6cb78511697e224ee26f844982fc61079df31529d21f6b71"
+    },
+    "icon-16.png": {
+      "bytes": 793,
+      "sha256": "7dc1ce7cfe2081a75c4d72b8bd0ba488322bae477891caaaa91de615917c6ec4"
+    },
+    "icon-256.png": {
+      "bytes": 43740,
+      "sha256": "e758c7fb1f1e4acca506ecc1453a374376c12599431e2f3551e82841ad658be7"
+    },
+    "icon-32.png": {
+      "bytes": 2100,
+      "sha256": "df45b814bb9550421016a0d06d321273da6d9203861b53bc054981f5917fd6c4"
+    },
+    "icon-512.png": {
+      "bytes": 116092,
+      "sha256": "477120016f87119565920118ebbf76ce1b3a4eadbef8093931ca0e8879342f51"
+    },
+    "icon-64.png": {
+      "bytes": 6004,
+      "sha256": "59e93858f2336fe3f6cf251dfaf3d31315658e01fb7166f24dc40c2879d5c937"
+    },
+    "icon.bmp": {
+      "bytes": 196662,
+      "sha256": "401aaabeefffff89d12cde8ba1d51d2e54cbc4f9da8cb292c6a0df99a3af64c2"
+    },
+    "icon.icns": {
+      "bytes": 549694,
+      "sha256": "78bf16dbbdd13289dfa1c79864a675576122f589015d5ff5559487c9b354b3bc"
+    },
+    "icon.ico": {
+      "bytes": 75058,
+      "sha256": "55c144b57aef7f3f648fd6a2fb837f3a2ebef973b63a289be15c132f703fcba8"
+    },
+    "icon.png": {
+      "bytes": 231086,
+      "sha256": "36a062b4aef71c40d4a3887f61f41e21e1430acce8e920043b675d97abddd123"
+    },
+    "source.png": {
+      "bytes": 231094,
+      "sha256": "20912419979323478dd0e4866afd7261214545be1a3caaed4ac038b02b1ac847"
+    },
+    "source.svg": {
+      "bytes": 1464,
+      "sha256": "7a358441fbaa227c534ad15e5df50ced4ce84f97f96a17c48457bc85cb70b515"
+    }
+  },
+  "gameId": "ashfall-county",
+  "installs": [
+    {
+      "asset": "source.png",
+      "path": "Assets/Editor/Branding/GameAppIcon.png"
+    }
+  ],
+  "pipeline": "securelyprogramming/game-workbench/scripts/game-icons.py",
+  "schemaVersion": 1,
+  "scope": "Application icons only; store capsules and platform release certification are separate."
+}

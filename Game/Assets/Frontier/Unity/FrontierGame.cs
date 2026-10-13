@@ -43,6 +43,7 @@ namespace Mayo.Frontier.Presentation
         bool quitting;
         public bool QaActive {get;private set;}
         public bool RebindingActive {get{return rebind!=null;}}
+        public string InteractionChoice {get{return interactionChoice;}}
         public int SnapshotsReceived {get;private set;}
         public int CommandsAccepted {get;private set;}
         public static string Arg(string key){string prefix="-"+key+"=";return Environment.GetCommandLineArgs().FirstOrDefault(a=>a.StartsWith(prefix,StringComparison.Ordinal))?.Substring(prefix.Length)??"";}
@@ -123,7 +124,7 @@ namespace Mayo.Frontier.Presentation
             if(IsClient){if(lan.SendCommand(JsonUtility.ToJson(command)))return new ActionResult(true,"Sent to host.");return new ActionResult(false,"Not connected to host.");}
             var result=Rules.Apply(0,command);if(result.accepted){CommandsAccepted++;if(command.kind=="attack"||command.kind=="interact")audio.Cue(command.kind);}if(feedback&&!string.IsNullOrEmpty(result.reason))Notice=result.reason;State=Rules.State;return result;
         }
-        public void StartSolo(){Disconnect();sequence=0;observedWin=-1;Rules=new Simulation(Profile.Rules(),Mathf.Clamp(ChapterChoice,1,Progress.unlocked));State=Rules.State;Show("story");}
+        public void StartSolo(){Disconnect();interactionChoice="";sequence=0;observedWin=-1;Rules=new Simulation(Profile.Rules(),Mathf.Clamp(ChapterChoice,1,Progress.unlocked));State=Rules.State;Show("story");}
         public void BeginChapter(){SessionStarted=true;Show("play");}
         public void Advance(){Send(new Command{kind="advance"});SessionStarted=false;Show("story");}
         public void Retry(){Send(new Command{kind="restart"});SessionStarted=false;observedWin=-1;Show("story");}
@@ -149,12 +150,12 @@ namespace Mayo.Frontier.Presentation
         public void NewCampaign(){Progress.unlocked=1;Progress.completedMask=0;Store.Save(Progress);ChapterChoice=1;StartSolo();}
         public void Host()
         {
-            Disconnect();Rules=new Simulation(Profile.Rules(),Mathf.Clamp(ChapterChoice,1,Progress.unlocked));State=Rules.State;sequence=0;observedWin=-1;
+            Disconnect();interactionChoice="";Rules=new Simulation(Profile.Rules(),Mathf.Clamp(ChapterChoice,1,Progress.unlocked));State=Rules.State;sequence=0;observedWin=-1;
             try{lan=LanSession.Host(Profile.id,Port,"0.0.0.0",3);WireLan();try{discovery=LanDiscovery.Advertise(Profile.id,Port,Profile.title,Port+1);}catch(Exception e){Notice="Direct-address hosting ready; discovery unavailable: "+e.Message;}Show("lobby");}catch(Exception e){Notice="Could not host: "+e.Message;Disconnect();Show("lan");}
         }
         public void Join()
         {
-            Disconnect();sequence=0;observedWin=-1;Rules=null;State=null;
+            Disconnect();interactionChoice="";sequence=0;observedWin=-1;Rules=null;State=null;
             try{lan=LanSession.Join(Profile.id,HostAddress,Port);WireLan();Show("connecting");}catch(Exception e){Notice=e.Message;Show("lan");}
         }
         void WireLan()
