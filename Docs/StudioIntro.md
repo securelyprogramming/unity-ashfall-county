@@ -1,0 +1,9 @@
+# ProgrammingSecurely creator intro
+
+The independently installed `Assets/StudioIntro/StudioIntro.cs` overlay displays this game's title, **ProgrammingSecurely** and <https://programmingsecurely.com/> for three seconds after the Unity splash. The real game/menu stays visible behind it when `showGameBehind` is true. Any keyboard key, mouse click or controller face/shoulder/trigger/d-pad button skips it. Existing UI modules are restored after the skip-input frame to avoid submitting a menu command accidentally. Rules, time scale, saves and scenes are untouched.
+
+`Assets/Resources/StudioIntro.json` owns its title, creator, website, duration, visibility, purchased panel provenance and exact existing QA flag allowlist. A hash-pinned compatible owned UI panel is restored by the independent editor prebuild callback into ignored `Assets/Resources/StudioIntroArt/`. The private source cache is `~/Library/Caches/GameAssets/studio-intro`; `STUDIO_INTRO_ASSET_CACHE` overrides it on any platform. Keep that cache with the original purchase/licence; the workspace installer populates it from existing local purchased selections. A missing or changed source cache rejects the native build with an actionable error. No paid images or vendor code are distributed in Git.
+
+Native development checks intentionally exercise the intro with `--studio-intro-smoke=keyboard|mouse|gamepad|auto`; each writes a JSON report plus visible/dismissed captures under the private temporary `GameWorkbenchQA/StudioIntro/` folder. Existing declared game QA flags skip the intro; unrelated validator arguments do not.
+
+Installed from `game-workbench/studio-intro/unity`. Source integration is not proof of native acceptance on every game/platform. Read each game's `Docs/ValidationReports` for the exact fresh native evidence.

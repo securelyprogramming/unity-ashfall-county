@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "gameId": "ashfall-county",
+  "source": "game-workbench/studio-intro/unity",
+  "hashes": {
+    "Game/Assets/StudioIntro/StudioIntro.cs": "fecf9721b13182a14f2b7218fd9c42902dae6bfa016c5c908254fad81ddefaa3",
+    "Game/Assets/StudioIntro/StudioIntro.cs.meta": "d4f595a023ea603a6c6f3c5e0667bf896a40eb16082e040fb20ac57227d2bbde",
+    "Game/Assets/StudioIntro.meta": "f4ce15ec03cc374e72c7394f9b7b458f39d77e73ef47e27a0268c4320c4ead08",
+    "Game/Assets/StudioIntro/Editor.meta": "eb416d2e747871b978621eed581abb828d00d310b04c1acc4a006fc44612bfca",
+    "Game/Assets/StudioIntro/Editor/StudioIntroPanelImport.cs": "aa59584de8a38c7378096ca039918c56a66a1ac28a0735af31ef10259ec23a39",
+    "Game/Assets/StudioIntro/Editor/StudioIntroPanelImport.cs.meta": "14e912a7b03bbcde690fc29d870e6f3f19a2d3cfe6665c88e2caa2642e1c7790",
+    "Game/Assets/Resources/StudioIntro.json": "64a35960059a2fb361af66f331118e82642759314b8ba6f31945d101d9c7869b",
+    "Game/Assets/Resources/StudioIntro.json.meta": "e23561a36d1c7a0215fc7b0551cfc4506cee9bfe1fd07cef3e8cf6f66c312618",
+    "Docs/StudioIntro.md": "9cfe419c1d8bba84cfbf047051edd766bb7e883d9b4194b7ff4ed8c4089bd09b",
+    ".gitignore": "4528a4908159814a6577183f0eed7c1cafe1825771674ce38e8bfff45099c1df"
+  }
+}

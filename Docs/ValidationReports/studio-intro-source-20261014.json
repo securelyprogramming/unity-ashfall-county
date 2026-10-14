@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-14",
+  "game": "ashfall-county",
+  "status": "source-integrated-native-intro-unverified",
+  "creator": "ProgrammingSecurely",
+  "website": "https://programmingsecurely.com/",
+  "durationSeconds": 3,
+  "liveGameBehind": true,
+  "sourceSha256": {
+    "runtime": "fecf9721b13182a14f2b7218fd9c42902dae6bfa016c5c908254fad81ddefaa3",
+    "editorPanelImporter": "aa59584de8a38c7378096ca039918c56a66a1ac28a0735af31ef10259ec23a39",
+    "settings": "64a35960059a2fb361af66f331118e82642759314b8ba6f31945d101d9c7869b"
+  },
+  "purchasedPanel": {
+    "pack": "27_1_5 Game UI Kit / 5 Game UI Kits",
+    "sourceProject": "unity-riftward-relay/Riftline/Assets/Resources/RiftlineUI/Purchased27/044.png",
+    "product": "https://www.gamedevmarket.net/asset/5-game-ui-kits-2",
+    "cacheFile": "e94ee1a88f2031785390cf51749744316d3d379156f3c2922dd66ada4ba134f7.png",
+    "sha256": "e94ee1a88f2031785390cf51749744316d3d379156f3c2922dd66ada4ba134f7",
+    "bytes": 9461,
+    "provenance": "User-owned Humble Game Dev GUI Goodness selection; original source and licence retained privately."
+  },
+  "sourceAndCacheOriginalHashVerified": true,
+  "paidSourceTracked": false,
+  "sharedInstallerTests": 7,
+  "nativeIntroAcceptance": null,
+  "scope": "Independent intro/UI source and config integration; game systems, scenes and Frontier runtime are unchanged by this module. Purchased panels are privately cached and restored by the editor prebuild callback.",
+  "limitations": [
+    "Fresh native build, actual intro rendering/dismissal and controller input acceptance for this game remain unverified.",
+    "Prior builds/probes do not include this new intro."
+  ],
+  "verifiedPurchasedOrigin": {
+    "pack": "27_1_5 Game UI Kit",
+    "sourceManifest": "unity-riftward-relay/Docs/ThirdParty/PURCHASED-UI-27-manifest.json",
+    "product": "https://www.gamedevmarket.net/asset/5-game-ui-kits-2"
+  },
+  "purchaseClassificationAudit": {
+    "originalPaidManifestVerified": true,
+    "freeArtRejectedByInstaller": true,
+    "imageChanged": false
+  }
+}

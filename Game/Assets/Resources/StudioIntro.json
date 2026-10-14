@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "enabled": true,
+  "creator": "ProgrammingSecurely",
+  "website": "https://programmingsecurely.com/",
+  "gameTitle": "Ashfall County",
+  "durationSeconds": 3,
+  "showGameBehind": true,
+  "preferredPanelResources": [
+    "StudioIntroArt/Panel",
+    "LicensedFrontier/ApocalypseHUD/Panel"
+  ],
+  "skipQaArguments": [
+    "-frontier-capture",
+    "-frontier-lan-role",
+    "-frontier-qa",
+    "-frontier-report"
+  ],
+  "purchasedPanel": {
+    "pack": "27_1_5 Game UI Kit / 5 Game UI Kits",
+    "sourceProject": "unity-riftward-relay/Riftline/Assets/Resources/RiftlineUI/Purchased27/044.png",
+    "product": "https://www.gamedevmarket.net/asset/5-game-ui-kits-2",
+    "cacheFile": "e94ee1a88f2031785390cf51749744316d3d379156f3c2922dd66ada4ba134f7.png",
+    "sha256": "e94ee1a88f2031785390cf51749744316d3d379156f3c2922dd66ada4ba134f7",
+    "bytes": 9461,
+    "provenance": "User-owned Humble Game Dev GUI Goodness selection; original source and licence retained privately."
+  }
+}

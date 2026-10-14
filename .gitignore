@@ -18,3 +18,7 @@ Game/Assets/Resources/LicensedFrontier.meta
 __pycache__/
 *.pyc
 .DS_Store
+
+# Private purchased creator intro panel
+/Game/Assets/Resources/StudioIntroArt/
+/Game/Assets/Resources/StudioIntroArt.meta
