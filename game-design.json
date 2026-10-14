@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "id": "ashfall-county",
+  "title": "Ashfall County",
+  "genre": "zombie-survival",
+  "brief": "Scavenge a flooded rural county, rescue stranded neighbors and hold an evacuation safehouse.",
+  "status": "development",
+  "runtimeFamily": "unity-frontier",
+  "world": {
+    "classification": "county-survival",
+    "configFile": "game-workbench.json",
+    "defaultMode": "authored",
+    "randomization": {
+      "workbench": "seeded-region-v1",
+      "runtime": "adapter-required; not established by authoring config",
+      "preserveAuthoredObjectives": true
+    },
+    "stageIds": [
+      "frontier-chapter-1",
+      "frontier-chapter-2",
+      "frontier-chapter-3",
+      "frontier-menu",
+      "frontier-story",
+      "frontier-victory1",
+      "frontier-story2",
+      "frontier-victory2",
+      "frontier-story3",
+      "frontier-victory3",
+      "frontier-finale",
+      "ashfall-pharmacy-interior-20261014",
+      "ashfall-pharmacy-doorway-20261014",
+      "ashfall-interior-pause-20261014",
+      "ashfall-safehouse-800x600-20261014"
+    ]
+  },
+  "characters": {
+    "player": {
+      "name": "Mara Vale",
+      "role": "paramedic",
+      "movementDesignTarget": "genre-specific 3D movement, collision and camera",
+      "nativeAcceptance": "required"
+    },
+    "npcs": [
+      {
+        "name": "Jonah Reed",
+        "role": "mechanic",
+        "source": "ContentSource/campaign.json",
+        "movementAcceptance": "Verify role-appropriate idle, locomotion, pathfinding and interaction reach in native stages; authored cast alone does not prove runtime NPC presence.",
+        "interactionsAcceptance": "Verify dialogue, quest state and role-specific interactions without bypassing game economy."
+      },
+      {
+        "name": "Ada Pike",
+        "role": "radio operator",
+        "source": "ContentSource/campaign.json",
+        "movementAcceptance": "Verify role-appropriate idle, locomotion, pathfinding and interaction reach in native stages; authored cast alone does not prove runtime NPC presence.",
+        "interactionsAcceptance": "Verify dialogue, quest state and role-specific interactions without bypassing game economy."
+      }
+    ],
+    "enemies": [
+      {
+        "archetype": "zombie",
+        "acceptance": "Verify spawn rules, locomotion/navigation, combat, animation and rewards per stage."
+      }
+    ]
+  },
+  "story": {
+    "source": "ContentSource/campaign.json",
+    "chapters": [
+      {
+        "number": 1,
+        "title": "The Last Pharmacy",
+        "story": "Mara reaches a shuttered pharmacy with one promise: nobody leaves the county alone.",
+        "layoutSeed": 101,
+        "acceptance": "native completion and save/reload required"
+      },
+      {
+        "number": 2,
+        "title": "The Waterline",
+        "story": "Ada hears families beyond the flooded road. Supplies must reach the refuge before dusk.",
+        "layoutSeed": 274,
+        "acceptance": "native completion and save/reload required"
+      },
+      {
+        "number": 3,
+        "title": "County Evacuation",
+        "story": "Jonah can start the convoy if the safehouse holds long enough to gather every survivor.",
+        "layoutSeed": 447,
+        "acceptance": "native completion and save/reload required"
+      }
+    ],
+    "sideQuests": {
+      "status": "design and runtime acceptance required",
+      "requirements": [
+        "Separate optional quest state from main story gates",
+        "Verify NPC giver, prerequisites, rewards, persistence and multiplayer authority where applicable"
+      ]
+    }
+  },
+  "studioIntro": {
+    "enabled": true,
+    "creator": "ProgrammingSecurely",
+    "website": "https://programmingsecurely.com/",
+    "durationSeconds": 3,
+    "skippable": true,
+    "presentation": "Game title and creator credits over the actual scene when available; no fabricated gameplay video.",
+    "nativeAcceptance": "required"
+  },
+  "systems": {
+    "coreLoopSource": "Scavenge a flooded rural county, rescue stranded neighbors and hold an evacuation safehouse.",
+    "worldRules": "Game-specific authored levels and optional seeded workshops; preserve runtime gameplay until an adapter is integrated.",
+    "playerControls": "Keyboard/mouse and controller navigation require native acceptance for this genre.",
+    "npcRules": "Verify cast presence, navigation, locomotion, interaction reach, dialogue and quest roles in native scenes.",
+    "progression": "Campaign gates, rewards, retries and save/reload must be tested per chapter.",
+    "sideQuests": "Optional quest chains must have explicit giver, prerequisites, state transitions, rewards and persistence."
+  },
+  "playtime": {
+    "campaignTargetMinutes": 180,
+    "measuredCampaignMinutes": null,
+    "freePlay": "Define genre-appropriate replay or free-play progression; not yet accepted",
+    "acceptance": "Measure normal play sessions; automated smoke duration and repeated captures do not establish playtime."
+  },
+  "assets": {
+    "policy": "Use compatible owned art for characters, buildings, weapons, animations, audio and menu presentation. Keep gameplay logic, controls, hitboxes and progression owned by the game.",
+    "candidateKeys": [
+      "local:INTERFACE_Apocalypse_HUD_Source_Sprites_v3.zip",
+      "local:POLYGON_Prototype_Unreal_5_3_v1_8_0.zip",
+      "item:790",
+      "item:809",
+      "item:808"
+    ],
+    "provenance": "Hash-pin selected original files, licence source and native references. Owned/downloaded/candidate is not proof of runtime integration."
+  },
+  "acceptance": {
+    "steamReady": false,
+    "multiplayerAdvertised": true,
+    "requiredChecks": [
+      "Every advertised story stage: start, objectives, victory/failure, retry, save/reload",
+      "Selected seed and alternate seeds: biome rules, sea exclusion, spawn clearance, routes and resource availability",
+      "Purchased characters/items: import, runtime reference, animation, collision and interaction",
+      "Menus: keyboard, mouse, physical controller, resolution and accessibility",
+      "Multiplayer if advertised: two machines on LAN, authority, disconnect/rejoin, persistence and progression",
+      "Measured playtime, performance, platform builds, distribution signing and Steam depot/release acceptance"
+    ],
+    "latestValidation": "Docs/ValidationReports; distinguish current native evidence from historical reports"
+  }
+}
