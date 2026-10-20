@@ -144,7 +144,7 @@ namespace Ashfall.Core
     }
 
     [Serializable]
-    public sealed class Corpse { public int id; public Vec2 pos; public float facing; public int variant; public bool female, zombie = true; public double time; public Inventory inventory = new Inventory(); public bool rolled; }
+    public sealed class Corpse { public int id; public Vec2 pos; public float facing; public int variant; public bool female, zombie = true; public ZombieKind kind; public bool plague; public double time; public Inventory inventory = new Inventory(); public bool rolled; }
 
     [Serializable]
     public sealed class Pile { public int x, y; public Inventory inventory = new Inventory { capacity = 999 }; }

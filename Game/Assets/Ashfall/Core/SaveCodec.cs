@@ -88,7 +88,7 @@ namespace Ashfall.Core
             b.Write(alive.Count);
             foreach (var z in alive) { b.Write(z.pos.x); b.Write(z.pos.y); b.Write(z.facing); b.Write((byte)(z.state == ZombieState.Climb || z.state == ZombieState.Attack ? ZombieState.Chase : z.state)); b.Write(z.hp); b.Write(z.speed); b.Write(z.variant); b.Write(z.female); b.Write(z.crawler); b.Write(z.hearing); b.Write(z.sight); b.Write(z.target.x); b.Write(z.target.y); b.Write(z.targetSurvivor); }
             b.Write(w.corpses.Count);
-            foreach (var c in w.corpses) { b.Write(c.id); b.Write(c.pos.x); b.Write(c.pos.y); b.Write(c.facing); b.Write(c.variant); b.Write(c.female); b.Write(c.time); b.Write(c.rolled); WriteInventory(c.inventory, b); }
+            foreach (var c in w.corpses) { b.Write(c.id); b.Write(c.pos.x); b.Write(c.pos.y); b.Write(c.facing); b.Write(c.variant); b.Write(c.female); b.Write(c.time); b.Write(c.rolled); b.Write((byte)c.kind); b.Write(c.plague); WriteInventory(c.inventory, b); }
             var piles = w.piles.Values.Where(p => p.inventory.items.Count > 0).ToList();
             b.Write(piles.Count);
             foreach (var p in piles) { b.Write(p.x); b.Write(p.y); WriteInventory(p.inventory, b); }
@@ -147,7 +147,7 @@ namespace Ashfall.Core
                 w.zombies.Add(z);
             }
             int corpses = b.ReadInt32();
-            for (int i = 0; i < corpses; i++) { var c = new Corpse { id = b.ReadInt32(), pos = new Vec2(b.ReadSingle(), b.ReadSingle()), facing = b.ReadSingle(), variant = b.ReadInt32(), female = b.ReadBoolean(), time = b.ReadDouble(), rolled = b.ReadBoolean() }; c.inventory = ReadInventory(b, 999); w.corpses.Add(c); }
+            for (int i = 0; i < corpses; i++) { var c = new Corpse { id = b.ReadInt32(), pos = new Vec2(b.ReadSingle(), b.ReadSingle()), facing = b.ReadSingle(), variant = b.ReadInt32(), female = b.ReadBoolean(), time = b.ReadDouble(), rolled = b.ReadBoolean(), kind = (ZombieKind)b.ReadByte(), plague = b.ReadBoolean() }; c.inventory = ReadInventory(b, 999); w.corpses.Add(c); }
             int piles = b.ReadInt32();
             for (int i = 0; i < piles; i++) { var p = new Pile { x = b.ReadInt32(), y = b.ReadInt32() }; p.inventory = ReadInventory(b, 999); w.piles[m.Index(p.x, p.y)] = p; }
             ItemCatalog.Uid = uid;

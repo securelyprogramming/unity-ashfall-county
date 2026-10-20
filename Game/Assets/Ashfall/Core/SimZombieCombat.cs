@@ -57,7 +57,7 @@ namespace Ashfall.Core
             if (!z.Alive) return;
             EndAct(z);
             z.state = ZombieState.Dead; z.hp = 0; z.burning = 0; world.index.Remove(z);
-            world.corpses.Add(new Corpse { id = world.nextCorpse++, pos = z.pos, facing = z.facing, variant = z.variant, female = z.female, time = world.minutes });
+            world.corpses.Add(new Corpse { id = world.nextCorpse++, pos = z.pos, facing = z.facing, variant = z.variant, female = z.female, time = world.minutes, kind = z.kind, plague = z.plague });
             world.Emit(EventKind.Kill, z.pos, by == null ? -1 : by.id, "", z.id);
             if (by != null) { by.kills++; GainXp(by, Skill.Melee, 4); }
             if (z.kind == ZombieKind.Bloater) Burst(z, by);
