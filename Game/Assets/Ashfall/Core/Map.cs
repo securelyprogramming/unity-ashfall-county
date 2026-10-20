@@ -3,7 +3,8 @@ using System.Collections.Generic;
 
 namespace Ashfall.Core
 {
-    public enum Ground : byte { Grass, Dirt, Road, Sidewalk, Water, WoodFloor, TileFloor, Concrete, Field, Sand, Parking, Bridge, Gravel }
+    public enum Ground : byte { Grass, Dirt, Road, Sidewalk, Water, WoodFloor, TileFloor, Concrete, Field, Sand, Parking, Bridge, Gravel,
+        Runway, Mud, MilitaryFloor }   // appended for the open county; views must render unknown values with a neutral fallback
     public enum Edge : byte { None, Wall, Window, Door, Fence }
     public enum PropKind : byte
     {

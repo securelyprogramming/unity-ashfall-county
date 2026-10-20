@@ -37,6 +37,10 @@ namespace Ashfall.View
         }
         public void ApplyScale() { var s = GetComponent<CanvasScaler>(); s.scaleFactor = game.Prefs.uiScale; s.referenceResolution = new Vector2(1920, 1080) / Mathf.Clamp(game.Prefs.uiScale, .75f, 1.5f); }
 
+        /// <summary>Every simulation event, forwarded by AshfallGame.Present before the frame's events are cleared.
+        /// Text, the radio log, the kill feed, banners and notifications are handled here; audio and effects are not.</summary>
+        public void OnEvent(SimEvent e) { }
+
         public void Toast(string text) { toast.text = text; toastUntil = Time.unscaledTime + 2.5f; }
 
         void Hide() { foreach (var r in new[] { title, newGame, load, loading, hud, pause, settings, controls, dead, evac, traitsPanel }) r.gameObject.SetActive(false); foreach (var p in panels.Values) p.gameObject.SetActive(false); open.Clear(); }

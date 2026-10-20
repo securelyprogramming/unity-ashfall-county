@@ -206,7 +206,7 @@ namespace Ashfall.Core
             }
             if (s.HasTrait("smoker")) { Give(s, "cigarettes", 12); if (s.inventory.FindTag("fire") == null) Give(s, "lighter"); }
             survivors.Add(s);
-            map.Explore(s.pos, 40);
+            if (survivors.Count == 1) map.Explore(s.pos, 40);   // only the founding leader reveals the map; AI survivors never do
             return s;
         }
         ItemStack Give(Survivor s, string id, int count = 1) { var item = ItemCatalog.Make(id, count); s.inventory.Add(item); return s.inventory.items.Last(i => i.def == id); }
