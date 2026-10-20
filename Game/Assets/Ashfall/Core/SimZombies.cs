@@ -10,6 +10,8 @@ namespace Ashfall.Core
         void UpdateZombie(Zombie z, float dt, bool perceive)
         {
             if (!z.Alive) return;
+            if (z.burning > 0) { Burn(z, dt); if (!z.Alive) return; }
+            if (z.kind != ZombieKind.Walker) FreakClocks(z, dt);
             z.groan -= dt;
             if (z.groan <= 0) { z.groan = world.rng.Range(6, 22); if (z.state == ZombieState.Chase || world.rng.Chance(.25f)) world.Emit(EventKind.Groan, z.pos, -1, z.state == ZombieState.Chase ? "chase" : "idle", z.id); }
             if (z.stagger > 0) { z.stagger -= dt; return; }
@@ -25,7 +27,10 @@ namespace Ashfall.Core
                 if (z.timer <= 0) { z.pos = z.target; world.index.Moved(z); z.state = z.targetSurvivor >= 0 ? ZombieState.Chase : ZombieState.Investigate; z.target = z.pos; z.path.Clear(); }
                 return;
             }
+            if (z.act != FreakAct.None) { UpdateAct(z, dt); return; }
+            if (z.state == ZombieState.Lunge) z.state = ZombieState.Chase;   // a pounce or charge cut short (or restored from a save)
             if (perceive) Perceive(z);
+            var before = z.pos;
             Survivor prey = z.targetSurvivor >= 0 ? Survivor(z.targetSurvivor) : null;
             if (prey != null && !prey.alive) { prey = null; z.targetSurvivor = -1; if (z.state == ZombieState.Chase || z.state == ZombieState.Attack) { z.state = ZombieState.Eating; z.timer = world.rng.Range(20, 60); } }
             switch (z.state)
@@ -51,6 +56,7 @@ namespace Ashfall.Core
                     if (world.map.LineOfSight(z.pos, prey.pos)) { z.target = prey.pos; z.lostSight = 0; }
                     else { z.lostSight += dt; if (z.lostSight > 14) { z.state = ZombieState.Investigate; z.timer = 25; z.targetSurvivor = -1; break; } }
                     float d = PreyDistance(z, prey);
+                    if (z.kind > ZombieKind.Crawler && FreakChase(z, prey, d, dt)) break;
                     if (d < .95f && world.map.LineOfSight(z.pos, prey.pos)) { z.state = ZombieState.Attack; z.attackClock = .55f; z.facing = (prey.pos - z.pos).Angle; break; }
                     MoveTo(z, z.target, z.speed, dt);
                     break;
@@ -60,6 +66,7 @@ namespace Ashfall.Core
                     z.attackClock -= dt;
                     if (z.attackClock <= 0)
                     {
+                        if (z.kind == ZombieKind.Juggernaut && TryGrab(z, prey)) break;
                         if (PreyDistance(z, prey) < 1.15f && world.map.LineOfSight(z.pos, prey.pos)) StrikeVehicle(z, prey);
                         z.attackClock = world.rng.Range(1.0f, 1.5f);
                         if (PreyDistance(z, prey) > 1.2f) z.state = ZombieState.Chase;
@@ -85,6 +92,7 @@ namespace Ashfall.Core
                         break;
                     }
             }
+            if (z.kind == ZombieKind.Juggernaut) Footsteps(z, Vec2.Distance(before, z.pos), dt, .6f);
         }
 
         void Perceive(Zombie z)
@@ -93,8 +101,9 @@ namespace Ashfall.Core
             var forward = Vec2.FromAngle(z.facing);
             foreach (var s in world.survivors)
             {
-                if (!s.alive) continue;
-                var to = s.pos - z.pos; float d = to.Length;
+                if (!s.alive || s.offscreen) continue;
+                var to = s.pos - z.pos; if (to.SqrLength > 48 * 48) continue;   // beyond any notice range (32 m lit x 1.3 sight)
+                float d = to.Length;
                 float range = NoticeRange(s) * z.sight;
                 if (d > range) continue;
                 bool cone = d < 2.2f || Vec2.Dot(to * (1 / Math.Max(.01f, d)), forward) > .15f;
