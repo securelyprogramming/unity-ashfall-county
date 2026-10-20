@@ -29,6 +29,17 @@ static class Program
         Run("pathfinding", Paths);
         Run("save-load", SaveLoad);
         Run("noise", NoiseAttracts);
+        Run("vehicle-setup", () => VehicleTests.Setup(Check));
+        Run("vehicle-enter-exit", () => VehicleTests.EnterExit(Check));
+        Run("vehicle-drive-fuel", () => VehicleTests.DriveAndFuel(Check));
+        Run("vehicle-collisions", () => VehicleTests.Collisions(Check));
+        Run("vehicle-save-load", () => VehicleTests.SaveLoad(Check));
+        Run("farming", () => SurvivalTests.Farming(Check));
+        Run("fishing", () => SurvivalTests.Fishing(Check));
+        Run("traits", () => SurvivalTests.Traits(Check));
+        Run("skill-books", () => SurvivalTests.SkillBooks(Check));
+        Run("survival-save-load", () => SurvivalTests.SaveLoad(Check));
+        Run("old-save-refused", () => SurvivalTests.OldSaveRefused(Check));
         Console.WriteLine("Ashfall core: " + passes + " checks passed, " + failures + " failed.");
         foreach (var kv in report) Console.WriteLine("  " + kv.Key + " = " + kv.Value);
         return failures == 0 ? 0 : 1;

@@ -21,6 +21,7 @@ namespace Ashfall.View
         public string bindings = "";
         public string lastName = "Mara Vale", lastProfession = "paramedic";
         public bool lastFemale = true;
+        public string lastTraits = "";   // comma-separated trait ids from the last New Game
     }
 
     public enum Screen { Title, NewGame, Load, Loading, Playing, Dead, Evacuated }
@@ -226,10 +227,11 @@ namespace Ashfall.View
         public bool InventoryPressed { get { return inventory.WasPressedThisFrame(); } }
 
         // ---------------------------------------------------------------- new game, load, save
-        public void StartNewGame(SandboxSettings settings, string name, string profession, bool female)
+        public void StartNewGame(SandboxSettings settings, string name, string profession, bool female, string[] traits = null)
         {
-            Prefs.lastName = name; Prefs.lastProfession = profession; Prefs.lastFemale = female; SavePrefs();
-            BeginLoading("Generating Ashfall County (" + settings.mapSize + " × " + settings.mapSize + " m)...", Task.Run(() => World.Create(settings, name, profession, female)),
+            traits = traits ?? new string[0];
+            Prefs.lastName = name; Prefs.lastProfession = profession; Prefs.lastFemale = female; Prefs.lastTraits = string.Join(",", traits); SavePrefs();
+            BeginLoading("Generating Ashfall County (" + settings.mapSize + " × " + settings.mapSize + " m)...", Task.Run(() => World.Create(settings, name, profession, female, traits)),
                 w => { CurrentSave = Path.Combine(SaveDirectory, Slug(name) + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".sav"); Radio.Clear(); Enter(w); SaveNow(); });
         }
         public void LoadGame(string path)
@@ -393,6 +395,12 @@ namespace Ashfall.View
                 if (journal.WasPressedThisFrame()) UI.Toggle("journal");
                 if (cancel.WasPressedThisFrame()) UI.CloseTopPanel();
             }
+            // Driving: the stick/WASD become throttle (y) and steering (x); Space brakes, R toggles the engine.
+            if (World.VehicleOf(s) != null)
+            {
+                input = new InputState { face = s.facing };
+                if (!ui) { var m = move.ReadValue<Vector2>(); input.moveX = m.x; input.moveY = m.y; input.shove = shove.IsPressed(); if (reload.WasPressedThisFrame()) Sim.Submit(s.id, Command.Of(CommandKind.ToggleEngine)); }
+            }
             Sim.SetInput(s.id, input);
             interactClock -= dt; if (interactClock <= 0) { interactClock = .1f; GatherInteractions(); }
         }
@@ -432,6 +440,7 @@ namespace Ashfall.View
                     case EventKind.Break: case EventKind.Craft: case EventKind.Barricade: if (!string.IsNullOrEmpty(e.text) && (mine || Vector2.Distance(new Vector2(e.pos.x, e.pos.y), new Vector2(s.pos.x, s.pos.y)) < 20)) UI.Log(e.kind == EventKind.Craft ? "Made: " + e.text : e.kind == EventKind.Barricade ? "Barricaded: " + e.text : e.text); Audio.Play(e.kind == EventKind.Break ? "break" : "hammer", e.pos); break;
                     case EventKind.Evacuated: UI.Log("<color=#9fffb0>" + e.text + "</color>"); break;
                     case EventKind.Death: break;
+                    case EventKind.Crash: if (mine) shake = e.text == "hard" ? 1.2f : .5f; Audio.Event(e, s); break;
                     case EventKind.Gunshot: Audio.Play(e.text == "shotgun" ? "shotgun" : "gunshot", e.pos); if (mine) shake = .5f; break;
                     case EventKind.Hit: { ActorView zv; if (e.zombie >= 0 && zombieViews.TryGetValue(e.zombie, out zv)) zv.Hit(); Audio.Event(e, s); break; }
                     default: Audio.Event(e, s); break;
@@ -446,14 +455,18 @@ namespace Ashfall.View
             var s = Player; if (s == null) return;
             shake = Mathf.Max(0, shake - dt * 2.5f);
             var target = Pos(s.pos);
-            camFocus = Vector3.Lerp(camFocus, target, 1 - Mathf.Exp(-dt * 8));
-            PlaceCamera(camFocus, zoom);
+            var car = World.VehicleOf(s); float size = zoom; var camTarget = target;
+            // Driving pulls the camera back and ahead of the car so there is time to react.
+            if (car != null) { camTarget += new Vector3(Mathf.Cos(car.heading), 0, Mathf.Sin(car.heading)) * car.speed * .55f; size = zoom + 5 + Mathf.Abs(car.speed) * .45f; }
+            camFocus = Vector3.Lerp(camFocus, camTarget, 1 - Mathf.Exp(-dt * 8));
+            PlaceCamera(camFocus, size);
             View.Refresh(camFocus, -CameraForward(), 2);
             var primary = s.Primary;
             playerView.SetHeld(primary == null ? "" : primary.def);
             var shirt = s.Worn(WearSlot.Torso); var pants = s.Worn(WearSlot.Legs);
             playerView.SetClothes(shirt == null ? new Color(.75f, .72f, .66f) : ClothColor(shirt.def), pants == null ? new Color(.7f, .6f, .5f) : ClothColor(pants.def));
-            playerView.Pose(target, Yaw(s.facing), s.speed, s.swingClock > 0, s.knockedDown > 0 || s.sleeping, !s.alive, s.aiming, dt);
+            playerView.SetVisible(car == null);
+            if (car == null) playerView.Pose(target, Yaw(s.facing), s.speed, s.swingClock > 0, s.knockedDown > 0 || s.sleeping, !s.alive, s.aiming, dt);
             SyncZombies(s, dt);
             SyncCorpses(s);
             bool indoors = World.map.Indoors(s.pos);

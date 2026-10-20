@@ -31,7 +31,7 @@ namespace Ashfall.View
             gameObject.AddComponent<GraphicRaycaster>();
             root = UIKit.Fill(transform, "Root");
             ApplyScale();
-            BuildTitle(); BuildNewGame(); BuildLoad(); BuildLoading(); BuildHud(); BuildPause(); BuildSettings(); BuildControls(); BuildDead(); BuildEvac();
+            BuildTitle(); BuildTraits(); BuildNewGame(); BuildLoad(); BuildLoading(); BuildHud(); BuildPause(); BuildSettings(); BuildControls(); BuildDead(); BuildEvac();
             BuildPanels();
             toast = UIKit.Label(root, "", 26, UIKit.Ink, new Vector2(.5f, 1), new Vector2(.5f, 1), new Vector2(-500, -120), new Vector2(500, -70), TextAlignmentOptions.Center);
         }
@@ -39,7 +39,7 @@ namespace Ashfall.View
 
         public void Toast(string text) { toast.text = text; toastUntil = Time.unscaledTime + 2.5f; }
 
-        void Hide() { foreach (var r in new[] { title, newGame, load, loading, hud, pause, settings, controls, dead, evac }) r.gameObject.SetActive(false); foreach (var p in panels.Values) p.gameObject.SetActive(false); open.Clear(); }
+        void Hide() { foreach (var r in new[] { title, newGame, load, loading, hud, pause, settings, controls, dead, evac, traitsPanel }) r.gameObject.SetActive(false); foreach (var p in panels.Values) p.gameObject.SetActive(false); open.Clear(); }
 
         public void ShowScreen(Screen s)
         {
@@ -108,7 +108,8 @@ namespace Ashfall.View
             profPick = UIKit.Picker(left, "Profession", Profession.All.Select(p => p.name).ToArray(), prof, i => profText.text = Profession.All[i].description + "\nStarts with: " + Kit(Profession.All[i]));
             profText = UIKit.Text(left, "", 22, UIKit.Ink); profText.gameObject.AddComponent<LayoutElement>().preferredHeight = 90;
             profPick.Set(prof);
-            UIKit.Text(left, "Every survivor carries a hand radio, a county map, a water bottle and a snack.", 20, UIKit.Dim).gameObject.AddComponent<LayoutElement>().preferredHeight = 60;
+            UIKit.Text(left, "Every survivor carries a hand radio, a county map, a water bottle and a snack.", 20, UIKit.Dim).gameObject.AddComponent<LayoutElement>().preferredHeight = 34;
+            BuildTraitRow(left);
 
             var right = UIKit.Rect(newGame, "Sandbox", new Vector2(.47f, 0), new Vector2(1, 1), new Vector2(0, 150), new Vector2(-90, -150)); UIKit.Column(right, 8);
             UIKit.Text(right, "County settings", 32, UIKit.Accent).gameObject.AddComponent<LayoutElement>().preferredHeight = 44;
@@ -133,7 +134,7 @@ namespace Ashfall.View
                 int seed; if (!int.TryParse(seedField.text, out seed)) seed = UnityEngine.Random.Range(100000, 999999);
                 var settings = new SandboxSettings { seed = seed, mapSize = draft.mapSize, population = draft.population, speed = draft.speed, dayLengthMinutes = draft.dayLengthMinutes, utilitiesMinDay = draft.utilitiesMinDay, utilitiesMaxDay = draft.utilitiesMaxDay, evacuationDay = draft.evacuationDay, lootAbundance = draft.lootAbundance, infection = draft.infection, respawn = draft.respawn };
                 string n = string.IsNullOrWhiteSpace(nameField.text) ? "Mara Vale" : nameField.text.Trim();
-                game.StartNewGame(settings, n, Profession.All[profPick.index].id, sexPick.index == 0);
+                game.StartNewGame(settings, n, Profession.All[profPick.index].id, sexPick.index == 0, chosenTraits.ToArray());
             }, 340, 62, 28);
         }
         static string Kit(Profession p)
@@ -187,7 +188,7 @@ namespace Ashfall.View
         // ---------------------------------------------------------------- overlays
         RectTransform overlay;
         void OpenOverlay(RectTransform r) { if (overlay != null) overlay.gameObject.SetActive(false); overlay = r; r.gameObject.SetActive(true); r.SetAsLastSibling(); Select(r); }
-        void CloseOverlay() { if (overlay == null) return; overlay.gameObject.SetActive(false); overlay = null; if (title.gameObject.activeSelf) Select(title); else if (pause.gameObject.activeSelf) Select(pause); }
+        void CloseOverlay() { if (overlay == null) return; overlay.gameObject.SetActive(false); overlay = null; if (newGame.gameObject.activeSelf) { RefreshTraitRow(); Select(newGame); } else if (title.gameObject.activeSelf) Select(title); else if (pause.gameObject.activeSelf) Select(pause); }
 
         void BuildPause()
         {
@@ -290,8 +291,9 @@ namespace Ashfall.View
         {
             if (toast != null) toast.gameObject.SetActive(Time.unscaledTime < toastUntil);
             if (loading.gameObject.activeSelf) { spinner.Rotate(0, 0, -240 * Time.unscaledDeltaTime); loadingText.text = game.LoadingText; }
-            if (overlay != null && game.BackPressed) CloseOverlay();
-            if (newGame.gameObject.activeSelf && game.BackPressed && !TextEntryActive) game.Show(Screen.Title);
+            bool overlayOpen = overlay != null;
+            if (overlayOpen && game.BackPressed) CloseOverlay();
+            if (newGame.gameObject.activeSelf && !overlayOpen && game.BackPressed && !TextEntryActive) game.Show(Screen.Title);
             if (load.gameObject.activeSelf && game.BackPressed) game.Show(Screen.Title);
             if (title.gameObject.activeSelf && overlay == null && EventSystem.current != null && EventSystem.current.currentSelectedGameObject == null && (Gamepad.current != null && Gamepad.current.leftStick.ReadValue().sqrMagnitude > .3f || Keyboard.current != null && Keyboard.current.downArrowKey.wasPressedThisFrame)) Select(title);
             if (hud.gameObject.activeSelf && game.World != null) TickHud();

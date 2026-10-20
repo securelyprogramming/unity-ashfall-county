@@ -46,7 +46,8 @@ namespace Ashfall.Core
             new Recipe { id = "rain_collector", name = "Rain Collector", description = "A barrel lined with a garbage bag. Collects clean rain water.", inputs = new[] { new Ingredient("plank", 4), new Ingredient("nails", 4), new Ingredient("garbage_bag", 1) }, tools = new[] { "hammer" }, places = true, place = PropKind.RainCollector, time = 12, xp = 12, minLevel = 1 },
             new Recipe { id = "wood_crate", name = "Wooden Crate", description = "Storage for your safehouse.", inputs = new[] { new Ingredient("plank", 3), new Ingredient("nails", 3) }, tools = new[] { "hammer" }, places = true, place = PropKind.WoodCrate, time = 10, xp = 10 },
             new Recipe { id = "stew", name = "Hearty Stew", description = "Pot, two cups of clean water and any two vegetables or meats, over a heat source.", tools = new[] { "pot" }, water = 2, needsHeat = true, result = "stew", time = 10, skill = Skill.Cooking, xp = 10,
-                anyOf = new[] { "carrots", "potato", "steak", "chicken", "mushrooms", "eggs", "rice", "berries", "steak_cooked", "chicken_cooked", "potato_baked" }, anyCount = 2 },
+                anyOf = new[] { "carrots", "potato", "steak", "chicken", "mushrooms", "eggs", "rice", "berries", "steak_cooked", "chicken_cooked", "potato_baked",
+                    "tomato", "cabbage", "fish_perch", "fish_bass", "fish_catfish", "fish_perch_cooked", "fish_bass_cooked", "fish_catfish_cooked" }, anyCount = 2 },
             new Recipe { id = "first_aid_kit", name = "First Aid Kit", description = "Bundle bandages and disinfectant.", inputs = new[] { new Ingredient("bandage", 2), new Ingredient("disinfectant", 1), new Ingredient("duct_tape", 1) }, result = "first_aid_kit", time = 4, skill = Skill.FirstAid, xp = 4 },
         };
         public static Recipe Get(string id) { return All.FirstOrDefault(r => r.id == id); }

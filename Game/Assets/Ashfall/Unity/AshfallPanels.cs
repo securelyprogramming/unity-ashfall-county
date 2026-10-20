@@ -70,6 +70,9 @@ namespace Ashfall.View
             if (p != null && p.Def.category == ItemCategory.Firearm) wtxt += "\n<size=20>" + s.inventory.Count(p.Def.ammo) + " spare " + ItemCatalog.Get(p.Def.ammo).name + "</size>";
             if (sec != null) wtxt += "\n<size=20>Off hand: " + sec.Label + (s.lightOn ? " (on)" : "") + "</size>";
             wtxt += "\n<size=20>Load " + s.CarriedWeight.ToString("0.0") + " / " + s.Capacity.ToString("0") + "</size>";
+            var car = w.VehicleOf(s);
+            if (car != null) wtxt = "<b>" + car.model + "</b>  " + Mathf.RoundToInt(Mathf.Abs(car.speed) * 3.6f) + " km/h" + (car.engineOn ? "" : "  <color=#ff9a80>engine off</color>")
+                + "\n<size=20>Fuel " + Mathf.RoundToInt(car.fuel / Vehicle.TankLiters * 100) + "% · Condition " + Mathf.RoundToInt(car.condition * 100) + "%</size>\n<size=20>W/S drive · A/D steer · Space brake · E/R engine</size>";
             weaponText.text = wtxt;
             // Context prompt.
             var f = game.Focus;
@@ -102,6 +105,9 @@ namespace Ashfall.View
             {
                 case ActionKind.Craft: var r = Recipe.Get(a.recipe); return "Crafting " + (r == null ? "" : r.name);
                 case ActionKind.Barricade: return "Barricading"; case ActionKind.FillWater: return "Filling water"; case ActionKind.ClearGlass: return "Clearing glass";
+                case ActionKind.Hotwire: return "Hotwiring"; case ActionKind.Refuel: return "Refuelling";
+                case ActionKind.DigPlot: return "Digging a plot"; case ActionKind.Plant: return "Planting"; case ActionKind.WaterPlot: return "Watering";
+                case ActionKind.Fish: return "Fishing"; case ActionKind.ReadBook: return "Studying"; case ActionKind.Smoke: return "Smoking";
                 default: return a.kind.ToString() + "ing".Replace("eing", "ing");
             }
         }
@@ -130,6 +136,7 @@ namespace Ashfall.View
             if (s.wetness > 30) M(s.wetness > 70 ? "Soaked" : "Damp", UIKit.Warn, "ICON_Status_Cold");
             if (s.Encumbrance > 1) M(s.Encumbrance > 1.5f ? "Overloaded" : "Heavy load", s.Encumbrance > 1.5f ? UIKit.Bad : UIKit.Warn, "ICON_Inventory_Backpack");
             if (s.boredom > 60) M("Bored", UIKit.Warn);
+            if (s.HasTrait("smoker") && s.hoursSinceSmoke >= 8) M(s.hoursSinceSmoke >= 16 ? "Desperate for a smoke" : "Craving a cigarette", s.hoursSinceSmoke >= 16 ? new Color(1, .55f, .25f) : UIKit.Warn);
             if (s.wellFedHours > 3 && s.health > 90) M("Well fed", UIKit.Good);
             if (s.sneaking) M("Sneaking", new Color(.6f, .8f, 1));
         }
@@ -293,6 +300,7 @@ namespace Ashfall.View
                 if (sel.count > 1) UIKit.Button(invActions, "Take one", () => game.Submit(new Command { kind = CommandKind.Transfer, item = uid, count = 1, from = src, to = InvRef.Player }), 250, 50, 20);
                 return;
             }
+            if (d.bookSkill >= 0 || d.Has("smoke") || d.Has("fishing")) UIKit.Button(invActions, d.bookSkill >= 0 ? (s.booksRead.Contains(d.id) ? "Read (already studied)" : "Read") : d.Has("smoke") ? "Smoke" : "Fish here", () => game.Submit(new Command { kind = CommandKind.Use, item = uid }), 250, 50, 20);
             if (d.Edible || d.category == ItemCategory.Medical || d.category == ItemCategory.Light || d.id == "magazine" || d.id == "battery") UIKit.Button(invActions, d.category == ItemCategory.Food ? "Eat" : d.category == ItemCategory.Drink ? "Drink" : d.category == ItemCategory.Light ? (s.lightOn && s.secondary == uid ? "Turn off" : "Turn on") : d.id == "magazine" ? "Read" : "Use", () => game.Submit(new Command { kind = CommandKind.Use, item = uid }), 250, 50, 20);
             if (d.IsWeapon && d.category != ItemCategory.Material || d.category == ItemCategory.Material && d.damage > 0) UIKit.Button(invActions, s.primary == uid ? "Unequip" : "Equip (main hand)", () => game.Submit(new Command { kind = s.primary == uid ? CommandKind.Unequip : CommandKind.Equip, item = uid, slot = 0 }), 250, 50, 20);
             if (d.category == ItemCategory.Light || d.category == ItemCategory.Tool || d.category == ItemCategory.Weapon && !d.twoHanded) UIKit.Button(invActions, s.secondary == uid ? "Unequip off hand" : "Equip off hand", () => game.Submit(new Command { kind = s.secondary == uid ? CommandKind.Unequip : CommandKind.Equip, item = uid, slot = 1 }), 250, 50, 20);
@@ -313,6 +321,12 @@ namespace Ashfall.View
             if (d.scratchProtection > 0) parts.Add("scratch " + (int)(d.scratchProtection * 100) + "% / bite " + (int)(d.biteProtection * 100) + "%");
             if (d.capacity > 0) parts.Add("+" + d.capacity + " capacity");
             if (d.bandageQuality > 0) parts.Add("treats bleeding wounds");
+            if (d.bookSkill >= 0) parts.Add((Skill)d.bookSkill + " experience ×" + d.bookMultiplier.ToString("0") + " for levels " + d.bookMinLevel + "–" + (d.bookMaxLevel - 1) + " once read");
+            var crop = CropDef.ForSeed(d.id); if (crop != null) parts.Add("plant in a dug plot; ripens in about " + crop.growDays.ToString("0") + " days if watered");
+            if (d.Has("watering")) parts.Add("fill at a tap, rain collector or river; waters farm plots");
+            if (d.Has("fishing")) parts.Add("fish at a river or pond edge with worms or a lure");
+            if (d.Has("bait") || d.Has("lure")) parts.Add("fishing bait");
+            if (d.Has("smoke")) parts.Add("calms smokers; needs a lighter or matches");
             return parts.Count == 0 ? "" : " · " + string.Join(", ", parts);
         }
         void ItemRow(RectTransform list, ItemStack item, bool loot, Survivor s)
@@ -368,7 +382,7 @@ namespace Ashfall.View
         void RefreshHealth(bool soft = false)
         {
             var s = game.Player; if (s == null) return;
-            string sig = string.Join(";", s.wounds.Select(w => w.Label)) + s.inventory.items.Count + (int)s.health + string.Join(",", s.level);
+            string sig = string.Join(";", s.wounds.Select(w => w.Label)) + s.inventory.items.Count + (int)s.health + string.Join(",", s.level) + s.booksRead.Count;
             if (soft && sig == lastHealthSig) return; lastHealthSig = sig;
             UIKit.Clear(healthBody);
             UIKit.Text(healthBody, "Health " + Mathf.CeilToInt(s.health) + " · Hunger " + (int)s.hunger + " · Thirst " + (int)s.thirst + " · Fatigue " + (int)s.fatigue + " · Pain " + (int)s.pain + " · Sickness " + (int)s.sickness, 22, UIKit.Ink).gameObject.AddComponent<LayoutElement>().preferredHeight = 60;
@@ -385,12 +399,15 @@ namespace Ashfall.View
             foreach (var pill in s.inventory.items.Where(i => i.def == "painkillers" || i.def == "antibiotics").Take(2)) { int uid = pill.uid; UIKit.Button(healthBody, "Take " + pill.Def.name, () => game.Submit(new Command { kind = CommandKind.Use, item = uid }), 400, 46, 20); }
             UIKit.Clear(healthSkills);
             UIKit.Text(healthSkills, Profession.Get(s.profession).name + " · " + s.kills + " zombies killed", 24, UIKit.Accent).gameObject.AddComponent<LayoutElement>().preferredHeight = 40;
+            if (s.traits.Count > 0) UIKit.Text(healthSkills, "Traits: " + string.Join(", ", s.traits.Select(t => Trait.Get(t) == null ? t : Trait.Get(t).name)), 20, UIKit.Ink).gameObject.AddComponent<LayoutElement>().preferredHeight = 52;
+            if (s.HasTrait("smoker")) UIKit.Text(healthSkills, s.hoursSinceSmoke >= 8 ? "<color=#e0c050>Craving a cigarette (" + (int)s.hoursSinceSmoke + " h)</color>" : "Last cigarette " + (int)s.hoursSinceSmoke + " h ago", 18, UIKit.Dim).gameObject.AddComponent<LayoutElement>().preferredHeight = 26;
             foreach (Skill k in Enum.GetValues(typeof(Skill)))
             {
                 int lv = s.Level(k); float next = lv >= 10 ? 1 : s.xp[(int)k] / Survivor.XpCurve[lv];
-                var row = UIKit.Row(healthSkills, 40, 8); UIKit.RowLabel(row.transform, k.ToString(), 200, 22);
+                float book = Simulation.BookMultiplier(s, k);
+                var row = UIKit.Row(healthSkills, 40, 8); UIKit.RowLabel(row.transform, k == Skill.FirstAid ? "First Aid" : k.ToString(), 200, 22);
                 UIKit.RowLabel(row.transform, new string('■', lv) + "<color=#444>" + new string('■', 10 - lv) + "</color>", 260, 22, UIKit.Accent);
-                UIKit.RowLabel(row.transform, lv >= 10 ? "max" : (int)(next * 100) + "%", 80, 18, UIKit.Dim);
+                UIKit.RowLabel(row.transform, (lv >= 10 ? "max" : (int)(next * 100) + "%") + (book > 1 ? "  <color=#9fd3ff>book ×" + book.ToString("0") + "</color>" : ""), 160, 18, UIKit.Dim);
             }
         }
 

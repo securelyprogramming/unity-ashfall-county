@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "game": "ashfall-county",
+  "kind": "native-gameplay-probe",
+  "platform": "WindowsPlayer",
+  "unity": "6000.6.0f1",
+  "recorded": "2026-10-20T12:48:02.713399+00:00",
+  "player": "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\playtests\\ashfall-county\\20261020-074255-survival\\Game.exe",
+  "nativeBuild": {
+    "status": "Succeeded",
+    "errors": 0,
+    "warnings": 5,
+    "bytes": 362441609
+  },
+  "exitCode": 1,
+  "durationSeconds": 192.0,
+  "status": "failed",
+  "county": {
+    "seed": 777,
+    "mapSize": 3072,
+    "buildings": 2764,
+    "settlements": 17,
+    "zombies": 11534,
+    "generationMs": 975
+  },
+  "performance": {
+    "averageFrameMs": 16.668725967407227,
+    "worstFrameMs": 16.687463760375977,
+    "simMs": 0.9620087146759033,
+    "viewMs": 0.2597314417362213,
+    "uiMs": 0.06766144931316376,
+    "activeZombies": 0,
+    "loadedChunks": 35,
+    "loadedBuildings": 66
+  },
+  "ownedAssets": {
+    "preparedArtRoles": 54,
+    "ownedAudioCues": 47
+  },
+  "checks": [
+    {
+      "name": "title-menu-visible",
+      "pass": true,
+      "detail": "screen=Title"
+    },
+    {
+      "name": "trait-picker",
+      "pass": true,
+      "detail": "picked strong,smoker,green_thumb; over-budget pick refused: The traits cost 3 more points than you have."
+    },
+    {
+      "name": "trait-picker-closes-with-back",
+      "pass": true,
+      "detail": "screen=NewGame"
+    },
+    {
+      "name": "new-game-generates-county",
+      "pass": true,
+      "detail": "ms=975"
+    },
+    {
+      "name": "county-scale",
+      "pass": true,
+      "detail": "3072m, 2764 buildings, 17 settlements, 11534 zombies"
+    },
+    {
+      "name": "keyboard-movement",
+      "pass": true,
+      "detail": "moved 1.51 m"
+    },
+    {
+      "name": "interact-opens-container",
+      "pass": true,
+      "detail": "items=0 focus=Couch"
+    },
+    {
+      "name": "eat",
+      "pass": true,
+      "detail": "hunger=40"
+    },
+    {
+      "name": "drink",
+      "pass": true,
+      "detail": "thirst=1"
+    },
+    {
+      "name": "gamepad-melee-kills-zombie",
+      "pass": true,
+      "detail": "kills=1 zombieHp=0.00"
+    },
+    {
+      "name": "zombie-perceives-and-wounds",
+      "pass": true,
+      "detail": "wounds=Head: Laceration, bleeding zombieState=Attack"
+    },
+    {
+      "name": "bandage-wound",
+      "pass": true,
+      "detail": "Head: Laceration, bandaged"
+    },
+    {
+      "name": "barricade-window",
+      "pass": true,
+      "detail": "planks=1"
+    },
+    {
+      "name": "map-panel",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "survivor-alive-before-town-sample",
+      "pass": true,
+      "detail": "health=100"
+    },
+    {
+      "name": "frame-time-in-town",
+      "pass": false,
+      "detail": "avg=16.7ms worst=16.7 sim=1.0 view=0.3 ui=0.1 active zombies=0"
+    },
+    {
+      "name": "vehicle-enter",
+      "pass": false,
+      "detail": "pressed E beside the Hatchback; seated=False"
+    },
+    {
+      "name": "traits-applied",
+      "pass": false,
+      "detail": "traits strong,smoker,green_thumb, Farming 1, cigarettes 0, capacity 16.0"
+    },
+    {
+      "name": "dig-action-offered",
+      "pass": false,
+      "detail": "no dig action"
+    },
+    {
+      "name": "farm-dig-plot",
+      "pass": false,
+      "detail": "no plot"
+    },
+    {
+      "name": "quit-to-title",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "save-and-reload",
+      "pass": true,
+      "detail": "pos=(1506.50,1559.50) kills=1 zombies=11402/11402"
+    },
+    {
+      "name": "survival-save-and-reload",
+      "pass": false,
+      "detail": "plot -1 missing; traits strong,smoker,green_thumb; books ; fishing 0"
+    }
+  ],
+  "qaOnlySetup": [
+    "teleported beside a container in the start house",
+    "moved to open ground at (1690.50,1374.50)",
+    "granted baseball bat",
+    "spawned 1 zombie in front",
+    "removed clothing protection; spawned attacker behind",
+    "granted bandages",
+    "after the wound test: health restored and infection cleared so later checks run on a live survivor",
+    "granted hammer, plank, nails; moved to a window",
+    "moved to Cedar Fork for performance capture; restored survivor health so the sample measures a live session",
+    "moved drivable car #29 (Hatchback) to an open east-west strip at (1504.50,1539.50) with 30 L fuel and the key in the ignition; cleared zombies within 110 m",
+    "moved to open grass at (1506.50,1559.50), cleared zombies within 60 m; granted shovel, 3 tomato seed packets and a full watering can"
+  ],
+  "screenshots": [
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\01-title.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\00-traits.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\02-start-house.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\03-loot-panel.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\04-combat.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\05-wounded.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\06-barricade.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\07-night.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\08-night-flashlight.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\09-map.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\10-town.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-124450\\11-reloaded.png"
+  ],
+  "notProven": [
+    "Physical controller hardware (the probe uses a virtual gamepad device); gamepad driving is not probed",
+    "Owned vehicle audio (engine, door and crash cues are synthesized stand-ins) and long drives across the county",
+    "Human playtime and the evacuation outcome over a full multi-hour session",
+    "Linux/macOS native builds, LAN multiplayer (not implemented in the rebuilt game), Steam packaging",
+    "Long-session memory and save growth, and every sandbox option combination",
+    "Crop growth in real-time play (the probe fast-forwards in-game days with the host simulation), fishing catch rates and trait balance over long sessions, and the trait picker driven by a physical controller"
+  ]
+}

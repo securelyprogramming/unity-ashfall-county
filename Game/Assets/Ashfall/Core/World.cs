@@ -24,7 +24,7 @@ namespace Ashfall.Core
         public float PopulationScale { get { switch (population) { case Population.Low: return .45f; case Population.High: return 1.7f; case Population.Insane: return 2.8f; default: return 1; } } }
     }
 
-    public enum EventKind { Message, Swing, Hit, Kill, Gunshot, Empty, Groan, Door, Glass, Thump, Hurt, Bite, Death, Craft, Eat, Drink, LevelUp, Radio, Helicopter, Footstep, Shove, Break, Barricade, Evacuated, Fire, Rain }
+    public enum EventKind { Message, Swing, Hit, Kill, Gunshot, Empty, Groan, Door, Glass, Thump, Hurt, Bite, Death, Craft, Eat, Drink, LevelUp, Radio, Helicopter, Footstep, Shove, Break, Barricade, Evacuated, Fire, Rain, Engine, Crash }
 
     public struct SimEvent
     {
@@ -44,7 +44,9 @@ namespace Ashfall.Core
     public enum CommandKind
     {
         Transfer, Equip, Unequip, Wear, Unwear, Use, Drop, Craft, ToggleDoor, Climb, BreakWindow, ClearGlass, Barricade, Unbarricade, Pry,
-        Sleep, Wake, Reload, ToggleLight, Forage, Chop, Cook, Boil, FillWater, Harvest, AddFuel, LightFire, Cancel, OpenContainer, CloseContainer, Treat, DropAll
+        Sleep, Wake, Reload, ToggleLight, Forage, Chop, Cook, Boil, FillWater, Harvest, AddFuel, LightFire, Cancel, OpenContainer, CloseContainer, Treat, DropAll,
+        EnterVehicle, ExitVehicle, ToggleEngine, Hotwire, Refuel,
+        DigPlot, Plant, WaterPlot, Fish
     }
     public enum InvKind { Player, Container, Pile, Corpse }
 
@@ -63,7 +65,7 @@ namespace Ashfall.Core
         public static Command Of(CommandKind kind, int item = -1, int target = -1) { return new Command { kind = kind, item = item, target = target, count = 1, recipe = "" }; }
     }
 
-    public sealed class World
+    public sealed partial class World
     {
         public SandboxSettings settings;
         public Map map;
@@ -77,6 +79,8 @@ namespace Ashfall.Core
         public readonly Dictionary<int, Pile> piles = new Dictionary<int, Pile>();
         public readonly List<SimEvent> events = new List<SimEvent>();
         public readonly List<Noise> noises = new List<Noise>();
+        public readonly List<Vehicle> vehicles = new List<Vehicle>();
+        public readonly Dictionary<int, FarmPlot> plots = new Dictionary<int, FarmPlot>();   // FarmPlot prop id -> plot
         public int powerOffDay, waterOffDay, helicopterDay; public double helicopterMinute;
         public bool raining; public float rainIntensity, fog;
         public int nextCorpse;
@@ -119,8 +123,9 @@ namespace Ashfall.Core
         }
 
         /// <summary>Creates a fresh county. Generation is deterministic for a seed and generator version.</summary>
-        public static World Create(SandboxSettings settings, string name, string profession, bool female)
+        public static World Create(SandboxSettings settings, string name, string profession, bool female, IList<string> traits = null)
         {
+            string invalid = Trait.Validate(traits); if (invalid.Length > 0) throw new ArgumentException(invalid);
             var w = new World { settings = settings, rng = new Rng((ulong)settings.seed, 3) };
             ItemCatalog.Uid = 0;
             WorldGen gen; w.map = WorldGen.Generate(settings.seed, settings.mapSize, out gen); w.gen = gen;
@@ -130,17 +135,21 @@ namespace Ashfall.Core
             w.waterOffDay = settings.utilitiesMaxDay <= 0 ? 0 : w.rng.Range(settings.utilitiesMinDay, settings.utilitiesMaxDay + 1);
             w.helicopterDay = w.rng.Range(2, 4); w.helicopterMinute = w.rng.Range(9 * 60, 17 * 60);
             var home = WorldGen.StartHouse(w.map, w.rng);
-            var s = w.AddSurvivor(name, profession, female, home);
+            var s = w.AddSurvivor(name, profession, female, home, traits);
             w.SpawnZombies(s.pos, home);
             w.index = new ZombieIndex(w);
+            w.SetupVehicles();
             return w;
         }
 
-        public Survivor AddSurvivor(string name, string profession, bool female, Building home)
+        public Survivor AddSurvivor(string name, string profession, bool female, Building home, IList<string> traits = null)
         {
+            string invalid = Trait.Validate(traits); if (invalid.Length > 0) throw new ArgumentException(invalid);
             var s = new Survivor { id = survivors.Count, name = string.IsNullOrEmpty(name) ? "Mara Vale" : name, profession = profession, female = female, spawnedAt = minutes };
             var prof = Profession.Get(profession);
             foreach (var kv in prof.skills) s.level[(int)kv.Key] = kv.Value;
+            if (traits != null) s.traits.AddRange(traits);
+            foreach (var t in s.traits.Select(Trait.Get)) if (t.bonusLevels > 0) s.level[(int)t.bonusSkill] = Math.Min(10, s.level[(int)t.bonusSkill] + t.bonusLevels);
             // Spawn inside a free tile of the home's first room, otherwise beside the road.
             Vec2 spawn = new Vec2(map.width / 2f, map.height / 2f);
             if (home != null)
@@ -162,10 +171,11 @@ namespace Ashfall.Core
             var boots = Give(s, "boots"); s.worn[WearSlot.Feet] = boots.uid;
             foreach (var id in prof.kit)
             {
-                var item = Give(s, id, id == "nails" ? 30 : id == "ammo_9mm" ? 15 : 1);
+                var item = Give(s, id, id == "nails" ? 30 : id == "ammo_9mm" ? 15 : id.StartsWith("seeds_") ? 3 : 1);
                 if (item.Def.IsWeapon && s.primary < 0 && item.Def.category != ItemCategory.Material) s.primary = item.uid;
                 if (item.Def.category == ItemCategory.Firearm) item.loaded = item.Def.magazine;
             }
+            if (s.HasTrait("smoker")) { Give(s, "cigarettes", 12); if (s.inventory.FindTag("fire") == null) Give(s, "lighter"); }
             survivors.Add(s);
             map.Explore(s.pos, 40);
             return s;

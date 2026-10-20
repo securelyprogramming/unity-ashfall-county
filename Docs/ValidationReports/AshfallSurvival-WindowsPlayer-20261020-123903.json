@@ -1,0 +1,218 @@
+{
+  "schemaVersion": 1,
+  "game": "ashfall-county",
+  "kind": "native-gameplay-probe",
+  "platform": "WindowsPlayer",
+  "unity": "6000.6.0f1",
+  "recorded": "2026-10-20T12:40:19.009947+00:00",
+  "player": "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\playtests\\ashfall-county\\20261020-123631-19767bdc1d94\\Game.exe",
+  "nativeBuild": {
+    "status": "Succeeded",
+    "errors": 0,
+    "warnings": 5,
+    "bytes": 362419705
+  },
+  "exitCode": 0,
+  "durationSeconds": 75.4,
+  "status": "passed",
+  "county": {
+    "seed": 777,
+    "mapSize": 3072,
+    "buildings": 2764,
+    "settlements": 17,
+    "zombies": 11534,
+    "generationMs": 1041
+  },
+  "performance": {
+    "averageFrameMs": 16.668609619140625,
+    "worstFrameMs": 16.686870574951172,
+    "simMs": 4.6796979904174805,
+    "viewMs": 0.45073744654655457,
+    "uiMs": 0.18479865789413452,
+    "activeZombies": 226,
+    "loadedChunks": 35,
+    "loadedBuildings": 66
+  },
+  "ownedAssets": {
+    "preparedArtRoles": 54,
+    "ownedAudioCues": 47
+  },
+  "checks": [
+    {
+      "name": "title-menu-visible",
+      "pass": true,
+      "detail": "screen=Title"
+    },
+    {
+      "name": "new-game-generates-county",
+      "pass": true,
+      "detail": "ms=1041"
+    },
+    {
+      "name": "county-scale",
+      "pass": true,
+      "detail": "3072m, 2764 buildings, 17 settlements, 11534 zombies"
+    },
+    {
+      "name": "keyboard-movement",
+      "pass": true,
+      "detail": "moved 1.51 m"
+    },
+    {
+      "name": "interact-opens-container",
+      "pass": true,
+      "detail": "items=0 focus=Couch"
+    },
+    {
+      "name": "eat",
+      "pass": true,
+      "detail": "hunger=40"
+    },
+    {
+      "name": "drink",
+      "pass": true,
+      "detail": "thirst=1"
+    },
+    {
+      "name": "gamepad-melee-kills-zombie",
+      "pass": true,
+      "detail": "kills=1 zombieHp=0.00"
+    },
+    {
+      "name": "zombie-perceives-and-wounds",
+      "pass": true,
+      "detail": "wounds=Head: Scratch, bleeding zombieState=Attack"
+    },
+    {
+      "name": "bandage-wound",
+      "pass": true,
+      "detail": "Head: Scratch, bandaged"
+    },
+    {
+      "name": "barricade-window",
+      "pass": true,
+      "detail": "planks=1"
+    },
+    {
+      "name": "map-panel",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "survivor-alive-before-town-sample",
+      "pass": true,
+      "detail": "health=100"
+    },
+    {
+      "name": "frame-time-in-town",
+      "pass": true,
+      "detail": "avg=16.7ms worst=16.7 sim=4.7 view=0.5 ui=0.2 active zombies=226"
+    },
+    {
+      "name": "vehicle-enter",
+      "pass": true,
+      "detail": "pressed E beside the Hatchback; seated=True"
+    },
+    {
+      "name": "vehicle-engine-start",
+      "pass": true,
+      "detail": "E with the key in the ignition; fuel 30.0 L"
+    },
+    {
+      "name": "vehicle-drives-with-keyboard",
+      "pass": true,
+      "detail": "held W 3 s: 27.0 m, 49 km/h"
+    },
+    {
+      "name": "vehicle-model-follows",
+      "pass": true,
+      "detail": "model offset 0.47 m, yaw error 0.0 deg"
+    },
+    {
+      "name": "driving-camera-zooms-out",
+      "pass": true,
+      "detail": "ortho size 18.0 -> 24.1"
+    },
+    {
+      "name": "engine-audio",
+      "pass": true,
+      "detail": "engine loop volume 0.49 pitch 1.70"
+    },
+    {
+      "name": "vehicle-brakes",
+      "pass": true,
+      "detail": "Space 2 s: 0.0 km/h"
+    },
+    {
+      "name": "car-knocks-down-zombie",
+      "pass": true,
+      "detail": "zombie killed, kills 1 -> 2, condition 0.80 -> 0.72"
+    },
+    {
+      "name": "vehicle-steers",
+      "pass": true,
+      "detail": "W+D 1.2 s turned -54 deg"
+    },
+    {
+      "name": "driving-uses-fuel",
+      "pass": true,
+      "detail": "30.00 -> 29.39 L"
+    },
+    {
+      "name": "vehicle-exit-parks",
+      "pass": true,
+      "detail": "survivor at (1576.90,1537.68), car parked at (1575.50,1537.19)"
+    },
+    {
+      "name": "quit-to-title",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "save-and-reload",
+      "pass": true,
+      "detail": "pos=(1576.90,1537.68) kills=2 zombies=11402/11402"
+    },
+    {
+      "name": "vehicle-save-and-reload",
+      "pass": true,
+      "detail": "car at (1575.50,1537.19) fuel 29.39 L (saved (1575.50,1537.19), 29.39 L)"
+    }
+  ],
+  "qaOnlySetup": [
+    "teleported beside a container in the start house",
+    "moved to open ground at (1690.50,1374.50)",
+    "granted baseball bat",
+    "spawned 1 zombie in front",
+    "removed clothing protection; spawned attacker behind",
+    "granted bandages",
+    "after the wound test: health restored and infection cleared so later checks run on a live survivor",
+    "granted hammer, plank, nails; moved to a window",
+    "moved to Cedar Fork for performance capture; restored survivor health so the sample measures a live session",
+    "moved drivable car #29 (Hatchback) to an open east-west strip at (1504.50,1539.50) with 30 L fuel and the key in the ignition; cleared zombies within 110 m",
+    "spawned 1 deaf, blind zombie 11 m ahead of the car"
+  ],
+  "screenshots": [
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\01-title.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\02-start-house.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\03-loot-panel.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\04-combat.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\05-wounded.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\06-barricade.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\07-night.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\08-night-flashlight.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\09-map.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\10-town.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\12-driving.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\13-hit.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\14-parked.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-123903\\11-reloaded.png"
+  ],
+  "notProven": [
+    "Physical controller hardware (the probe uses a virtual gamepad device); gamepad driving is not probed",
+    "Owned vehicle audio (engine, door and crash cues are synthesized stand-ins) and long drives across the county",
+    "Human playtime and the evacuation outcome over a full multi-hour session",
+    "Linux/macOS native builds, LAN multiplayer (not implemented in the rebuilt game), Steam packaging",
+    "Long-session memory and save growth, and every sandbox option combination"
+  ]
+}

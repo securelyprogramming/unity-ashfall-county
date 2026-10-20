@@ -8,7 +8,7 @@ namespace Ashfall.Core
     public enum PropKind : byte
     {
         Tree, Bush, Counter, Fridge, Stove, Sink, Toilet, MedicineCabinet, Bed, Couch, Dresser, Wardrobe, Shelf, Crate,
-        Desk, Table, Bin, Toolbox, Workbench, Car, GasPump, HayBale, Campfire, RainCollector, WoodCrate, Cashier, Locker, Mailbox, Crops
+        Desk, Table, Bin, Toolbox, Workbench, Car, GasPump, HayBale, Campfire, RainCollector, WoodCrate, Cashier, Locker, Mailbox, Crops, FarmPlot
     }
     public enum RoomType : byte { Living, Kitchen, Bedroom, Bathroom, Garage, Grocery, Pharmacy, Hardware, Diner, GasStation, Police, Barn, Storage, Office, Clothing }
     public enum BuildingKind : byte { House, Farmhouse, Barn, Grocery, Pharmacy, Hardware, Diner, GasStation, Police, Clothing, Shed, Office }
@@ -36,7 +36,7 @@ namespace Ashfall.Core
         public PropKind kind;
         public float fuel, water, hp = 1;   // campfire fuel hours; stored water units; tree health
         public bool lit, removed, modified;
-        public bool Blocks { get { return !removed && kind != PropKind.Crops && kind != PropKind.Campfire && kind != PropKind.Bush && kind != PropKind.Mailbox; } }
+        public bool Blocks { get { return !removed && kind != PropKind.Crops && kind != PropKind.FarmPlot && kind != PropKind.Campfire && kind != PropKind.Bush && kind != PropKind.Mailbox; } }
         public bool IsHeat { get { return kind == PropKind.Stove || kind == PropKind.Campfire; } }
         public bool IsWaterSource { get { return kind == PropKind.Sink || kind == PropKind.Toilet || kind == PropKind.RainCollector; } }
         public bool CanSleep { get { return kind == PropKind.Bed || kind == PropKind.Couch; } }

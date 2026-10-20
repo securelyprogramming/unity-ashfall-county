@@ -6,7 +6,7 @@ namespace Ashfall.Core
 {
     public enum BodyPart { Head, Torso, LeftArm, RightArm, LeftLeg, RightLeg, Hands }
     public enum WoundKind { Scratch, Laceration, Bite, GlassCut, Burn }
-    public enum Skill { Melee, Aiming, Carpentry, Cooking, FirstAid, Foraging, Sneaking, Fitness }
+    public enum Skill { Melee, Aiming, Carpentry, Cooking, FirstAid, Foraging, Sneaking, Fitness, Mechanics, Farming, Fishing }
 
     [Serializable]
     public sealed class Wound
@@ -36,7 +36,7 @@ namespace Ashfall.Core
             new Profession { id = "paramedic", name = "Paramedic", description = "First Aid +3. Bandages work faster and better.", skills = { { Skill.FirstAid, 3 } }, kit = new[] { "bandage", "bandage", "disinfectant" } },
             new Profession { id = "carpenter", name = "Carpenter", description = "Carpentry +3. Starts with a hammer and nails.", skills = { { Skill.Carpentry, 3 } }, kit = new[] { "hammer", "nails" } },
             new Profession { id = "deputy", name = "Sheriff's Deputy", description = "Aiming +3, Melee +1. Starts with a pistol.", skills = { { Skill.Aiming, 3 }, { Skill.Melee, 1 } }, kit = new[] { "pistol", "ammo_9mm" } },
-            new Profession { id = "farmer", name = "Farmer", description = "Foraging +3, Cooking +1. Finds more in the wild.", skills = { { Skill.Foraging, 3 }, { Skill.Cooking, 1 } }, kit = new[] { "shovel", "potato" } },
+            new Profession { id = "farmer", name = "Farmer", description = "Foraging +3, Farming +2, Cooking +1. Finds more in the wild and grows food faster.", skills = { { Skill.Foraging, 3 }, { Skill.Farming, 2 }, { Skill.Cooking, 1 } }, kit = new[] { "shovel", "potato", "seeds_carrot", "seeds_potato", "watering_can" } },
             new Profession { id = "firefighter", name = "Firefighter", description = "Fitness +2, Melee +1. Starts with an axe.", skills = { { Skill.Fitness, 2 }, { Skill.Melee, 1 } }, kit = new[] { "axe" } },
             new Profession { id = "cook", name = "Line Cook", description = "Cooking +3. Starts with a knife and a pot.", skills = { { Skill.Cooking, 3 } }, kit = new[] { "kitchen_knife", "cooking_pot" } },
             new Profession { id = "unemployed", name = "Unemployed", description = "No head start. Learns every skill 25% faster.", kit = new string[0] },
@@ -47,7 +47,8 @@ namespace Ashfall.Core
     public enum ActionKind
     {
         None, Loot, Eat, Drink, Bandage, Disinfect, Suture, Barricade, Unbarricade, Climb, BreakWindow, ClearGlass, Craft, Sleep, Reload,
-        Forage, Chop, Cook, Boil, FillWater, Pry, Read, Stomp, Wear, Unwear, Rest, Harvest, Light, AddFuel, Pills
+        Forage, Chop, Cook, Boil, FillWater, Pry, Read, Stomp, Wear, Unwear, Rest, Harvest, Light, AddFuel, Pills, Hotwire, Refuel,
+        DigPlot, Plant, WaterPlot, Fish, ReadBook, Smoke
     }
 
     [Serializable]
@@ -81,9 +82,14 @@ namespace Ashfall.Core
         public double spawnedAt, diedAt;
         public string causeOfDeath = "";
         public int lootContainer = -1;  // container the survivor has open
+        public int vehicle = -1;        // vehicle the survivor is driving (inVehicle mirrors it)
         public float wellFedHours;
+        public List<string> traits = new List<string>();      // chosen at creation, validated by the host
+        public List<string> booksRead = new List<string>();   // skill book item ids
+        public float hoursSinceSmoke;
 
         public const float Radius = .3f;
+        public bool HasTrait(string id) { return traits.Contains(id); }
         public ItemStack Primary { get { return primary < 0 ? null : inventory.ByUid(primary); } }
         public ItemStack Secondary { get { return secondary < 0 ? null : inventory.ByUid(secondary); } }
         public ItemStack Worn(WearSlot slot) { int uid; return worn.TryGetValue(slot, out uid) ? inventory.ByUid(uid) : null; }
@@ -91,7 +97,7 @@ namespace Ashfall.Core
         public int Level(Skill s) { return level[(int)s]; }
         public float Capacity
         {
-            get { var bag = Worn(WearSlot.Back); return 12 + (bag == null ? 0 : bag.Def.capacity) + Level(Skill.Fitness) * .5f; }
+            get { var bag = Worn(WearSlot.Back); return 12 + (bag == null ? 0 : bag.Def.capacity) + Level(Skill.Fitness) * .5f + (HasTrait("strong") ? 4 : HasTrait("weak") ? -4 : 0); }
         }
         /// <summary>Equipped clothing and bags weigh less than items carried loose.</summary>
         public float CarriedWeight

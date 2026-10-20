@@ -186,6 +186,8 @@ namespace Ashfall.View
                 case "nails": case "duct_tape": case "screwdriver": case "saw": return "ICON_SM_Prop_Scav_Scrap_13";
                 case "boots": return "ICON_SM_Prop_Shoes_01";
                 case "potato": case "carrots": case "berries": case "mushrooms": return "ICON_SM_Prop_SeedPacket_01";
+                case "seeds_carrot": case "seeds_potato": case "seeds_tomato": case "seeds_cabbage": return "ICON_SM_Prop_SeedPacket_01";
+                case "watering_can": return "ICON_SM_Item_Canteen_01";
                 case "steak_cooked": case "chicken_cooked": case "steak": case "chicken": case "stew": return "ICON_SM_Item_Meat_Cooked_01";
             }
             switch (d.category)

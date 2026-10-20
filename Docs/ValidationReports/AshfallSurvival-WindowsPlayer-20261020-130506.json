@@ -1,0 +1,324 @@
+{
+  "schemaVersion": 1,
+  "game": "ashfall-county",
+  "kind": "native-gameplay-probe",
+  "platform": "WindowsPlayer",
+  "unity": "6000.6.0f1",
+  "recorded": "2026-10-20T13:07:43.989639+00:00",
+  "player": "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\playtests\\ashfall-county\\20261020-080010-survival\\Game.exe",
+  "nativeBuild": {
+    "status": "Succeeded",
+    "errors": 0,
+    "warnings": 5,
+    "bytes": 362442297
+  },
+  "exitCode": 0,
+  "durationSeconds": 157.1,
+  "status": "passed",
+  "county": {
+    "seed": 777,
+    "mapSize": 3072,
+    "buildings": 2764,
+    "settlements": 17,
+    "zombies": 11534,
+    "generationMs": 925
+  },
+  "performance": {
+    "averageFrameMs": 16.66873550415039,
+    "worstFrameMs": 16.672300338745117,
+    "simMs": 1.6018656492233276,
+    "viewMs": 0.30160748958587646,
+    "uiMs": 0.08238418400287628,
+    "activeZombies": 227,
+    "loadedChunks": 35,
+    "loadedBuildings": 66
+  },
+  "ownedAssets": {
+    "preparedArtRoles": 54,
+    "ownedAudioCues": 47
+  },
+  "checks": [
+    {
+      "name": "title-menu-visible",
+      "pass": true,
+      "detail": "screen=Title"
+    },
+    {
+      "name": "trait-picker",
+      "pass": true,
+      "detail": "picked strong,smoker,green_thumb; over-budget pick refused: The traits cost 3 more points than you have."
+    },
+    {
+      "name": "trait-picker-closes-with-back",
+      "pass": true,
+      "detail": "screen=NewGame"
+    },
+    {
+      "name": "new-game-generates-county",
+      "pass": true,
+      "detail": "ms=925"
+    },
+    {
+      "name": "county-scale",
+      "pass": true,
+      "detail": "3072m, 2764 buildings, 17 settlements, 11534 zombies"
+    },
+    {
+      "name": "keyboard-movement",
+      "pass": true,
+      "detail": "moved 1.51 m"
+    },
+    {
+      "name": "interact-opens-container",
+      "pass": true,
+      "detail": "items=0 focus=Couch"
+    },
+    {
+      "name": "eat",
+      "pass": true,
+      "detail": "hunger=40"
+    },
+    {
+      "name": "drink",
+      "pass": true,
+      "detail": "thirst=1"
+    },
+    {
+      "name": "gamepad-melee-kills-zombie",
+      "pass": true,
+      "detail": "kills=1 zombieHp=0.00"
+    },
+    {
+      "name": "zombie-perceives-and-wounds",
+      "pass": true,
+      "detail": "wounds=Left leg: Scratch, bleeding zombieState=Attack"
+    },
+    {
+      "name": "bandage-wound",
+      "pass": true,
+      "detail": "Left leg: Scratch, bandaged"
+    },
+    {
+      "name": "barricade-window",
+      "pass": true,
+      "detail": "planks=1"
+    },
+    {
+      "name": "map-panel",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "survivor-alive-before-town-sample",
+      "pass": true,
+      "detail": "health=100"
+    },
+    {
+      "name": "frame-time-in-town",
+      "pass": true,
+      "detail": "avg=16.7ms worst=16.7 sim=1.6 view=0.3 ui=0.1 active zombies=227"
+    },
+    {
+      "name": "vehicle-enter",
+      "pass": true,
+      "detail": "pressed E beside the Hatchback; seated=True"
+    },
+    {
+      "name": "vehicle-engine-start",
+      "pass": true,
+      "detail": "E with the key in the ignition; fuel 30.0 L"
+    },
+    {
+      "name": "vehicle-drives-with-keyboard",
+      "pass": true,
+      "detail": "held W 3 s: 27.6 m, 49 km/h"
+    },
+    {
+      "name": "vehicle-model-follows",
+      "pass": true,
+      "detail": "model offset 0.85 m, yaw error 0.0 deg"
+    },
+    {
+      "name": "driving-camera-zooms-out",
+      "pass": true,
+      "detail": "ortho size 18.0 -> 24.1"
+    },
+    {
+      "name": "engine-audio",
+      "pass": true,
+      "detail": "engine loop volume 0.49 pitch 1.70"
+    },
+    {
+      "name": "vehicle-brakes",
+      "pass": true,
+      "detail": "Space 2 s: 0.0 km/h"
+    },
+    {
+      "name": "car-knocks-down-zombie",
+      "pass": true,
+      "detail": "zombie killed, kills 1 -> 2, condition 0.80 -> 0.72"
+    },
+    {
+      "name": "vehicle-steers",
+      "pass": true,
+      "detail": "W+D 1.2 s turned -54 deg"
+    },
+    {
+      "name": "driving-uses-fuel",
+      "pass": true,
+      "detail": "30.00 -> 29.39 L"
+    },
+    {
+      "name": "vehicle-exit-parks",
+      "pass": true,
+      "detail": "survivor at (1576.90,1537.68), car parked at (1575.50,1537.19)"
+    },
+    {
+      "name": "traits-applied",
+      "pass": true,
+      "detail": "traits strong,smoker,green_thumb, Farming 1, cigarettes 12, capacity 16.0"
+    },
+    {
+      "name": "dig-action-offered",
+      "pass": true,
+      "detail": "enabled"
+    },
+    {
+      "name": "farm-dig-plot",
+      "pass": true,
+      "detail": "plot at 1588,1543 (faced 1588,1543)"
+    },
+    {
+      "name": "plant-action-offered",
+      "pass": true,
+      "detail": "Plant tomatoes | Water with Watering Can (20) | Water with Water Bottle (4)"
+    },
+    {
+      "name": "farm-plant",
+      "pass": true,
+      "detail": "Farm plot: Tomatoes (seedling 0%, damp)"
+    },
+    {
+      "name": "farm-water",
+      "pass": true,
+      "detail": "Farm plot: Tomatoes (seedling 0%, wet), can 11/20"
+    },
+    {
+      "name": "farm-grows-over-days",
+      "pass": true,
+      "detail": "Farm plot: Tomatoes (ripe, wet) after 2.53 days"
+    },
+    {
+      "name": "farm-plot-rendered",
+      "pass": true,
+      "detail": "Plants tomato 5 wet"
+    },
+    {
+      "name": "farm-harvest",
+      "pass": true,
+      "detail": "tomatoes 0 -> 4"
+    },
+    {
+      "name": "fish-action-offered",
+      "pass": true,
+      "detail": "Forage here (G) | Dig a farm plot ahead | Fish here | Fill Water Bottle from the river | Fill Watering Can from the river | Sleep on the ground"
+    },
+    {
+      "name": "fishing-catch",
+      "pass": true,
+      "detail": "2 casts, worms left 10, Fishing xp 10 level 0"
+    },
+    {
+      "name": "fish-cooks",
+      "pass": true,
+      "detail": "Raw Bass -> Grilled Bass"
+    },
+    {
+      "name": "skill-book-read",
+      "pass": true,
+      "detail": "Carpentry level 3, multiplier 3"
+    },
+    {
+      "name": "health-panel-shows-traits-and-books",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "smoker-smokes",
+      "pass": true,
+      "detail": "cigarettes 12 -> 11"
+    },
+    {
+      "name": "quit-to-title",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "save-and-reload",
+      "pass": true,
+      "detail": "pos=(955.50,1669.50) kills=2 zombies=11396/11396"
+    },
+    {
+      "name": "vehicle-save-and-reload",
+      "pass": true,
+      "detail": "car at (1575.50,1537.19) fuel 29.39 L (saved (1575.50,1537.19), 29.39 L)"
+    },
+    {
+      "name": "survival-save-and-reload",
+      "pass": true,
+      "detail": "plot 258272 Farm plot: Tomatoes (growing 37%, wet); traits strong,smoker,green_thumb; books book_carpentry_1; fishing 0"
+    }
+  ],
+  "qaOnlySetup": [
+    "teleported beside a container in the start house",
+    "moved to open ground at (1690.50,1374.50)",
+    "granted baseball bat",
+    "spawned 1 zombie in front",
+    "removed clothing protection; spawned attacker behind",
+    "granted bandages",
+    "after the wound test: health restored and infection cleared so later checks run on a live survivor",
+    "granted hammer, plank, nails; moved to a window",
+    "moved to Cedar Fork for performance capture; restored survivor health so the sample measures a live session",
+    "kept the survivor's health, wounds, infection and knockdown reset during the 9 s town sample",
+    "moved drivable car #29 (Hatchback) to an open east-west strip at (1504.50,1539.50) with 30 L fuel and the key in the ignition; cleared zombies within 110 m",
+    "spawned 1 deaf, blind zombie 11 m ahead of the car",
+    "moved to open grass at (1587.50,1543.50), cleared zombies within 60 m; granted shovel, 3 tomato seed packets and a full watering can",
+    "fast-forwarded 2.5 in-game days with Simulation.Tick(boost), refilling the plot's soil moisture and the survivor's needs",
+    "replanted tomatoes and set growth to 37% to verify save/reload",
+    "moved to a water bank at (955.50,1669.50); granted a fishing rod and 10 worms",
+    "placed a lit campfire beside the bank",
+    "granted Carpentry Handbook, Vol. 1; set the clock to noon so it is light enough to read",
+    "set hours since the last cigarette to 10"
+  ],
+  "screenshots": [
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\01-title.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\00-traits.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\02-start-house.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\03-loot-panel.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\04-combat.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\05-wounded.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\06-barricade.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\07-night.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\08-night-flashlight.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\09-map.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\10-town.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\12-driving.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\13-hit.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\14-parked.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\15-plot-planted.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\16-plot-growing.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\17-plot-ripe.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\18-fishing.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\19-fish-cooked.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\20-skills-traits-books.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-130506\\11-reloaded.png"
+  ],
+  "notProven": [
+    "Physical controller hardware (the probe uses a virtual gamepad device); gamepad driving is not probed",
+    "Owned vehicle audio (engine, door and crash cues are synthesized stand-ins) and long drives across the county",
+    "Human playtime and the evacuation outcome over a full multi-hour session",
+    "Linux/macOS native builds, LAN multiplayer (not implemented in the rebuilt game), Steam packaging",
+    "Long-session memory and save growth, and every sandbox option combination",
+    "Crop growth in real-time play (the probe fast-forwards in-game days with the host simulation), fishing catch rates and trait balance over long sessions, and the trait picker driven by a physical controller"
+  ]
+}

@@ -33,6 +33,8 @@ namespace Ashfall.Core
         public float scratchProtection, biteProtection, warmth, capacity;
         // Lights.
         public float lightRange, batteryHours;
+        // Skill books: reading multiplies experience for a skill while its level is in [bookMinLevel, bookMaxLevel).
+        public int bookSkill = -1, bookMinLevel, bookMaxLevel; public float bookMultiplier = 1;
         public int stack = 1;
         public bool Has(string tag) { return Array.IndexOf(tags, tag) >= 0; }
         public bool Edible { get { return category == ItemCategory.Food || category == ItemCategory.Drink; } }
@@ -67,6 +69,8 @@ namespace Ashfall.Core
                 if (Rotten) label = "Rotten " + label; else if (Stale) label = "Stale " + label;
                 if (d.IsWeapon && d.category != ItemCategory.Firearm && condition < .995f) label += " " + (int)(condition * 100) + "%";
                 if (d.category == ItemCategory.Light) label += " " + (int)(condition * 100) + "%";
+                if (d.Has("fishing") && condition < .995f) label += " " + (int)(condition * 100) + "%";
+                if (d.id == "gas_can") label += condition <= .001f ? " (empty)" : " (" + (condition * Vehicle.GasCanLiters).ToString("0.#") + " L)";
                 return label;
             }
         }
@@ -194,7 +198,8 @@ namespace Ashfall.Core
             Add("sheet", "Bed Sheet", ItemCategory.Material, .4f, d => { d.tags = new[] { "rippable" }; });
             Add("garbage_bag", "Garbage Bag", ItemCategory.Material, .05f, d => { d.stack = 10; });
             Add("duct_tape", "Duct Tape", ItemCategory.Material, .1f);
-            Add("gas_can", "Gas Can", ItemCategory.Material, 1.5f, d => { d.tags = new[] { "fuel" }; });
+            Add("gas_can", "Gas Can", ItemCategory.Material, 1.5f, d => { d.tags = new[] { "fuel" }; });   // condition = fill level, 1 = 10 L
+            Add("car_key", "Car Key", ItemCategory.Misc, .02f, d => { d.tags = new[] { "car-key" }; });
             Add("battery", "Battery", ItemCategory.Material, .05f, d => { d.stack = 12; });
             Add("radio", "Hand Radio", ItemCategory.Misc, .5f, d => { d.tags = new[] { "radio" }; });
             Add("county_map", "Ashfall County Map", ItemCategory.Misc, .05f, d => { d.tags = new[] { "map" }; });
@@ -213,7 +218,36 @@ namespace Ashfall.Core
             Add("school_bag", "School Backpack", ItemCategory.Bag, .4f, d => { d.slot = WearSlot.Back; d.capacity = 10; });
             Add("duffel_bag", "Duffel Bag", ItemCategory.Bag, .7f, d => { d.slot = WearSlot.Back; d.capacity = 16; });
             Add("hiking_bag", "Hiking Bag", ItemCategory.Bag, .8f, d => { d.slot = WearSlot.Back; d.capacity = 20; });
+
+            // Farming: seed packets plant one plot each; produce grows over several in-game days.
+            Food("tomato", "Tomato", .2f, 8, -5, 6);
+            Food("cabbage", "Cabbage", .8f, 20, -3, 12);
+            foreach (var crop in new[] { new[] { "carrot", "Carrot" }, new[] { "potato", "Potato" }, new[] { "tomato", "Tomato" }, new[] { "cabbage", "Cabbage" } })
+                Add("seeds_" + crop[0], crop[1] + " Seeds", ItemCategory.Misc, .02f, d => { d.stack = 20; d.tags = new[] { "seeds" }; });
+            Add("watering_can", "Watering Can", ItemCategory.Tool, .8f, d => { d.waterCapacity = 20; d.tags = new[] { "watering" }; });
+
+            // Fishing: a rod plus worms (consumed) or a lure (sometimes lost). Fish must be cooked.
+            Add("fishing_rod", "Fishing Rod", ItemCategory.Tool, 1.0f, d => { d.tags = new[] { "fishing" }; });
+            Add("worms", "Worms", ItemCategory.Misc, .01f, d => { d.stack = 30; d.tags = new[] { "bait" }; });
+            Add("lure", "Fishing Lure", ItemCategory.Misc, .02f, d => { d.stack = 10; d.tags = new[] { "lure" }; });
+            Food("fish_perch", "Raw Perch", .3f, 8, 0, 2, d => { d.raw = true; d.cooksInto = "fish_perch_cooked"; });
+            Food("fish_perch_cooked", "Grilled Perch", .3f, 18, 2, 3);
+            Food("fish_bass", "Raw Bass", .6f, 14, 0, 2, d => { d.raw = true; d.cooksInto = "fish_bass_cooked"; });
+            Food("fish_bass_cooked", "Grilled Bass", .6f, 30, 2, 3);
+            Food("fish_catfish", "Raw Catfish", 1.2f, 22, 0, 2, d => { d.raw = true; d.cooksInto = "fish_catfish_cooked"; });
+            Food("fish_catfish_cooked", "Grilled Catfish", 1.2f, 46, 2, 3);
+
+            Add("cigarettes", "Cigarettes", ItemCategory.Misc, .01f, d => { d.stack = 20; d.tags = new[] { "smoke" }; });
+
+            // Skill books: Vol. 1 triples experience for levels 0-4, Vol. 2 quadruples it for levels 5-9.
+            foreach (var skill in new[] { Skill.Carpentry, Skill.Cooking, Skill.FirstAid, Skill.Foraging, Skill.Farming, Skill.Fishing })
+            {
+                var sk = skill; string title = sk == Skill.FirstAid ? "First Aid" : sk.ToString();
+                Add(BookId(sk, 1), title + " Handbook, Vol. 1", ItemCategory.Misc, .4f, d => { d.bookSkill = (int)sk; d.bookMinLevel = 0; d.bookMaxLevel = 5; d.bookMultiplier = 3; d.tags = new[] { "book" }; });
+                Add(BookId(sk, 2), title + " Handbook, Vol. 2", ItemCategory.Misc, .5f, d => { d.bookSkill = (int)sk; d.bookMinLevel = 5; d.bookMaxLevel = 10; d.bookMultiplier = 4; d.tags = new[] { "book" }; });
+            }
         }
+        public static string BookId(Skill skill, int volume) { return "book_" + skill.ToString().ToLowerInvariant() + "_" + volume; }
 
         public static int Uid;
         public static ItemStack Make(string id, int count = 1, Rng rng = null)

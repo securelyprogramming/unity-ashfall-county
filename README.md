@@ -16,7 +16,11 @@ Each new game generates a seeded county: 3 km × 3 km by default (2 km and 1 km 
 - **Zombies:** they wander, investigate sounds, chase on sight, pound on doors, windows and barricades, and climb through open windows. Shove them (Space), knock them down and finish them on the ground.
 - **Utilities:** the power and water fail on seeded days. Fridges stop keeping food, stoves go cold, and the taps run dry. After that, collect rain, boil river water or drain what is left in the pipes.
 - **Crafting** (B): rip sheets into rags, saw logs into planks, and build spears, spiked bats, campfires, rain collectors and crates. You can also cook a stew. Barricade doors and windows with a hammer, a plank and nails.
-- **Skills:** Melee, Aiming, Carpentry, Cooking, First Aid, Foraging, Sneaking and Fitness improve with use. Your profession gives you a head start.
+- **Cars:** some abandoned cars still run. Keys may be in the ignition, the glovebox or a nearby house; otherwise hotwire the car with a screwdriver (Mechanics). Fuel runs down as you drive; refuel from gas cans or, while the power is on, at gas station pumps. Engines are loud and draw zombies. Hitting zombies knocks them down; crashes and zombies damage the car.
+- **Farming:** find seed packets (carrot, potato, tomato, cabbage) in barns, hardware stores and groceries, or save them from field crops. Dig a plot with a shovel on grass or a field, plant, and keep the soil wet with a watering can or any water container; rain waters plots for you. Crops take 3 to 5 in-game days and only grow while watered. Dry plants wilt and die, and ripe crops left in the ground rot.
+- **Fishing:** with a fishing rod and worms (foraged, dug up or sold as bait at gas stations) or a lure, cast from the bank of the river or a pond. Dawn, dusk and rain help. Cook the fish before eating it.
+- **Traits:** on the New Game screen, spend 4 points on positive traits (Strong, Fast Learner, Athletic, Light Sleeper, Eagle Eyed, Graceful, Light Eater, Green Thumb, Angler) and earn more by taking negative ones (Weak, Slow Learner, Out of Shape, Smoker, Short Sighted, Clumsy, Hearty Appetite). Smokers start with cigarettes and get anxious without one every 8 hours.
+- **Skills:** Melee, Aiming, Carpentry, Cooking, First Aid, Foraging, Sneaking, Fitness, Mechanics, Farming and Fishing improve with use. Your profession gives you a head start. Skill books (Vol. 1 and Vol. 2) found in homes and shops multiply the experience for one skill once read.
 - **Story:** Ada Pike's emergency band and Jonah Reed's convoy come through on your hand radio. The convoy waits on the configured day (default Day 5, 8 AM – 2 PM). Death is permanent.
 
 ## Controls
@@ -32,9 +36,10 @@ Each new game generates a seeded county: 3 km × 3 km by default (2 km and 1 km 
 | Reload / flashlight / forage | R / F / G | X / d-pad up |
 | Hotbar / next weapon | 1–6 | RB |
 | Zoom / rotate view | Mouse wheel / Z, X | |
+| Drive (in a car): throttle and reverse / steer / brake / engine / get out | W, S / A, D / Space / R or E / E | Left stick / left stick / LB / X / A |
 | Pause | Esc | Start |
 
-Menus work with keyboard, mouse and controller. You can rebind keys in Controls. Saves autosave every 5 minutes and on quit, and live in the game's own data folder (`Survival/*.sav`). Saves from the earlier chapter game are untouched.
+Menus work with keyboard, mouse and controller. You can rebind keys in Controls. Saves autosave every 5 minutes and on quit, and live in the game's own data folder (`Survival/*.sav`). Survivors saved before farming, fishing and traits were added (save version 1) cannot be loaded; the load menu says so and leaves the file untouched. Saves from the earlier chapter game are untouched.
 
 ## Code layout
 

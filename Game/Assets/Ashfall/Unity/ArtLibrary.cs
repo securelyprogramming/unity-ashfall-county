@@ -93,6 +93,10 @@ namespace Ashfall.View
                     for (int i = 0; i < 8; i++) { float a = i * Mathf.PI / 4; k.Box(new Vector3(Mathf.Cos(a) * .35f, 0, Mathf.Sin(a) * .35f), new Vector3(.16f, .14f, .16f), new Color32(110, 106, 100, 255)); }
                     for (int i = 0; i < 4; i++) k.Box(new Vector3(0, .05f, 0), new Vector3(.08f, .08f, .6f), DarkWood, i * 45);
                     break;
+                case PropKind.FarmPlot:
+                    k.Box(o, new Vector3(.96f, .05f, .96f), new Color32(96, 68, 44, 255));
+                    for (int i = 0; i < 3; i++) k.Box(new Vector3(0, .05f, -.3f + i * .3f), new Vector3(.88f, .04f, .14f), new Color32(78, 54, 36, 255));
+                    break;
                 case PropKind.Crops: for (int i = 0; i < 4; i++) k.Pyramid(new Vector3(-.3f + i * .2f, 0, (i % 2) * .2f - .1f), .12f, .45f, 4, new Color32(70, 130, 50, 255), i * 20); break;
                 default: k.Box(o, new Vector3(.8f, .8f, .8f), Wood); break;
             }

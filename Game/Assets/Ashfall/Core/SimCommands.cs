@@ -11,6 +11,9 @@ namespace Ashfall.Core
             var inv = s.inventory;
             if (s.knockedDown > 0 && c.kind != CommandKind.Cancel) return;
             if (s.sleeping && c.kind != CommandKind.Wake) return;
+            if (s.vehicle >= 0 && !AllowedInVehicle(c.kind)) return;
+            if (VehicleCommand(s, c)) return;
+            if (ExecuteSurvival(s, c)) return;
             switch (c.kind)
             {
                 case CommandKind.Cancel: CancelAction(s, ""); break;
@@ -20,7 +23,7 @@ namespace Ashfall.Core
                         if (c.target < 0 || c.target >= world.map.containers.Count) return;
                         var box = world.map.containers[c.target];
                         if (box.prop < 0 || !ReachProp(s, world.map.props[box.prop])) return;
-                        if (!box.generated) Loot.Roll(box, (ulong)world.settings.seed, world.settings.lootAbundance);
+                        world.RollContainer(box);
                         s.lootContainer = box.id; break;
                     }
                 case CommandKind.CloseContainer: s.lootContainer = -1; break;
@@ -303,6 +306,7 @@ namespace Ashfall.Core
         void Complete(Survivor s, TimedAction a)
         {
             var inv = s.inventory; var item = a.item >= 0 ? inv.ByUid(a.item) : null;
+            if (CompleteSurvival(s, a)) return;
             switch (a.kind)
             {
                 case ActionKind.Eat:
@@ -429,6 +433,7 @@ namespace Ashfall.Core
                         if (world.rng.Chance(.55f * bonus)) { inv.Add(ItemCatalog.Make("branch", world.rng.Range(1, 3))); found++; }
                         if (world.rng.Chance(.3f * bonus)) { inv.Add(ItemCatalog.Make("berries", 1)); found++; }
                         if (world.rng.Chance(.18f * bonus)) { inv.Add(ItemCatalog.Make("mushrooms", 1)); found++; }
+                        if (world.rng.Chance(.22f * bonus)) { inv.Add(ItemCatalog.Make("worms", world.rng.Range(1, 4))); found++; }
                         world.Message(s, found == 0 ? "You find nothing useful." : "You forage " + found + " useful thing" + (found > 1 ? "s." : "."));
                         GainXp(s, Skill.Foraging, 3 + found * 2); break;
                     }
@@ -446,8 +451,11 @@ namespace Ashfall.Core
                     {
                         var crop = a.target >= 0 ? world.map.props[a.target] : null; if (crop == null || crop.removed) return;
                         crop.removed = true; crop.modified = true;
-                        inv.Add(ItemCatalog.Make(world.rng.Chance(.5f) ? "potato" : "carrots", world.rng.Range(1, 3)));
-                        GainXp(s, Skill.Foraging, 3); break;
+                        bool potato = world.rng.Chance(.5f);
+                        inv.Add(ItemCatalog.Make(potato ? "potato" : "carrots", world.rng.Range(1, 3)));
+                        // Gone-to-seed field crops are the main way to start a garden without looting seed packets.
+                        if (world.rng.Chance(.3f + s.Level(Skill.Farming) * .04f)) { inv.Add(ItemCatalog.Make(potato ? "seeds_potato" : "seeds_carrot")); world.Message(s, "Some of the plants have gone to seed. You save a packet."); }
+                        GainXp(s, Skill.Foraging, 3); GainXp(s, Skill.Farming, 2); break;
                     }
                 case ActionKind.Cook:
                     {
@@ -475,6 +483,7 @@ namespace Ashfall.Core
                         }
                         break;
                     }
+                case ActionKind.Hotwire: case ActionKind.Refuel: CompleteVehicleAction(s, a); break;
                 case ActionKind.Light: { var f = world.map.props[a.target]; f.lit = true; f.modified = true; world.Emit(EventKind.Fire, f.Center, s.id); break; }
                 case ActionKind.Craft:
                     {

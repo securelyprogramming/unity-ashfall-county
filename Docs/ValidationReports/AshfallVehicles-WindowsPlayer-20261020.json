@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "game": "ashfall-county",
+  "feature": "drivable-cars",
+  "recorded": "2026-10-20T12:41:00Z",
+  "source": {
+    "kind": "uncommitted working tree (also contains the parallel farming/fishing/traits/skill-books work)",
+    "core": "Game/Assets/Ashfall/Core/Vehicles.cs",
+    "view": "Game/Assets/Ashfall/Unity/VehicleView.cs",
+    "tests": "tools/AshfallCoreTests/VehicleTests.cs"
+  },
+  "compile": {
+    "coreDotnet": "dotnet run --project tools/AshfallCoreTests -c Release: 574 checks passed, 0 failed on the full run (562 with --quick, which skips the 3072 county)",
+    "nativeBuild": {
+      "tool": "python tools/playtest/run_current.py --build-only",
+      "unity": "6000.6.0f1",
+      "target": "StandaloneWindows64 development player",
+      "status": "Succeeded",
+      "errors": 0,
+      "warnings": 5,
+      "artifact": "C:/Users/Quent/AppData/Local/GameWorkbench/playtests/ashfall-county/20261020-123631-19767bdc1d94/Game.exe",
+      "note": "An earlier build attempt (20261020-123454) failed with CS1010 from a broken string literal in the vehicle HUD line; fixed before this build."
+    }
+  },
+  "coreChecks": {
+    "vehicle-setup": "44 of 139 cars run on the 1024 test county; parked cars block their tiles; fuel and condition seeded; keys in the ignition, in a nearby house container or missing; deterministic per seed; a container key appears only when that container is first searched",
+    "vehicle-enter-exit": "entry refused from 6 m; entry within reach releases the parked tiles; world interactions refused while seated; no key, no start; a carried key starts; exit lands on free ground and parks the car again; hotwiring needs a screwdriver and succeeds with Mechanics 6",
+    "vehicle-drive-fuel": "a stopped engine does not move; 21.4 m in 3 s at full throttle; driver rides with the car; fuel burned in proportion to distance; engine noise draws a zombie 24 m away; right steer turns clockwise; brake stops; an empty tank stalls; a gas can pours 10 L and then reads empty; refuelling needs reach",
+    "vehicle-collisions": "a zombie hit at speed is killed or knocked down and ends outside the body; the car stops at a wall and loses condition; reversing stops at a crate; zombies pound on an occupied car and stay outside its body",
+    "vehicle-save-load": "moved car position, heading, fuel, condition, new blocked tiles, key link and a seated driver restored; the loaded driver can get out; a save without the vehicle section loads and seeds cars"
+  },
+  "nativeGameplay": {
+    "report": "Docs/ValidationReports/AshfallSurvival-WindowsPlayer-20261020-123903.json",
+    "status": "passed",
+    "checks": "28/28, including 12 new vehicle checks driven through a virtual keyboard",
+    "vehicleChecks": [
+      "vehicle-enter: E beside the Hatchback seats the survivor",
+      "vehicle-engine-start: E starts it with the key in the ignition",
+      "vehicle-drives-with-keyboard: W for 3 s, 27.0 m, 49 km/h",
+      "vehicle-model-follows: model 0.47 m behind the host position at speed (smoothing), yaw error 0.0 deg",
+      "driving-camera-zooms-out: orthographic size 18.0 -> 24.1",
+      "engine-audio: engine loop volume 0.49, pitch 1.70",
+      "vehicle-brakes: Space 2 s to 0 km/h",
+      "car-knocks-down-zombie: zombie killed, kill counted, condition 0.80 -> 0.72",
+      "vehicle-steers: W+D 1.2 s turned 54 deg",
+      "driving-uses-fuel: 30.00 -> 29.39 L",
+      "vehicle-exit-parks: E exits, engine off, survivor on free ground, car blocks its tiles",
+      "vehicle-save-and-reload: car position and fuel identical after quit and reload"
+    ],
+    "screenshots": "12-driving.png, 13-hit.png, 14-parked.png in C:/Users/Quent/AppData/Local/GameWorkbench/qa/ashfall-20261020-123903 (the owned vehicle model's plow end leads in the direction of travel)",
+    "qaOnlySetup": "the probe moves one drivable car to an open road strip with 30 L fuel and the key in the ignition, clears zombies within 110 m and spawns one deaf, blind zombie ahead; all inside the isolated GameWorkbenchQA save",
+    "performance": "Cedar Fork sample unchanged: 16.7 ms average frame (v-sync), simulation 4.7 ms with 226 active zombies"
+  },
+  "controller": "Not proven. Gamepad driving bindings exist (left stick throttle/steer, LB brake, X engine, A interact) but the probe drove with the virtual keyboard only; no physical controller was used.",
+  "lan": "Not applicable: LAN is not implemented in the rebuilt game. Driving is host-side; the owner sends throttle, steering and brake input and enter/exit/engine/hotwire/refuel commands only.",
+  "notProven": [
+    "Physical controller driving",
+    "Owned vehicle audio: no vehicle sounds are in the restored packs, so the engine loop, start/stop, door, sputter and crash cues are synthesized",
+    "Long drives across the whole county, night driving with headlights, and fuel balance over a full playthrough",
+    "Linux/macOS players and Steam packaging"
+  ]
+}

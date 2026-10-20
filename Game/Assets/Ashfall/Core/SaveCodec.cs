@@ -10,7 +10,8 @@ namespace Ashfall.Core
     public static class SaveCodec
     {
         const uint Magic = 0x41534846; // "ASHF"
-        public const int Version = 1;
+        /// <summary>2: farm plots, traits, skill books and smoking ("survival" section) and farming/fishing skills. Version 1 saves are refused.</summary>
+        public const int Version = 2;
 
         public sealed class Summary { public string name = "", profession = "", clock = "", outcome = ""; public int day, kills, seed, mapSize; public double hours; public bool alive; public long savedAtTicks; }
 
@@ -47,7 +48,9 @@ namespace Ashfall.Core
         static void Header(BinaryReader b)
         {
             if (b.ReadUInt32() != Magic) throw new InvalidDataException("Not an Ashfall County save.");
-            int version = b.ReadInt32(); if (version != Version) throw new InvalidDataException("Save version " + version + " is not supported by this build.");
+            int version = b.ReadInt32();
+            if (version < Version) throw new InvalidDataException("This survivor was saved by an older build (save version " + version + ", this build reads " + Version + "). Farming, fishing, traits and skill books changed the save format, so it cannot be loaded. Start a new survivor; the old file is left untouched.");
+            if (version > Version) throw new InvalidDataException("This survivor was saved by a newer build (save version " + version + ", this build reads " + Version + "). Update the game to load it.");
             int gen = b.ReadInt32(); if (gen != WorldGen.Version) throw new InvalidDataException("This save was made with a different county generator (" + gen + ").");
         }
 
@@ -88,6 +91,10 @@ namespace Ashfall.Core
             var piles = w.piles.Values.Where(p => p.inventory.items.Count > 0).ToList();
             b.Write(piles.Count);
             foreach (var p in piles) { b.Write(p.x); b.Write(p.y); WriteInventory(p.inventory, b); }
+            // Optional tagged sections follow; a reader stops at "" or the end of an older save.
+            b.Write("vehicles"); w.WriteVehicles(b);
+            b.Write("survival"); WriteSurvival(w, b);
+            b.Write("");
         }
 
         static World Read(BinaryReader b)
@@ -138,8 +145,54 @@ namespace Ashfall.Core
             for (int i = 0; i < piles; i++) { var p = new Pile { x = b.ReadInt32(), y = b.ReadInt32() }; p.inventory = ReadInventory(b, 999); w.piles[m.Index(p.x, p.y)] = p; }
             ItemCatalog.Uid = uid;
             w.index = new ZombieIndex(w);
+            bool vehicles = false, survival = false;
+            for (string section = NextSection(b); section.Length > 0; section = NextSection(b))
+            {
+                if (section == "vehicles") { w.ReadVehicles(b); vehicles = true; }
+                else if (section == "survival") { ReadSurvival(w, b); survival = true; }
+                else throw new InvalidDataException("Unknown save section \"" + section + "\".");
+            }
+            if (!vehicles) w.SetupVehicles();   // saves from before drivable cars
+            // Every dug plot needs state; a save without the survival section keeps its plots, empty and dry.
+            if (!survival) foreach (var s in w.survivors) s.hoursSinceSmoke = 0;
+            foreach (var p in m.props) if (p.kind == PropKind.FarmPlot && !p.removed && !w.plots.ContainsKey(p.id)) w.plots[p.id] = new FarmPlot { prop = p.id };
             return w;
         }
+
+        /// <summary>Survivor traits, read skill books and smoking clock, then every farm plot.</summary>
+        static void WriteSurvival(World w, BinaryWriter b)
+        {
+            b.Write(w.survivors.Count);
+            foreach (var s in w.survivors)
+            {
+                b.Write(s.traits.Count); foreach (var t in s.traits) b.Write(t);
+                b.Write(s.booksRead.Count); foreach (var k in s.booksRead) b.Write(k);
+                b.Write(s.hoursSinceSmoke);
+            }
+            b.Write(w.plots.Count);
+            foreach (var p in w.plots.Values) { b.Write(p.prop); b.Write(p.crop ?? ""); b.Write(p.growth); b.Write(p.water); b.Write(p.health); b.Write(p.ripeHours); b.Write(p.care); }
+        }
+        static void ReadSurvival(World w, BinaryReader b)
+        {
+            int n = b.ReadInt32(); if (n != w.survivors.Count) throw new InvalidDataException("Save survivors do not match their traits.");
+            foreach (var s in w.survivors)
+            {
+                int traits = b.ReadInt32(); for (int i = 0; i < traits; i++) s.traits.Add(b.ReadString());
+                if (Trait.Validate(s.traits).Length > 0) throw new InvalidDataException("Save has invalid traits: " + Trait.Validate(s.traits));
+                int books = b.ReadInt32(); for (int i = 0; i < books; i++) { string id = b.ReadString(); if (ItemCatalog.Exists(id) && ItemCatalog.Get(id).bookSkill >= 0) s.booksRead.Add(id); }
+                s.hoursSinceSmoke = b.ReadSingle();
+            }
+            int plots = b.ReadInt32();
+            for (int i = 0; i < plots; i++)
+            {
+                var p = new FarmPlot { prop = b.ReadInt32(), crop = b.ReadString(), growth = b.ReadSingle(), water = b.ReadSingle(), health = b.ReadSingle(), ripeHours = b.ReadSingle(), care = b.ReadSingle() };
+                if (p.prop < 0 || p.prop >= w.map.props.Count || w.map.props[p.prop].kind != PropKind.FarmPlot) throw new InvalidDataException("Save farm plots do not match the county.");
+                if (!p.Empty && CropDef.Get(p.crop) == null) p.Clear();
+                w.plots[p.prop] = p;
+            }
+        }
+
+        static string NextSection(BinaryReader b) { try { return b.ReadString(); } catch (EndOfStreamException) { return ""; } }
 
         static void WriteSettings(SandboxSettings s, BinaryWriter b)
         {

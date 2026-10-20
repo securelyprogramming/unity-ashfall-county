@@ -1074,7 +1074,7 @@
      "isolated-save",
      "county-survival"
     ],
-    "description": "Builds a fresh county (seed 777) in an isolated GameWorkbenchQA user directory and drives movement, looting, eating, drinking, melee, a zombie attack, bandaging, barricading, night lighting, the map, a town frame-time sample and save/reload. Writes a JSON report and screenshots.",
+    "description": "Builds a fresh county (seed 777) in an isolated GameWorkbenchQA user directory and drives movement, looting, eating, drinking, melee, a zombie attack, bandaging, barricading, night lighting, the map, a town frame-time sample, a keyboard car drive (enter, start, accelerate, brake, run down a zombie, steer, park) and save/reload. Writes a JSON report and screenshots.",
     "launch": {
      "arguments": [
       "-ashfall-qa={output}/ashfall-qa.json",

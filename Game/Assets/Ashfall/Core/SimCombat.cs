@@ -41,6 +41,7 @@ namespace Ashfall.Core
                 float damage = (armed ? def.damage : .18f) * (1 + s.Level(Skill.Melee) * .07f) * world.rng.Range(.8f, 1.2f);
                 if (armed && weapon.condition <= 0) damage *= .3f;
                 if (s.endurance < 10) damage *= .6f;
+                if (s.HasTrait("strong")) damage *= 1.2f; else if (s.HasTrait("weak")) damage *= .8f;
                 if (z.state == ZombieState.Knocked) damage *= 2.2f;   // stomp or strike a downed zombie
                 if (world.rng.Chance(.06f + s.Level(Skill.Melee) * .012f)) damage *= 2;   // critical hit
                 HitZombie(z, s, damage, (armed ? def.knockdown : .2f) + s.Level(Skill.Melee) * .03f, armed && def.blade);
@@ -85,7 +86,7 @@ namespace Ashfall.Core
                 if (z.state == ZombieState.Knocked) continue;
                 z.pos = world.map.Slide(z.pos, to.Normalized * .7f, Zombie.Radius); world.index.Moved(z);
                 z.attackClock = 0; z.stagger = 1.0f;
-                if (world.rng.Chance(.35f + s.Level(Skill.Fitness) * .03f)) Knock(z);
+                if (world.rng.Chance(.35f + s.Level(Skill.Fitness) * .03f + (s.HasTrait("strong") ? .15f : s.HasTrait("weak") ? -.1f : 0))) Knock(z);
             }
         }
 

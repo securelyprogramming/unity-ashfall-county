@@ -50,7 +50,7 @@ namespace Ashfall.Core
                     if (prey == null) { z.state = ZombieState.Investigate; z.timer = 20; break; }
                     if (world.map.LineOfSight(z.pos, prey.pos)) { z.target = prey.pos; z.lostSight = 0; }
                     else { z.lostSight += dt; if (z.lostSight > 14) { z.state = ZombieState.Investigate; z.timer = 25; z.targetSurvivor = -1; break; } }
-                    float d = Vec2.Distance(z.pos, prey.pos);
+                    float d = PreyDistance(z, prey);
                     if (d < .95f && world.map.LineOfSight(z.pos, prey.pos)) { z.state = ZombieState.Attack; z.attackClock = .55f; z.facing = (prey.pos - z.pos).Angle; break; }
                     MoveTo(z, z.target, z.speed, dt);
                     break;
@@ -60,11 +60,11 @@ namespace Ashfall.Core
                     z.attackClock -= dt;
                     if (z.attackClock <= 0)
                     {
-                        if (Vec2.Distance(z.pos, prey.pos) < 1.15f && world.map.LineOfSight(z.pos, prey.pos)) ZombieStrike(z, prey);
+                        if (PreyDistance(z, prey) < 1.15f && world.map.LineOfSight(z.pos, prey.pos)) StrikeVehicle(z, prey);
                         z.attackClock = world.rng.Range(1.0f, 1.5f);
-                        if (Vec2.Distance(z.pos, prey.pos) > 1.2f) z.state = ZombieState.Chase;
+                        if (PreyDistance(z, prey) > 1.2f) z.state = ZombieState.Chase;
                     }
-                    else if (Vec2.Distance(z.pos, prey.pos) > 1.6f) z.state = ZombieState.Chase;
+                    else if (PreyDistance(z, prey) > 1.6f) z.state = ZombieState.Chase;
                     break;
                 case ZombieState.Thump:
                     {
@@ -197,9 +197,10 @@ namespace Ashfall.Core
                     a.pos = world.map.Slide(a.pos, push, Zombie.Radius); b.pos = world.map.Slide(b.pos, push * -1, Zombie.Radius);
                     world.index.Moved(a); world.index.Moved(b);
                 }
+                SeparateFromVehicles(a);
                 foreach (var s in world.survivors)
                 {
-                    if (!s.alive) continue;
+                    if (!s.alive || s.vehicle >= 0) continue;
                     var d = a.pos - s.pos; float l = d.Length;
                     if (l < .58f && l > 1e-4f) { a.pos = world.map.Slide(a.pos, d.Normalized * (.58f - l), Zombie.Radius); world.index.Moved(a); }
                 }

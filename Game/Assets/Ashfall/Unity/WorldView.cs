@@ -26,6 +26,7 @@ namespace Ashfall.View
         readonly Dictionary<int, GameObject> pileViews = new Dictionary<int, GameObject>();
         readonly List<Light> fireLights = new List<Light>();
         int propVersion;
+        public VehicleView Vehicles { get; private set; }
 
         sealed class Chunk { public int cx, cy; public GameObject root; public Mesh ground, water, nature, fences; public GameObject natureObject; public int natureRemoved; public readonly List<GameObject> props = new List<GameObject>(); public readonly Dictionary<int, GameObject> propObjects = new Dictionary<int, GameObject>(); }
         sealed class OpeningView { public Opening o; public Transform door; public GameObject[] planks; public int state = -1; public Vector3 outward, center, along; }
@@ -47,6 +48,7 @@ namespace Ashfall.View
             for (int i = 0; i < buildingOpenings.Length; i++) buildingOpenings[i] = new List<int>();
             foreach (var o in map.openings) if (o.building >= 0) buildingOpenings[o.building].Add(o.id);
             propVersion = map.props.Count;
+            Vehicles = new VehicleView(world, root);
         }
 
         public void Clear()
@@ -54,6 +56,7 @@ namespace Ashfall.View
             foreach (var c in chunks.Values) { Destroy(c.root); DestroyMesh(c.ground); DestroyMesh(c.water); DestroyMesh(c.nature); DestroyMesh(c.fences); }
             chunks.Clear(); foreach (var b in buildings.Values) Destroy(b.root); buildings.Clear();
             foreach (var p in pileViews.Values) Destroy(p); pileViews.Clear();
+            if (Vehicles != null) Vehicles.Clear();
             if (root != null) Destroy(root.gameObject);
         }
         static void DestroyMesh(Mesh m) { if (m != null) Destroy(m); }
@@ -82,6 +85,7 @@ namespace Ashfall.View
             UpdateCutaway(focus, cameraBack);
             foreach (var b in buildings.Values) { foreach (var o in b.openings) SyncOpening(o, b.root.transform); SyncGlass(b); }
             SyncPiles(focus);
+            Vehicles.Sync(focus, Time.deltaTime);
         }
 
         // ---------------------------------------------------------------- chunks
@@ -120,7 +124,7 @@ namespace Ashfall.View
             }
             return Grass;
         }
-        static float GroundHeight(Ground g) { return g == Ground.Water ? -.45f : g == Ground.Sidewalk ? .03f : g == Ground.Bridge ? .25f : g == Ground.WoodFloor || g == Ground.TileFloor ? .05f : 0; }
+        public static float GroundHeight(Ground g) { return g == Ground.Water ? -.45f : g == Ground.Sidewalk ? .03f : g == Ground.Bridge ? .25f : g == Ground.WoodFloor || g == Ground.TileFloor ? .05f : 0; }
 
         void LoadChunk(int cx, int cy)
         {
@@ -216,6 +220,7 @@ namespace Ashfall.View
         void SpawnProp(Chunk c, Prop p)
         {
             if (p.removed) return;
+            if (p.kind == PropKind.Car && world.VehicleOfProp(p.id) != null) return;   // drivable cars are drawn by VehicleView
             if (p.kind == PropKind.Tree || p.kind == PropKind.Bush)
             {
                 if (!PurchasedNature(p)) return;
@@ -242,7 +247,7 @@ namespace Ashfall.View
             c.props.Add(go); c.propObjects[p.id] = go;
         }
 
-        GameObject CarModel(Transform parent, Prop p)
+        public static GameObject CarModel(Transform parent, Prop p)
         {
             var k = new MeshKit(); float h = p.hp; bool wreck = h < .2f;
             var palette = new[] { C(150, 40, 36), C(40, 70, 130), C(200, 200, 196), C(40, 42, 46), C(90, 110, 80), C(170, 140, 60) };
@@ -270,12 +275,50 @@ namespace Ashfall.View
             // Campfire flame and light follow the lit state.
             foreach (var kv in c.propObjects)
             {
-                var p = map.props[kv.Key]; if (p.kind != PropKind.Campfire) continue;
+                var p = map.props[kv.Key];
+                if (p.kind == PropKind.FarmPlot) { SyncPlot(kv.Value, p); continue; }
+                if (p.kind != PropKind.Campfire) continue;
                 var flame = kv.Value.transform.Find("Flame"); var light = kv.Value.GetComponentInChildren<Light>(true);
                 if (flame != null) { flame.gameObject.SetActive(p.lit); flame.localScale = new Vector3(.35f, .45f + Mathf.PerlinNoise(Time.time * 3, p.id) * .2f, .35f); }
                 if (light != null) { light.enabled = p.lit; light.intensity = 1.4f + Mathf.PerlinNoise(Time.time * 5, p.id) * .5f; }
             }
         }
+        /// <summary>Plants on a farm plot follow its crop, growth stage and moisture; rebuilt only when the stage changes.</summary>
+        void SyncPlot(GameObject go, Prop p)
+        {
+            FarmPlot plot; if (!world.plots.TryGetValue(p.id, out plot)) return;
+            int stage = plot.Empty ? -2 : plot.Dead ? -1 : plot.Ripe ? 5 : Mathf.Clamp((int)(plot.growth * 5), 0, 4);
+            string key = "Plants " + plot.crop + " " + stage + (plot.water > .35f ? " wet" : "");
+            var old = go.transform.Find("Plants");
+            var tag = old == null || old.childCount == 0 ? null : old.GetChild(0);
+            if (tag != null && tag.name == key) return;
+            if (old != null) Destroy(old.gameObject);
+            Mesh mesh; if (!plotMeshes.TryGetValue(key, out mesh)) plotMeshes[key] = mesh = PlotMesh(plot, stage);
+            var plants = MeshKit.Object("Plants", go.transform, mesh, ArtLibrary.Vertex);
+            new GameObject(key).transform.SetParent(plants.transform, false);   // stage marker
+        }
+        // One shared mesh per crop, stage and moisture (a few dozen at most), so chunk reloads never leak meshes.
+        static readonly Dictionary<string, Mesh> plotMeshes = new Dictionary<string, Mesh>();
+        static Mesh PlotMesh(FarmPlot plot, int stage)
+        {
+            var k = new MeshKit();
+            if (plot.water > .35f) k.Box(new Vector3(0, .005f, 0), new Vector3(.9f, .062f, .9f), C(58, 40, 28));   // darker wet soil
+            if (stage != -2)
+            {
+                Color32 leaf = stage == -1 ? C(110, 84, 50) : C(70, 132, 52), fruit = C(220, 120, 40);
+                switch (plot.crop) { case "tomato": fruit = C(200, 40, 34); break; case "potato": fruit = C(176, 140, 92); break; case "cabbage": fruit = C(150, 196, 110); break; }
+                float g = stage == -1 ? .35f : stage == 5 ? 1 : .15f + stage * .18f;
+                for (int i = 0; i < 4; i++)
+                {
+                    var at = new Vector3(i % 2 == 0 ? -.22f : .22f, .06f, i < 2 ? -.22f : .22f);
+                    if (plot.crop == "cabbage" && stage >= 2) k.Blob(at + Vector3.up * .12f * g, new Vector3(.17f, .13f, .17f) * g, stage == -1 ? leaf : fruit, 11 + i);
+                    else k.Pyramid(at, .12f * g + .03f, .5f * g, 5, leaf, i * 37);
+                    if (stage == 5 && plot.crop != "cabbage") k.Blob(at + new Vector3(.06f, plot.crop == "tomato" ? .3f : .05f, .04f), Vector3.one * .07f, fruit, 23 + i);
+                }
+            }
+            return k.Vertices > 0 ? k.Build("Plot plants") : null;
+        }
+
         void AddNewProps()
         {
             for (int i = propVersion; i < map.props.Count; i++)

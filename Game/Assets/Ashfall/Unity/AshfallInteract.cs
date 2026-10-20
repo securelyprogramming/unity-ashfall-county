@@ -14,6 +14,7 @@ namespace Ashfall.View
         {
             Nearby.Clear(); Focus = null;
             var s = Player; if (s == null || !s.alive || s.sleeping) return;
+            var seat = World.VehicleOf(s); if (seat != null) { SeatInteractions(s, seat); return; }
             var map = World.map; var inv = s.inventory;
             var forward = new Vector2(Mathf.Cos(s.facing), Mathf.Sin(s.facing));
             bool hammer = inv.FindTag("hammer") != null, planks = inv.Count("plank") > 0, nails = inv.Count("nails") >= 2, pry = inv.FindTag("pry") != null;
@@ -76,6 +77,7 @@ namespace Ashfall.View
             // The survivor's own context: foraging, sleeping rough, drinking from the river.
             var self = new Interactable { label = "Yourself", pos = Pos(s.pos, 1.8f), score = 99 };
             if (!map.Indoors(s.pos)) Add(self, "Forage here (G)", () => Submit(Command.Of(CommandKind.Forage)));
+            SurvivalSelfActions(self, s);
             if (Sim.NearWater(s)) foreach (var bottle in inv.items.Where(i => i.Def.waterCapacity > 0 && i.water < i.Def.waterCapacity).Take(2)) { int uid = bottle.uid; Add(self, "Fill " + bottle.Def.name + " from the river", () => Submit(new Command { kind = CommandKind.FillWater, item = uid, target = -1 })); }
             Add(self, "Sleep on the ground", () => Submit(new Command { kind = CommandKind.Sleep, target = -1 }), s.fatigue >= 30, "Not tired enough");
             if (inv.items.Any(i => i.Def.category == ItemCategory.Light)) Add(self, s.lightOn ? "Turn flashlight off (F)" : "Turn flashlight on (F)", () => Submit(Command.Of(CommandKind.ToggleLight)));
@@ -95,7 +97,9 @@ namespace Ashfall.View
         {
             var inv = s.inventory; var it = new Interactable { label = PropName(p.kind), pos = new Vector3(p.x + p.w * .5f, 1, p.y + p.h * .5f) };
             int id = p.id;
-            if (p.container >= 0) { int cid = p.container; Add(it, "Search " + it.label.ToLowerInvariant(), () => { Submit(new Command { kind = CommandKind.OpenContainer, target = cid }); UI.OpenInventory(); }); }
+            var car = p.kind == PropKind.Car ? World.VehicleOfProp(p.id) : null;
+            if (car != null) CarInteractions(it, s, car);
+            if (p.container >= 0) { int cid = p.container; Add(it, car != null ? "Search trunk" : "Search " + it.label.ToLowerInvariant(), () => { Submit(new Command { kind = CommandKind.OpenContainer, target = cid }); UI.OpenInventory(); }); }
             if (p.CanSleep) Add(it, "Sleep", () => Submit(new Command { kind = CommandKind.Sleep, target = id }), s.fatigue >= 30, "Not tired enough");
             if (p.IsWaterSource)
             {
@@ -115,7 +119,36 @@ namespace Ashfall.View
             }
             if (p.kind == PropKind.Tree) { var axe = s.Primary; Add(it, "Chop down tree", () => Submit(new Command { kind = CommandKind.Chop, target = id }), axe != null && axe.Def.Has("chop"), "Equip an axe"); }
             if (p.kind == PropKind.Crops) Add(it, "Harvest crops", () => Submit(new Command { kind = CommandKind.Harvest, target = id }));
+            if (p.kind == PropKind.FarmPlot) PlotActions(it, s, p);
             return it;
+        }
+
+        static string CarState(Vehicle v) { return v.model + " (fuel " + Mathf.RoundToInt(v.fuel / Vehicle.TankLiters * 100) + "%, condition " + Mathf.RoundToInt(v.condition * 100) + "%)"; }
+
+        /// <summary>Standing beside a drivable car: get in, refuel from a gas can or a powered pump.</summary>
+        void CarInteractions(Interactable it, Survivor s, Vehicle v)
+        {
+            it.label = CarState(v); it.pos = Pos(v.pos, 1); int vid = v.id;
+            Add(it, "Get in and drive", () => Submit(new Command { kind = CommandKind.EnterVehicle, target = vid }), v.driver < 0, "Occupied");
+            bool room = v.fuel < Vehicle.TankLiters - .05f;
+            foreach (var can in s.inventory.items.Where(i => i.def == "gas_can" && i.condition > .001f).Take(2)) { int uid = can.uid; Add(it, "Refuel from " + can.Label, () => Submit(new Command { kind = CommandKind.Refuel, target = vid, item = uid }), room, "Tank is full"); }
+            if (Sim.Pump(s) != null) Add(it, "Fill up at the gas pump", () => Submit(new Command { kind = CommandKind.Refuel, target = vid, item = -1 }), room, "Tank is full");
+        }
+
+        /// <summary>Seated in a car: engine, hotwiring and getting out.</summary>
+        void SeatInteractions(Survivor s, Vehicle v)
+        {
+            var it = new Interactable { label = CarState(v) + (v.engineOn ? " · running" : ""), pos = Pos(v.pos, 1.6f) };
+            bool canStart = Sim.HasKey(s, v) || v.hotwired;
+            System.Action engine = () => Submit(Command.Of(CommandKind.ToggleEngine)), exit = () => Submit(Command.Of(CommandKind.ExitVehicle));
+            if (v.engineOn) { Add(it, "Get out", exit, Mathf.Abs(v.speed) < 1.5f, "Stop first"); Add(it, "Turn the engine off (R)", engine); }
+            else
+            {
+                if (canStart) Add(it, "Start the engine (R)", engine, v.fuel > 0 && !v.Wrecked, v.Wrecked ? "Wrecked" : "Out of gas");
+                else Add(it, "Hotwire the ignition", () => Submit(Command.Of(CommandKind.Hotwire)), s.inventory.FindTag("screwdriver") != null && !v.Wrecked, v.Wrecked ? "Wrecked" : "Needs a screwdriver");
+                Add(it, "Get out", exit);
+            }
+            Nearby.Add(it); Focus = it;
         }
 
         static string PropName(PropKind k)
@@ -124,7 +157,7 @@ namespace Ashfall.View
             {
                 case PropKind.MedicineCabinet: return "Medicine cabinet"; case PropKind.WoodCrate: return "Wooden crate"; case PropKind.RainCollector: return "Rain collector";
                 case PropKind.GasPump: return "Gas pump"; case PropKind.HayBale: return "Hay bale"; case PropKind.Bin: return "Garbage bin"; case PropKind.Cashier: return "Register";
-                case PropKind.Car: return "Abandoned car (trunk)"; case PropKind.Crops: return "Crops";
+                case PropKind.Car: return "Abandoned car (trunk)"; case PropKind.Crops: return "Crops"; case PropKind.FarmPlot: return "Farm plot";
                 default: return k.ToString();
             }
         }

@@ -47,6 +47,7 @@ namespace Ashfall.Core
             Weather(hours);
             Story();
             foreach (var s in world.survivors) if (s.alive) UpdateSurvivor(s, dt, hours);
+            UpdateVehicles(dt);
             CollectActive();
             searches = 0;
             perceptionClock -= dt;
@@ -138,6 +139,7 @@ namespace Ashfall.Core
             foreach (var p in w.piles.Values) foreach (var i in p.inventory.items) if (i.Def.perishDays > 0) i.ageHours += 1;
             foreach (var p in w.map.props)
                 if (p.kind == PropKind.Campfire && p.lit && !p.removed) { p.fuel -= 1; p.modified = true; if (p.fuel <= 0) { p.lit = false; p.fuel = 0; } }
+            GrowPlots();
             // Slow migration: a few dormant zombies drift; the dead are slowly replaced from the county edges.
             if (w.settings.respawn && w.Day > 2 && w.LivingZombies < w.initialPopulation * .8f)
                 for (int i = 0; i < 6; i++)
@@ -188,6 +190,7 @@ namespace Ashfall.Core
             float light = world.Daylight, range = 9 + 22 * light;
             if (s.lightOn) range = Math.Max(range, 18);
             if (world.fog > 0) range *= 1 - world.fog * .45f;
+            if (s.HasTrait("eagle_eyed")) range *= 1.2f; else if (s.HasTrait("short_sighted")) range *= .7f;
             world.index.Query(s.pos, Math.Max(range, 4), query);
             var forward = Vec2.FromAngle(s.facing);
             foreach (var z in query)
@@ -196,7 +199,7 @@ namespace Ashfall.Core
                 bool inCone = d < 3.2f || Vec2.Dot(to * (1 / Math.Max(.01f, d)), forward) > -0.25f;
                 if (inCone && d <= range && world.map.LineOfSight(s.pos, z.pos)) set.Add(z.id);
             }
-            world.map.Explore(s.pos, Math.Max(12, range));
+            world.map.Explore(s.pos, Math.Max(s.HasTrait("short_sighted") ? 8 : 12, range));
             // Panic rises with visible zombies nearby.
             int close = 0; foreach (int id in set) if (Vec2.Distance(world.zombies[id].pos, s.pos) < 10) close++;
             s.panic = MathUtil.Clamp(s.panic + close * 1.2f - 1.5f, 0, 100);
@@ -208,6 +211,7 @@ namespace Ashfall.Core
         void GainXp(Survivor s, Skill skill, float amount)
         {
             if (s.profession == "unemployed") amount *= 1.25f;
+            amount *= TraitXpMultiplier(s) * BookMultiplier(s, skill);
             int i = (int)skill; if (s.level[i] >= 10) return;
             s.xp[i] += amount;
             while (s.level[i] < 10 && s.xp[i] >= Ashfall.Core.Survivor.XpCurve[s.level[i]])
@@ -273,7 +277,7 @@ namespace Ashfall.Core
                         if (r.id < 0 || r.id >= world.map.containers.Count) return null;
                         var c = world.map.containers[r.id]; var p = c.prop >= 0 ? world.map.props[c.prop] : null;
                         if (p == null || !ReachProp(s, p)) return null;
-                        if (!c.generated) Loot.Roll(c, (ulong)world.settings.seed, world.settings.lootAbundance);
+                        world.RollContainer(c);
                         return c.inventory;
                     }
                 case InvKind.Pile:

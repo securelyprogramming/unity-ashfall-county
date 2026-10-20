@@ -11,6 +11,9 @@ namespace Ashfall.Core
         static readonly Dictionary<string, Table> tables = new Dictionary<string, Table>();
         static void T(string name, int rollsMin, int rollsMax, float empty, params Entry[] entries) { tables[name] = new Table { rollsMin = rollsMin, rollsMax = rollsMax, emptyChance = empty, entries = entries }; }
         static Entry E(string id, float w, int min = 1, int max = 1) { return new Entry(id, w, min, max); }
+        static void X(string name, params Entry[] more) { var t = tables[name]; var all = new Entry[t.entries.Length + more.Length]; t.entries.CopyTo(all, 0); more.CopyTo(all, t.entries.Length); t.entries = all; }
+        static Entry[] Books(int volume, float weight, params Skill[] skills) { var e = new Entry[skills.Length]; for (int i = 0; i < skills.Length; i++) e[i] = E(ItemCatalog.BookId(skills[i], volume), weight); return e; }
+        static readonly Skill[] BookSkills = { Skill.Carpentry, Skill.Cooking, Skill.FirstAid, Skill.Foraging, Skill.Farming, Skill.Fishing };
 
         static Loot()
         {
@@ -41,6 +44,23 @@ namespace Ashfall.Core
             T("barn", 1, 4, .2f, E("plank", 5, 1, 4), E("nails", 5, 10, 40), E("hammer", 3), E("saw", 3), E("axe", 2), E("shovel", 3), E("log", 3), E("potato", 3, 1, 4), E("carrots", 3, 1, 4), E("rifle", .6f), E("ammo_308", 1, 4, 10), E("garbage_bag", 2, 1, 4), E("work_gloves", 2), E("gas_can", 2));
             T("car", 0, 3, .4f, E("water_bottle", 4), E("chips", 3), E("county_map", 3), E("flashlight", 2), E("battery", 2, 1, 3), E("duffel_bag", 1.5f), E("school_bag", 1), E("first_aid_kit", 1), E("crowbar", 1.5f), E("gas_can", 1), E("tshirt", 1), E("hoodie", 1), E("revolver", .3f), E("ammo_38", .5f, 3, 12), E("soda", 2));
             T("corpse", 0, 2, .45f, E("chocolate", 2), E("lighter", 2), E("bandage", 1.5f), E("tshirt", 3), E("jeans", 3), E("hoodie", 2), E("water_bottle", 1.5f), E("kitchen_knife", 1), E("county_map", .5f), E("ammo_9mm", .5f, 2, 10), E("radio", .3f), E("school_bag", .6f));
+
+            // Long-term survival: seeds, watering cans, fishing gear, cigarettes and skill books.
+            X("barn", E("seeds_carrot", 2, 1, 3), E("seeds_potato", 2, 1, 3), E("seeds_tomato", 1.5f, 1, 3), E("seeds_cabbage", 1.5f, 1, 3), E("watering_can", 2), E("fishing_rod", 1), E("worms", 1, 2, 6), E("book_farming_1", .5f));
+            X("tools", E("watering_can", 1.5f), E("fishing_rod", 1), E("lure", 1, 1, 2), E("seeds_carrot", 1, 1, 2), E("seeds_tomato", 1, 1, 2));
+            X("hardware", E("seeds_carrot", 2, 1, 3), E("seeds_potato", 2, 1, 3), E("seeds_tomato", 2, 1, 3), E("seeds_cabbage", 2, 1, 3), E("watering_can", 3), E("fishing_rod", 2), E("lure", 2, 1, 3), E("book_carpentry_1", 1), E("book_farming_1", .8f));
+            X("grocery", E("seeds_carrot", 1, 1, 2), E("seeds_tomato", 1, 1, 2), E("cigarettes", 2, 5, 20), E("tomato", 3), E("cabbage", 2));
+            X("grocery_cold", E("tomato", 4), E("cabbage", 3));
+            X("gas", E("cigarettes", 5, 5, 20), E("worms", 1.5f, 2, 8), E("lure", 1), E("fishing_rod", .5f));
+            X("cashier", E("cigarettes", 3, 5, 20));
+            X("pharmacy", E("book_firstaid_1", 1), E("book_firstaid_2", .5f), E("cigarettes", 1, 5, 20));
+            X("diner", E("book_cooking_1", .6f), E("tomato", 3), E("cabbage", 2));
+            X("living", Books(1, .5f, BookSkills)); X("living", Books(2, .15f, BookSkills)); X("living", E("cigarettes", 1.5f, 3, 20));
+            X("bedroom", Books(1, .35f, BookSkills)); X("bedroom", Books(2, .12f, BookSkills)); X("bedroom", E("cigarettes", 1.5f, 3, 20));
+            X("office", Books(1, .4f, BookSkills)); X("office", Books(2, .25f, BookSkills));
+            X("wardrobe", E("fishing_rod", .6f));
+            X("car", E("cigarettes", 1, 2, 15), E("fishing_rod", .4f), E("lure", .4f));
+            X("corpse", E("cigarettes", 1.5f, 1, 12));
         }
 
         public static void Roll(Container c, ulong seed, float abundance)

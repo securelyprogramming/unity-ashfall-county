@@ -53,10 +53,12 @@ def main():
         'qaOnlySetup': data.get('qaSetup', []),
         'screenshots': data.get('screenshots', []),
         'notProven': [
-            'Physical controller hardware (the probe uses a virtual gamepad device)',
+            'Physical controller hardware (the probe uses a virtual gamepad device); gamepad driving is not probed',
+            'Owned vehicle audio (engine, door and crash cues are synthesized stand-ins) and long drives across the county',
             'Human playtime and the evacuation outcome over a full multi-hour session',
             'Linux/macOS native builds, LAN multiplayer (not implemented in the rebuilt game), Steam packaging',
             'Long-session memory and save growth, and every sandbox option combination',
+            'Crop growth in real-time play (the probe fast-forwards in-game days with the host simulation), fishing catch rates and trait balance over long sessions, and the trait picker driven by a physical controller',
         ],
     }
     out = ROOT / 'Docs' / 'ValidationReports' / ('AshfallSurvival-' + (data.get('platform') or 'native') + '-' + stamp + '.json')

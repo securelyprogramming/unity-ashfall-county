@@ -49,7 +49,7 @@
   "characters": {
     "player": {
       "name": "Player-named survivor (default Mara Vale)",
-      "role": "Profession chosen at New Game: paramedic, carpenter, sheriff's deputy, farmer, firefighter, line cook or unemployed",
+      "role": "Profession chosen at New Game: paramedic, carpenter, sheriff's deputy, farmer, firefighter, line cook or unemployed; plus positive/negative traits within a point budget",
       "movementDesignTarget": "Isometric walk/run/sneak with wall sliding, window climbing and fence hopping; encumbrance, endurance and leg wounds slow movement.",
       "nativeAcceptance": "required"
     },
@@ -115,10 +115,15 @@
     "noise": "Footsteps, combat, glass, barricading, chopping and gunshots emit noise that zombies hear through walls at reduced range.",
     "resources": "Weighted loot tables per room/container type; perishable food spoils (fridges slow it while the grid is up); tap water until shut-off, then stored pipe water (tainted), rain collectors (clean) and river water (tainted, boil it).",
     "crafting": "Rags, planks, spear, spiked bat, campfire, rain collector, wooden crate, stew, first aid kit; barricading with hammer, plank and nails.",
-    "skills": "Melee, Aiming, Carpentry, Cooking, First Aid, Foraging, Sneaking, Fitness, levelled by use.",
+    "skills": "Melee, Aiming, Carpentry, Cooking, First Aid, Foraging, Sneaking, Fitness, Mechanics, Farming, Fishing, levelled by use.",
+    "farming": "Seed packets (carrot, potato, tomato, cabbage) from barns, hardware/tool stores, groceries and gone-to-seed field crops. Dig a plot with a shovel on grass, dirt or field ground outdoors, plant a packet, keep the soil watered (watering can or any water container; rain waters plots). Crops grow over 3-5 in-game days only while watered, wilt and die after about 30 dry hours, and rot if left ripe for 3 days. Harvest yields produce scaled by Farming skill and plant health, sometimes seed packets back. Host rules in Game/Assets/Ashfall/Core/SimSurvival.cs and Farming.cs.",
+    "fishing": "Fishing rod plus worms (foraged, dug up, gas-station bait; one per cast) or a reusable lure, from outdoor land within 2 m of the river or a pond. Catch chance rises with Fishing level, dawn/dusk and rain; perch, bass and catfish must be cooked (raw fish causes sickness). The rod wears with use.",
+    "traits": "Picked on the New Game screen with a 4-point budget: positive traits cost points, negative traits give points, opposite pairs exclude each other. Strong/Weak (capacity, melee, shove), Fast/Slow Learner (XP), Athletic/Out of Shape (run speed, endurance), Light Sleeper (wakes at 14 m), Eagle Eyed/Short Sighted (zombie visibility, mapping), Graceful/Clumsy (footstep noise), Light Eater/Hearty Appetite (hunger), Green Thumb (Farming +1, faster growth), Angler (Fishing +1, more bites), Smoker (starts with cigarettes; cravings raise panic and boredom after 8 hours). The host validates the selection again in World.Create.",
+    "skillBooks": "Vol. 1 and Vol. 2 handbooks for Carpentry, Cooking, First Aid, Foraging, Farming and Fishing. Reading (20 s, needs light) multiplies that skill's XP by 3 for levels 0-4 (Vol. 1) or by 4 for levels 5-9 (Vol. 2); the book is kept and cannot be studied twice.",
+    "vehicles": "About 40% of intact abandoned cars run (seeded per county). Keys in the ignition, the car's trunk or a nearby house container, or hotwire with a screwdriver (Mechanics). Host-side driving with fuel use, top speed by condition, slower off-road, collisions with walls, fences, water and props that damage the car, zombies knocked down or killed when hit at speed, engine noise that draws zombies, refuelling from gas cans or powered pumps; parked cars block their tiles. Game/Assets/Ashfall/Core/Vehicles.cs.",
     "interaction": "E performs the focused action; Q opens every nearby action. All requests are host commands validated for reach, line of sight, tools and ownership.",
     "authority": "Host-authoritative simulation (Simulation.Submit/SetInput). Clients would send input and commands only; LAN is not implemented for the rebuilt game.",
-    "saves": "Atomic, versioned, gzip-compressed seed + delta saves in the per-game persistent data directory (Survival/*.sav); autosave every 5 minutes, on sleep start and on quit. Legacy Campaigns data is untouched."
+    "saves": "Atomic, versioned, gzip-compressed seed + delta saves in the per-game persistent data directory (Survival/*.sav); autosave every 5 minutes, on sleep start and on quit. Save version 2 (farming, fishing, traits, skill books) refuses version 1 saves with an explanation and leaves the file untouched. Legacy Campaigns data is untouched."
   },
   "playtime": {
     "campaignTargetMinutes": 225,
@@ -149,7 +154,9 @@
       "Native new game on each county size: generation, start house, spawn clearance and water exclusion",
       "Keyboard/mouse and physical controller: movement, aiming, combat, interaction and every menu",
       "Looting, eating, drinking, cooking, crafting, barricading, sleeping, wounds and treatment",
+      "Farming over in-game days, fishing and cooking fish, trait selection and effects, skill books and smoking; save/reload of plots, traits and read books",
       "Zombie perception, pathing to doors and windows, thumping, climbing, combat and corpses",
+      "Drivable cars: enter/exit, keys and hotwiring, driving and steering, fuel and refuelling, collisions, running down zombies, engine audio and save/reload",
       "Evacuation outcome on the convoy day, death outcome, save/reload and autosave",
       "Purchased characters/items: import, runtime reference, animation and interaction",
       "Measured playtime, performance in towns, platform builds, distribution signing and Steam acceptance"

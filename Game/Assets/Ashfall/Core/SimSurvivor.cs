@@ -11,6 +11,7 @@ namespace Ashfall.Core
             s.attackCooldown -= dt; s.shoveCooldown -= dt; s.hurtFlash = Math.Max(0, s.hurtFlash - dt); s.swingClock = Math.Max(0, s.swingClock - dt);
             if (s.knockedDown > 0) { s.knockedDown -= dt; s.speed = 0; input = new InputState { face = s.facing }; }
             if (s.sleeping) { UpdateSleep(s, hours); Needs(s, hours, dt, true); Health(s, hours); return; }
+            if (s.vehicle >= 0) { RideAlong(s, dt, hours); return; }
 
             // Movement: clamp client input; the host decides speed from stance, endurance and load.
             var move = new Vec2(input.moveX, input.moveY); if (move.Length > 1) move = move.Normalized;
@@ -20,7 +21,7 @@ namespace Ashfall.Core
             s.sneaking = input.sneak && !input.run;
             s.running = input.run && moving && s.endurance > 5 && !s.aiming;
             if (!float.IsNaN(input.face) && !float.IsInfinity(input.face)) s.facing = MathUtil.WrapAngle(input.face);
-            float speed = s.running ? 4.1f : s.sneaking ? 1.25f : s.aiming ? 1.3f : 2.15f;
+            float speed = s.running ? 4.1f * (s.HasTrait("athletic") ? 1.08f : 1) : s.sneaking ? 1.25f : s.aiming ? 1.3f : 2.15f;
             float load = s.Encumbrance; if (load > 1) speed *= load > 1.5f ? .55f : .78f;
             if (s.fatigue > 80) speed *= .85f;
             if (s.endurance < 15) speed *= .8f;
@@ -36,6 +37,7 @@ namespace Ashfall.Core
                 {
                     s.footstepClock = s.running ? .32f : .55f;
                     float radius = s.running ? 11 : s.sneaking ? 1.2f * (1 - s.Level(Skill.Sneaking) * .06f) : 3.5f;
+                    if (s.HasTrait("graceful")) radius *= .7f; else if (s.HasTrait("clumsy")) radius *= 1.3f;
                     world.MakeNoise(s.pos, radius, s.id);
                     if (s.sneaking) GainXp(s, Skill.Sneaking, .4f);
                     if (s.running) GainXp(s, Skill.Fitness, .25f);
@@ -44,7 +46,7 @@ namespace Ashfall.Core
             }
             else s.speed = 0;
             // Endurance: running and fighting drain, resting recovers.
-            if (s.running) s.endurance -= dt * (4.5f - s.Level(Skill.Fitness) * .25f) * (load > 1 ? 1.6f : 1);
+            if (s.running) s.endurance -= dt * (4.5f - s.Level(Skill.Fitness) * .25f) * (load > 1 ? 1.6f : 1) * (s.HasTrait("athletic") ? .75f : s.HasTrait("out_of_shape") ? 1.35f : 1);
             else if (s.swingClock <= 0) s.endurance += dt * (moving ? 2.5f : 5f) * (s.fatigue > 70 ? .5f : 1);
             s.endurance = MathUtil.Clamp(s.endurance, 0, 100);
 
@@ -75,7 +77,8 @@ namespace Ashfall.Core
         void Needs(Survivor s, float hours, float dt, bool asleep)
         {
             float activity = s.running ? 1.6f : 1;
-            s.hunger = MathUtil.Clamp(s.hunger + hours * 4.0f * (asleep ? .55f : activity), 0, 100);
+            float appetite = s.HasTrait("light_eater") ? .75f : s.HasTrait("hearty_appetite") ? 1.3f : 1;
+            s.hunger = MathUtil.Clamp(s.hunger + hours * 4.0f * appetite * (asleep ? .55f : activity), 0, 100);
             s.thirst = MathUtil.Clamp(s.thirst + hours * 5.2f * (asleep ? .5f : activity), 0, 100);
             if (!asleep) s.fatigue = MathUtil.Clamp(s.fatigue + hours * (4.2f + (s.running ? 3 : 0)), 0, 100);
             s.boredom = MathUtil.Clamp(s.boredom + hours * (world.map.Indoors(s.pos) ? 2.2f : .4f), 0, 100);
@@ -89,6 +92,7 @@ namespace Ashfall.Core
             s.stress = Math.Max(0, s.stress - hours);
             s.pain = MathUtil.Clamp(pain - s.stress * 1.5f, 0, 100);
             if (s.hunger < 25 && s.thirst < 25) s.wellFedHours += hours; else s.wellFedHours = 0;
+            SmokerNeeds(s, hours);
         }
 
         void Health(Survivor s, float hours)
@@ -124,6 +128,7 @@ namespace Ashfall.Core
         public void Kill(Survivor s, string cause)
         {
             if (!s.alive) return;
+            ReleaseVehicle(s);
             s.alive = false; s.health = 0; s.diedAt = world.minutes; s.causeOfDeath = cause; s.action = null; s.sleeping = false;
             // The body drops everything it carried.
             var pile = world.PileAt((int)s.pos.x, (int)s.pos.y, true);
@@ -141,7 +146,7 @@ namespace Ashfall.Core
             float rate = bed == null ? 7 : bed.kind == PropKind.Bed ? 13 : 10;
             s.fatigue = Math.Max(0, s.fatigue - hours * rate);
             s.endurance = 100;
-            world.index.Query(s.pos, 7, query);
+            world.index.Query(s.pos, s.HasTrait("light_sleeper") ? 14 : 7, query);
             bool danger = query.Any(z => z.state == ZombieState.Chase || z.state == ZombieState.Thump || z.state == ZombieState.Attack);
             if (danger) { Wake(s, "You jolt awake. Something is right outside!"); return; }
             if (s.fatigue <= 2 || s.hunger > 85 || s.thirst > 85 || s.Bleeding) Wake(s, s.fatigue <= 2 ? "You wake up rested." : "You wake up.");
