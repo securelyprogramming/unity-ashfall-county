@@ -29,3 +29,15 @@ Find this project's game reference in Game Builder before making design or asset
 
 Knox CLI is already configured on this development machine. Retrieve backend or game credentials through the installed Knox CLI only when needed for the task. Vaultwarden is also available at https://192.168.1.176:8444/. Keep secret values out of instruction files, prompts, source control, chat, and logs. Capture credential retrieval output directly in application memory rather than displaying it.
 <!-- END:shared-game-resources -->
+
+<!-- BEGIN:game-gallery -->
+## Game Workbench media and preview links
+
+This game has a central media gallery: http://192.168.1.101:3120/#game=52ce9a56-648b-4c13-9b2e-1a90cffd0be0--ashfall-county&gallery=1
+
+The website is available without a workspace access token to users/tools on the trusted 192.168.1.x LAN. Optionally upload screenshots, images, playable MP4/WebM clips, or text/code snippets when they help demonstrate this game. Use the actual game version/commit and capture date, plus a clear name, description and relevant tags. Do not upload credentials, private unrelated content, or generated evidence presented as a real playtest.
+
+Use Upload images or videos, paste an image into the paste area, or choose Add snippet on that page. After saving, use Copy media link and include the returned preview link in the user-facing report. Verify that the linked capture loads and belongs to this game. Archive/delete controls require review; do not automatically remove older media.
+
+For optional tool uploads, the game-scoped endpoint is POST http://192.168.1.101:3120/api/games/52ce9a56-648b-4c13-9b2e-1a90cffd0be0--ashfall-county/gallery. For files, send raw PNG/JPEG/WebP/GIF/MP4/WebM bytes with the matching Content-Type and X-Gallery-Details containing base64-encoded UTF-8 JSON: name, description, tags (array), version, capturedAt (ISO timestamp), snippet (empty string). For snippets, send the same fields as application/json with snippet text. Files are limited to 100 MiB each. The response contains entry.id; preview it at http://192.168.1.101:3120/#game=52ce9a56-648b-4c13-9b2e-1a90cffd0be0--ashfall-county&gallery=1&item=ENTRY_ID. Full usage: https://github.com/securelyprogramming/game-workbench/blob/main/docs/GAME-MEDIA-GALLERY.md
+<!-- END:game-gallery -->
