@@ -27,6 +27,10 @@ namespace Ashfall.View
         readonly List<Light> fireLights = new List<Light>();
         int propVersion;
         public VehicleView Vehicles { get; private set; }
+        readonly List<KeyValuePair<int, int>> wanted = new List<KeyValuePair<int, int>>();
+        readonly List<int> stale = new List<int>();
+        readonly HashSet<int> keepPiles = new HashSet<int>();
+        static readonly System.Comparison<KeyValuePair<int, int>> ByDistance = (a, b) => a.Key.CompareTo(b.Key);
 
         sealed class Chunk { public int cx, cy; public GameObject root; public Mesh ground, water, nature, fences; public GameObject natureObject; public int natureRemoved; public readonly List<GameObject> props = new List<GameObject>(); public readonly Dictionary<int, GameObject> propObjects = new Dictionary<int, GameObject>(); }
         sealed class OpeningView { public Opening o; public Transform door; public GameObject[] planks; public int state = -1; public Vector3 outward, center, along; }
@@ -66,20 +70,19 @@ namespace Ashfall.View
         {
             if (world == null) return;
             int fx = Mathf.FloorToInt(focus.x / ChunkSize), fy = Mathf.FloorToInt(focus.z / ChunkSize);
-            // Load nearest first.
-            var wanted = new List<KeyValuePair<int, int>>();
+            // Load nearest first. The lists are reused so streaming allocates nothing per frame on big counties.
+            wanted.Clear();
             for (int dx = -LoadRadius; dx <= LoadRadius; dx++)
                 for (int dy = -LoadRadius; dy <= LoadRadius; dy++)
                 {
                     int cx = fx + dx, cy = fy + dy; if (cx < 0 || cy < 0 || cx >= chunksX || cy >= chunksY) continue;
                     int key = cx + cy * chunksX; if (!chunks.ContainsKey(key)) wanted.Add(new KeyValuePair<int, int>(dx * dx + dy * dy, key));
                 }
-            foreach (var w in wanted.OrderBy(w => w.Key)) { if (budget-- <= 0) break; LoadChunk(w.Value % chunksX, w.Value / chunksX); }
-            foreach (var key in chunks.Keys.ToList())
-            {
-                var c = chunks[key];
-                if (Mathf.Abs(c.cx - fx) > LoadRadius + 1 || Mathf.Abs(c.cy - fy) > LoadRadius + 1) UnloadChunk(key);
-            }
+            if (wanted.Count > 1) wanted.Sort(ByDistance);
+            foreach (var w in wanted) { if (budget-- <= 0) break; LoadChunk(w.Value % chunksX, w.Value / chunksX); }
+            stale.Clear();
+            foreach (var kv in chunks) if (Mathf.Abs(kv.Value.cx - fx) > LoadRadius + 1 || Mathf.Abs(kv.Value.cy - fy) > LoadRadius + 1) stale.Add(kv.Key);
+            foreach (var key in stale) UnloadChunk(key);
             if (map.props.Count != propVersion) { AddNewProps(); propVersion = map.props.Count; }
             foreach (var c in chunks.Values) SyncProps(c);
             UpdateCutaway(focus, cameraBack);
@@ -121,8 +124,36 @@ namespace Ashfall.View
                 case Ground.Parking: return (x % 4 == 0) ? C(170, 170, 160) : MeshKit.Shade(Parking, .95f + h * .06f);
                 case Ground.Bridge: return MeshKit.Shade(Bridge, .95f + h * .05f);
                 case Ground.Gravel: return MeshKit.Shade(Gravel, .9f + h * .15f);
+                case Ground.Runway: return RunwayColor(x, y, h);
+                case Ground.Mud:
+                    {
+                        // Wet ruts and darker puddles.
+                        float p = Mathf.PerlinNoise(x * .21f, y * .21f);
+                        return p > .68f ? MeshKit.Shade(MudWet, .9f + h * .1f) : MeshKit.Shade(Mud, .86f + h * .16f + p * .08f);
+                    }
+                case Ground.MilitaryFloor:
+                    {
+                        // Painted concrete with faint bay lines every 6 m.
+                        bool line = x % 6 == 0 || y % 6 == 0;
+                        return line ? C(150, 136, 70) : MeshKit.Shade(MilitaryFloor, .95f + h * .06f);
+                    }
             }
-            return Grass;
+            return MeshKit.Shade(Unknown, .94f + h * .1f);   // a ground kind this view does not know yet
+        }
+        static readonly Color32 RunwayAsphalt = C(54, 56, 60), Mud = C(84, 66, 46), MudWet = C(58, 46, 34), MilitaryFloor = C(112, 118, 104), Unknown = C(118, 114, 100);
+        /// <summary>Runway asphalt with edge lines and a dashed centre line along its long axis (found from the strip's extent).</summary>
+        Color32 RunwayColor(int x, int y, float h)
+        {
+            int left = 0, right = 0, down = 0, up = 0;
+            while (left < 40 && map.GroundAt(x - left - 1, y) == Ground.Runway) left++;
+            while (right < 40 && map.GroundAt(x + right + 1, y) == Ground.Runway) right++;
+            while (down < 40 && map.GroundAt(x, y - down - 1) == Ground.Runway) down++;
+            while (up < 40 && map.GroundAt(x, y + up + 1) == Ground.Runway) up++;
+            bool alongX = left + right >= down + up;
+            int a = alongX ? down : left, b = alongX ? up : right, along = alongX ? x : y;
+            if (Mathf.Min(a, b) == 1) return C(214, 212, 200);                                       // edge lines
+            if (Mathf.Abs(a - b) <= 1 && (along / 5) % 2 == 0) return C(222, 220, 210);              // centre dashes
+            return MeshKit.Shade(RunwayAsphalt, .94f + h * .08f);
         }
         public static float GroundHeight(Ground g) { return g == Ground.Water ? -.45f : g == Ground.Sidewalk ? .03f : g == Ground.Bridge ? .25f : g == Ground.WoodFloor || g == Ground.TileFloor ? .05f : 0; }
 
@@ -235,7 +266,7 @@ namespace Ashfall.View
             float yaw = p.kind == PropKind.Car ? (p.rotation % 2 == 1 ? 90 : 0) + (p.rotation >= 2 ? 180 : 0) : new[] { 0f, 270f, 180f, 90f }[p.rotation & 3];
             string role = ArtLibrary.PropRole(p.kind);
             if (p.kind == PropKind.Car) { var v = ArtLibrary.Variant("vehicle", (int)(p.hp * 997)); go = (v == null ? null : ArtLibrary.Spawn(v, c.root.transform)) ?? CarModel(c.root.transform, p); }
-            else go = ArtLibrary.Spawn(role, c.root.transform) ?? MeshKit.Object(p.kind.ToString(), c.root.transform, ArtLibrary.PropMesh(p.kind), ArtLibrary.Vertex);
+            else go = ArtLibrary.Spawn(role, c.root.transform) ?? MeshKit.Object(p.kind.ToString(), c.root.transform, ViewPropMeshes.Get(p) ?? ArtLibrary.PropMesh(p.kind), ArtLibrary.Vertex);
             go.transform.localPosition = pos; go.transform.localRotation = Quaternion.Euler(0, yaw, 0) * go.transform.localRotation;
             if (p.kind == PropKind.Campfire)
             {
@@ -602,7 +633,7 @@ namespace Ashfall.View
         // ---------------------------------------------------------------- floor piles
         void SyncPiles(Vector3 focus)
         {
-            var keep = new HashSet<int>();
+            var keep = keepPiles; keep.Clear();
             foreach (var kv in world.piles)
             {
                 var p = kv.Value; if (p.inventory.items.Count == 0) continue;
@@ -617,7 +648,9 @@ namespace Ashfall.View
                     pileViews[kv.Key] = go;
                 }
             }
-            foreach (var key in pileViews.Keys.Where(k => !keep.Contains(k)).ToList()) { var go = pileViews[key]; Destroy(go.GetComponent<MeshFilter>().sharedMesh); Destroy(go); pileViews.Remove(key); }
+            if (pileViews.Count == keep.Count) return;
+            stale.Clear(); foreach (var key in pileViews.Keys) if (!keep.Contains(key)) stale.Add(key);
+            foreach (var key in stale) { var go = pileViews[key]; Destroy(go.GetComponent<MeshFilter>().sharedMesh); Destroy(go); pileViews.Remove(key); }
         }
     }
 }

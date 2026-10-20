@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Ashfall.Core;
 using UnityEngine;
 
@@ -21,9 +20,10 @@ namespace Ashfall.View
         public int Drawn { get { return cars.Count; } }
         public Transform ViewOf(int id) { Car c; return cars.TryGetValue(id, out c) ? c.body : null; }
 
+        readonly HashSet<int> keep = new HashSet<int>(); readonly List<int> stale = new List<int>();
         public void Sync(Vector3 focus, float dt)
         {
-            var keep = new HashSet<int>();
+            keep.Clear();
             foreach (var v in world.vehicles)
             {
                 if (Mathf.Abs(v.pos.x - focus.x) > DrawRadius || Mathf.Abs(v.pos.y - focus.z) > DrawRadius) continue;
@@ -46,7 +46,9 @@ namespace Ashfall.View
                 if (lit && c.lights == null) c.lights = Headlights(c.body);
                 if (c.lights != null) c.lights.enabled = lit;
             }
-            foreach (var id in cars.Keys.Where(k => !keep.Contains(k)).ToList()) { Object.Destroy(cars[id].body.gameObject); cars.Remove(id); }
+            if (cars.Count == keep.Count) return;
+            stale.Clear(); foreach (var id in cars.Keys) if (!keep.Contains(id)) stale.Add(id);
+            foreach (var id in stale) { Object.Destroy(cars[id].body.gameObject); cars.Remove(id); }
         }
 
         Car Spawn(Vehicle v)
