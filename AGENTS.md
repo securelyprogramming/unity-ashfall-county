@@ -12,3 +12,20 @@ Read game-design.json and game-workbench.json before changing game systems. The 
 - Keep supported launch arguments in playtest.scenarios. Unimplemented stage/free-play/LAN/items targets stay explicitly unavailable until a real adapter and tests exist. Isolate test saves and outputs.
 - Record fresh native tests in Docs/ValidationReports. Track controller hardware, two-machine LAN, campaign completion, playtime, platform and Steam acceptance separately. A target of several hours is a design target, not a measured claim.
 <!-- END:system-design-workflow -->
+
+
+<!-- BEGIN:shared-game-resources -->
+## Shared game development resources
+
+This is a game project under active development. Use these shared LAN resources when relevant to the task:
+
+- Asset and resource library: http://192.168.1.101:8090/
+- Library settings: http://192.168.1.101:8090/settings
+- Library documentation: http://192.168.1.101:8090/docs
+- Game Builder and game references: http://192.168.1.101:8090/game-builder
+- Game Workbench: http://192.168.1.101:3120/
+
+Find this project's game reference in Game Builder before making design or asset decisions. Read existing project instructions and relevant design files; preserve unrelated changes.
+
+Knox CLI is already configured on this development machine. Retrieve backend or game credentials through the installed Knox CLI only when needed for the task. Vaultwarden is also available at https://192.168.1.176:8444/. Keep secret values out of instruction files, prompts, source control, chat, and logs. Capture credential retrieval output directly in application memory rather than displaying it.
+<!-- END:shared-game-resources -->
