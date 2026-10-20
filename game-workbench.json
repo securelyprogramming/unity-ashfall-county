@@ -1,1068 +1,1087 @@
 {
+ "schemaVersion": 1,
+ "id": "ashfall-county",
+ "title": "Ashfall County",
+ "engine": "Unity",
+ "family": "Zombie survival",
+ "projectPath": "Game",
+ "gameType": "open-world-zombie-survival",
+ "description": "Survive the dead in a seeded 3 km x 3 km rural county: scavenge homes and stores, manage hunger, thirst, fatigue and wounds, barricade a safehouse, and reach the evacuation convoy at the Ash River bridge, or keep surviving after it leaves.",
+ "links": {
+  "repository": "https://github.com/securelyprogramming/unity-ashfall-county",
+  "websiteRepository": null,
+  "website": null,
+  "jira": null
+ },
+ "builder": {
+  "openScript": null,
+  "guide": "unity-ashfall-county/tools/StageBuilder/README.md"
+ },
+ "catalog": "unity-ashfall-county/tools/StageBuilder/stage-catalog.json",
+ "design": "game-design.json",
+ "worldGeneration": {
   "schemaVersion": 1,
-  "id": "ashfall-county",
-  "title": "Ashfall County",
-  "engine": "Unity",
-  "family": "Zombie survival",
-  "projectPath": "Game",
-  "gameType": "3d-game",
-  "description": "Scavenge supplies, rescue neighbours from infected, and repair an evacuation beacon. Three-chapter development prototype; controller, multiplayer, platform and Steam release acceptance are tracked separately.",
-  "links": {
-    "repository": "https://github.com/securelyprogramming/unity-ashfall-county",
-    "websiteRepository": null,
-    "website": null,
-    "jira": null
+  "mode": "procedural",
+  "autoGenerate": false,
+  "seed": 35099512,
+  "halfWidth": 48,
+  "halfDepth": 48,
+  "regionSize": 16,
+  "maxObjects": 180,
+  "spawnClearance": 6,
+  "sea": {
+   "enabled": false,
+   "coverage": 0.3,
+   "color": "#285e79"
   },
-  "builder": {
-    "openScript": null,
-    "guide": "unity-ashfall-county/tools/StageBuilder/README.md"
-  },
-  "catalog": "unity-ashfall-county/tools/StageBuilder/stage-catalog.json",
-  "design": "game-design.json",
-  "worldGeneration": {
-    "schemaVersion": 1,
-    "mode": "authored",
-    "autoGenerate": false,
-    "seed": 35099512,
-    "halfWidth": 48,
-    "halfDepth": 48,
-    "regionSize": 16,
-    "maxObjects": 180,
-    "spawnClearance": 6,
-    "sea": {
-      "enabled": false,
-      "coverage": 0.3,
-      "color": "#285e79"
-    },
-    "biomes": [
-      {
-        "id": "suburb",
-        "name": "Suburbs",
-        "color": "#67726a",
-        "weight": 65,
-        "enemies": 0.3,
-        "resources": 1,
-        "scenery": 1.5
-      },
-      {
-        "id": "woodland",
-        "name": "Woodland",
-        "color": "#37594b",
-        "weight": 35,
-        "enemies": 0.3,
-        "resources": 1,
-        "scenery": 1.5
-      }
-    ],
-    "buildings": {
-      "enabled": true,
-      "density": 0.12,
-      "minSpacing": 10,
-      "types": [
-        {
-          "id": "shelter",
-          "name": "Shelter",
-          "weight": 1,
-          "width": 5,
-          "depth": 4,
-          "height": 3,
-          "assetPath": "",
-          "biomeIds": []
-        }
-      ]
+  "biomes": [
+   {
+    "id": "suburb",
+    "name": "Suburbs",
+    "color": "#67726a",
+    "weight": 65,
+    "enemies": 0.3,
+    "resources": 1,
+    "scenery": 1.5
+   },
+   {
+    "id": "woodland",
+    "name": "Woodland",
+    "color": "#37594b",
+    "weight": 35,
+    "enemies": 0.3,
+    "resources": 1,
+    "scenery": 1.5
+   }
+  ],
+  "buildings": {
+   "enabled": true,
+   "density": 0.12,
+   "minSpacing": 10,
+   "types": [
+    {
+     "id": "shelter",
+     "name": "Shelter",
+     "weight": 1,
+     "width": 5,
+     "depth": 4,
+     "height": 3,
+     "assetPath": "",
+     "biomeIds": []
     }
+   ]
   },
-  "stageWorlds": {
-    "frontier-chapter-1": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 101,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "rural-town",
-          "name": "Rural town",
-          "color": "#67726a",
-          "weight": 100,
-          "enemies": 0.44999999999999996,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-chapter-2": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 274,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": true,
-        "coverage": 0.2,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "flooded-county",
-          "name": "Flooded county",
-          "color": "#b19e70",
-          "weight": 100,
-          "enemies": 0.6,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-chapter-3": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 447,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "evacuation-county",
-          "name": "Evacuation county",
-          "color": "#67726a",
-          "weight": 100,
-          "enemies": 0.75,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-menu": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 45569105,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-story": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 185927024,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-victory1": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 16919556,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-story2": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 211880709,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-victory2": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 199334139,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-story3": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 13930776,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-victory3": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 125108145,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "frontier-finale": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 238891603,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "ashfall-pharmacy-interior-20261014": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 156985914,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "ashfall-pharmacy-doorway-20261014": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 143826088,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "ashfall-interior-pause-20261014": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 215396125,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
-    },
-    "ashfall-safehouse-800x600-20261014": {
-      "schemaVersion": 1,
-      "mode": "authored",
-      "autoGenerate": false,
-      "seed": 84073756,
-      "halfWidth": 48,
-      "halfDepth": 48,
-      "regionSize": 16,
-      "maxObjects": 180,
-      "spawnClearance": 6,
-      "sea": {
-        "enabled": false,
-        "coverage": 0.3,
-        "color": "#285e79"
-      },
-      "biomes": [
-        {
-          "id": "suburb",
-          "name": "Suburbs",
-          "color": "#67726a",
-          "weight": 65,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        },
-        {
-          "id": "woodland",
-          "name": "Woodland",
-          "color": "#37594b",
-          "weight": 35,
-          "enemies": 0.3,
-          "resources": 1,
-          "scenery": 1.5
-        }
-      ],
-      "buildings": {
-        "enabled": true,
-        "density": 0.12,
-        "minSpacing": 10,
-        "types": [
-          {
-            "id": "shelter",
-            "name": "Shelter",
-            "weight": 1,
-            "width": 5,
-            "depth": 4,
-            "height": 3,
-            "assetPath": "",
-            "biomeIds": []
-          }
-        ]
-      }
+  "note": "Native runtime generation is Game/Assets/Ashfall/Core/WorldGen.cs (seeded, 1024-3072 tiles). These workbench settings are planning-only and do not drive the native generator."
+ },
+ "stageWorlds": {
+  "frontier-chapter-1": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 101,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "rural-town",
+     "name": "Rural town",
+     "color": "#67726a",
+     "weight": 100,
+     "enemies": 0.44999999999999996,
+     "resources": 1,
+     "scenery": 1.5
     }
-  },
-  "playtest": {
-    "schemaVersion": 1,
-    "defaultScenarioId": "menu",
-    "scenarios": [
-      {
-        "id": "menu",
-        "title": "Start menu",
-        "kind": "menu",
-        "stageId": "frontier-menu",
-        "tags": [
-          "normal-entry"
-        ],
-        "description": "Open this game's regular entry point. Existing local progress is used; no stage is auto-selected.",
-        "launch": {
-          "arguments": []
-        }
-      },
-      {
-        "id": "stage-frontier-chapter-1",
-        "title": "Chapter 1: The Last Pharmacy",
-        "kind": "story",
-        "stageId": "frontier-chapter-1",
-        "tags": [
-          "catalog-stage",
-          "county-survival"
-        ],
-        "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
-        "disabledReason": "No source-verified direct-stage argument is configured. Choose Start menu and navigate in the game for now."
-      },
-      {
-        "id": "stage-frontier-chapter-2",
-        "title": "Chapter 2: The Waterline",
-        "kind": "story",
-        "stageId": "frontier-chapter-2",
-        "tags": [
-          "catalog-stage",
-          "county-survival"
-        ],
-        "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
-        "disabledReason": "No source-verified direct-stage argument is configured. Choose Start menu and navigate in the game for now."
-      },
-      {
-        "id": "stage-frontier-chapter-3",
-        "title": "Chapter 3: County Evacuation",
-        "kind": "story",
-        "stageId": "frontier-chapter-3",
-        "tags": [
-          "catalog-stage",
-          "county-survival"
-        ],
-        "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
-        "disabledReason": "No source-verified direct-stage argument is configured. Choose Start menu and navigate in the game for now."
-      },
-      {
-        "id": "stage-frontier-story",
-        "title": "Story 1",
-        "kind": "smoke",
-        "stageId": "frontier-story",
-        "tags": [
-          "captured-reference",
-          "county-survival"
-        ],
-        "description": "Inspect this captured screen through a future isolated UI check.",
-        "disabledReason": "Captured UI references do not implement direct-screen launch. An isolated UI adapter is still required."
-      },
-      {
-        "id": "stage-frontier-victory1",
-        "title": "Chapter victory 1",
-        "kind": "smoke",
-        "stageId": "frontier-victory1",
-        "tags": [
-          "captured-reference",
-          "county-survival"
-        ],
-        "description": "Inspect this captured screen through a future isolated UI check.",
-        "disabledReason": "Captured UI references do not implement direct-screen launch. An isolated UI adapter is still required."
-      },
-      {
-        "id": "stage-frontier-story2",
-        "title": "Story 2",
-        "kind": "smoke",
-        "stageId": "frontier-story2",
-        "tags": [
-          "captured-reference",
-          "county-survival"
-        ],
-        "description": "Inspect this captured screen through a future isolated UI check.",
-        "disabledReason": "Captured UI references do not implement direct-screen launch. An isolated UI adapter is still required."
-      },
-      {
-        "id": "stage-frontier-victory2",
-        "title": "Chapter victory 2",
-        "kind": "smoke",
-        "stageId": "frontier-victory2",
-        "tags": [
-          "captured-reference",
-          "county-survival"
-        ],
-        "description": "Inspect this captured screen through a future isolated UI check.",
-        "disabledReason": "Captured UI references do not implement direct-screen launch. An isolated UI adapter is still required."
-      },
-      {
-        "id": "stage-frontier-story3",
-        "title": "Story 3",
-        "kind": "smoke",
-        "stageId": "frontier-story3",
-        "tags": [
-          "captured-reference",
-          "county-survival"
-        ],
-        "description": "Inspect this captured screen through a future isolated UI check.",
-        "disabledReason": "Captured UI references do not implement direct-screen launch. An isolated UI adapter is still required."
-      },
-      {
-        "id": "stage-frontier-victory3",
-        "title": "Chapter victory 3",
-        "kind": "smoke",
-        "stageId": "frontier-victory3",
-        "tags": [
-          "captured-reference",
-          "county-survival"
-        ],
-        "description": "Inspect this captured screen through a future isolated UI check.",
-        "disabledReason": "Captured UI references do not implement direct-screen launch. An isolated UI adapter is still required."
-      },
-      {
-        "id": "stage-frontier-finale",
-        "title": "Native campaign result",
-        "kind": "smoke",
-        "stageId": "frontier-finale",
-        "tags": [
-          "captured-reference",
-          "county-survival"
-        ],
-        "description": "Inspect this captured screen through a future isolated UI check.",
-        "disabledReason": "Captured UI references do not implement direct-screen launch. An isolated UI adapter is still required."
-      },
-      {
-        "id": "stage-ashfall-pharmacy-interior-20261014",
-        "title": "Pharmacy interior · shoulder camera",
-        "kind": "story",
-        "stageId": "ashfall-pharmacy-interior-20261014",
-        "tags": [
-          "catalog-stage",
-          "county-survival"
-        ],
-        "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
-        "disabledReason": "No source-verified direct-stage argument is configured. Choose Start menu and navigate in the game for now."
-      },
-      {
-        "id": "stage-ashfall-pharmacy-doorway-20261014",
-        "title": "Pharmacy doorway · walkable entrance",
-        "kind": "story",
-        "stageId": "ashfall-pharmacy-doorway-20261014",
-        "tags": [
-          "catalog-stage",
-          "county-survival"
-        ],
-        "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
-        "disabledReason": "No source-verified direct-stage argument is configured. Choose Start menu and navigate in the game for now."
-      },
-      {
-        "id": "stage-ashfall-interior-pause-20261014",
-        "title": "Indoor pause menu",
-        "kind": "smoke",
-        "stageId": "ashfall-interior-pause-20261014",
-        "tags": [
-          "captured-reference",
-          "county-survival"
-        ],
-        "description": "Inspect this captured screen through a future isolated UI check.",
-        "disabledReason": "Captured UI references do not implement direct-screen launch. An isolated UI adapter is still required."
-      },
-      {
-        "id": "stage-ashfall-safehouse-800x600-20261014",
-        "title": "Enterable safehouse · 800×600",
-        "kind": "story",
-        "stageId": "ashfall-safehouse-800x600-20261014",
-        "tags": [
-          "catalog-stage",
-          "county-survival"
-        ],
-        "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
-        "disabledReason": "No source-verified direct-stage argument is configured. Choose Start menu and navigate in the game for now."
-      },
-      {
-        "id": "free-play",
-        "title": "Free play / generated world",
-        "kind": "free-play",
-        "stageId": null,
-        "tags": [
-          "world-generation",
-          "replayability"
-        ],
-        "description": "Acceptance target for a repeatable mode with the selected world settings and seed.",
-        "disabledReason": "A runtime free-play/world-generation adapter and repeatable seed contract still need verification."
-      },
-      {
-        "id": "multiplayer-lan",
-        "title": "LAN multiplayer acceptance",
-        "kind": "multiplayer",
-        "stageId": null,
-        "tags": [
-          "lan",
-          "acceptance"
-        ],
-        "description": "If supported: verify independent host/client machines, stage agreement, reconnect, host loss and delayed packets.",
-        "disabledReason": "Requires a supported multiplayer mode and an explicit multi-process test adapter. Same-computer probes do not establish separate-machine LAN acceptance."
-      },
-      {
-        "id": "asset-coverage",
-        "title": "Characters, items and buildings",
-        "kind": "items",
-        "stageId": null,
-        "tags": [
-          "purchased-assets",
-          "coverage"
-        ],
-        "description": "Exercise imported meshes, weapons, animation states, buildings, menus and interaction paths.",
-        "disabledReason": "A game-specific item/animation/asset coverage adapter and recorded results are still required."
-      }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
     ]
+   }
+  },
+  "frontier-chapter-2": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 274,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": true,
+    "coverage": 0.2,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "flooded-county",
+     "name": "Flooded county",
+     "color": "#b19e70",
+     "weight": 100,
+     "enemies": 0.6,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-chapter-3": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 447,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "evacuation-county",
+     "name": "Evacuation county",
+     "color": "#67726a",
+     "weight": 100,
+     "enemies": 0.75,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-menu": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 45569105,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-story": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 185927024,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-victory1": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 16919556,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-story2": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 211880709,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-victory2": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 199334139,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-story3": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 13930776,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-victory3": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 125108145,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "frontier-finale": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 238891603,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "ashfall-pharmacy-interior-20261014": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 156985914,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "ashfall-pharmacy-doorway-20261014": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 143826088,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "ashfall-interior-pause-20261014": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 215396125,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
+  },
+  "ashfall-safehouse-800x600-20261014": {
+   "schemaVersion": 1,
+   "mode": "authored",
+   "autoGenerate": false,
+   "seed": 84073756,
+   "halfWidth": 48,
+   "halfDepth": 48,
+   "regionSize": 16,
+   "maxObjects": 180,
+   "spawnClearance": 6,
+   "sea": {
+    "enabled": false,
+    "coverage": 0.3,
+    "color": "#285e79"
+   },
+   "biomes": [
+    {
+     "id": "suburb",
+     "name": "Suburbs",
+     "color": "#67726a",
+     "weight": 65,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    },
+    {
+     "id": "woodland",
+     "name": "Woodland",
+     "color": "#37594b",
+     "weight": 35,
+     "enemies": 0.3,
+     "resources": 1,
+     "scenery": 1.5
+    }
+   ],
+   "buildings": {
+    "enabled": true,
+    "density": 0.12,
+    "minSpacing": 10,
+    "types": [
+     {
+      "id": "shelter",
+      "name": "Shelter",
+      "weight": 1,
+      "width": 5,
+      "depth": 4,
+      "height": 3,
+      "assetPath": "",
+      "biomeIds": []
+     }
+    ]
+   }
   }
+ },
+ "playtest": {
+  "schemaVersion": 1,
+  "defaultScenarioId": "menu",
+  "scenarios": [
+   {
+    "id": "menu",
+    "title": "Start menu",
+    "kind": "menu",
+    "stageId": "frontier-menu",
+    "tags": [
+     "normal-entry"
+    ],
+    "description": "Open this game's regular entry point. Existing local progress is used; no stage is auto-selected.",
+    "launch": {
+     "arguments": []
+    }
+   },
+   {
+    "id": "stage-frontier-chapter-1",
+    "title": "Chapter 1: The Last Pharmacy",
+    "kind": "story",
+    "stageId": "frontier-chapter-1",
+    "tags": [
+     "catalog-stage",
+     "county-survival"
+    ],
+    "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-chapter-2",
+    "title": "Chapter 2: The Waterline",
+    "kind": "story",
+    "stageId": "frontier-chapter-2",
+    "tags": [
+     "catalog-stage",
+     "county-survival"
+    ],
+    "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-chapter-3",
+    "title": "Chapter 3: County Evacuation",
+    "kind": "story",
+    "stageId": "frontier-chapter-3",
+    "tags": [
+     "catalog-stage",
+     "county-survival"
+    ],
+    "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-story",
+    "title": "Story 1",
+    "kind": "smoke",
+    "stageId": "frontier-story",
+    "tags": [
+     "captured-reference",
+     "county-survival"
+    ],
+    "description": "Inspect this captured screen through a future isolated UI check.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-victory1",
+    "title": "Chapter victory 1",
+    "kind": "smoke",
+    "stageId": "frontier-victory1",
+    "tags": [
+     "captured-reference",
+     "county-survival"
+    ],
+    "description": "Inspect this captured screen through a future isolated UI check.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-story2",
+    "title": "Story 2",
+    "kind": "smoke",
+    "stageId": "frontier-story2",
+    "tags": [
+     "captured-reference",
+     "county-survival"
+    ],
+    "description": "Inspect this captured screen through a future isolated UI check.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-victory2",
+    "title": "Chapter victory 2",
+    "kind": "smoke",
+    "stageId": "frontier-victory2",
+    "tags": [
+     "captured-reference",
+     "county-survival"
+    ],
+    "description": "Inspect this captured screen through a future isolated UI check.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-story3",
+    "title": "Story 3",
+    "kind": "smoke",
+    "stageId": "frontier-story3",
+    "tags": [
+     "captured-reference",
+     "county-survival"
+    ],
+    "description": "Inspect this captured screen through a future isolated UI check.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-victory3",
+    "title": "Chapter victory 3",
+    "kind": "smoke",
+    "stageId": "frontier-victory3",
+    "tags": [
+     "captured-reference",
+     "county-survival"
+    ],
+    "description": "Inspect this captured screen through a future isolated UI check.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-frontier-finale",
+    "title": "Native campaign result",
+    "kind": "smoke",
+    "stageId": "frontier-finale",
+    "tags": [
+     "captured-reference",
+     "county-survival"
+    ],
+    "description": "Inspect this captured screen through a future isolated UI check.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-ashfall-pharmacy-interior-20261014",
+    "title": "Pharmacy interior \u00b7 shoulder camera",
+    "kind": "story",
+    "stageId": "ashfall-pharmacy-interior-20261014",
+    "tags": [
+     "catalog-stage",
+     "county-survival"
+    ],
+    "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-ashfall-pharmacy-doorway-20261014",
+    "title": "Pharmacy doorway \u00b7 walkable entrance",
+    "kind": "story",
+    "stageId": "ashfall-pharmacy-doorway-20261014",
+    "tags": [
+     "catalog-stage",
+     "county-survival"
+    ],
+    "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-ashfall-interior-pause-20261014",
+    "title": "Indoor pause menu",
+    "kind": "smoke",
+    "stageId": "ashfall-interior-pause-20261014",
+    "tags": [
+     "captured-reference",
+     "county-survival"
+    ],
+    "description": "Inspect this captured screen through a future isolated UI check.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "stage-ashfall-safehouse-800x600-20261014",
+    "title": "Enterable safehouse \u00b7 800\u00d7600",
+    "kind": "story",
+    "stageId": "ashfall-safehouse-800x600-20261014",
+    "tags": [
+     "catalog-stage",
+     "county-survival"
+    ],
+    "description": "Playtest this catalog stage after a native stage-selection adapter is implemented and verified.",
+    "disabledReason": "Retired Frontier chapter stage. The rebuilt game is an open county started from New Game; no direct-stage adapter exists."
+   },
+   {
+    "id": "free-play",
+    "title": "Free play / generated world",
+    "kind": "free-play",
+    "stageId": null,
+    "tags": [
+     "world-generation",
+     "replayability"
+    ],
+    "description": "Acceptance target for a repeatable mode with the selected world settings and seed.",
+    "disabledReason": "A runtime free-play/world-generation adapter and repeatable seed contract still need verification."
+   },
+   {
+    "id": "multiplayer-lan",
+    "title": "LAN multiplayer acceptance",
+    "kind": "multiplayer",
+    "stageId": null,
+    "tags": [
+     "lan",
+     "acceptance"
+    ],
+    "description": "If supported: verify independent host/client machines, stage agreement, reconnect, host loss and delayed packets.",
+    "disabledReason": "Requires a supported multiplayer mode and an explicit multi-process test adapter. Same-computer probes do not establish separate-machine LAN acceptance."
+   },
+   {
+    "id": "asset-coverage",
+    "title": "Characters, items and buildings",
+    "kind": "items",
+    "stageId": null,
+    "tags": [
+     "purchased-assets",
+     "coverage"
+    ],
+    "description": "Exercise imported meshes, weapons, animation states, buildings, menus and interaction paths.",
+    "disabledReason": "A game-specific item/animation/asset coverage adapter and recorded results are still required."
+   },
+   {
+    "id": "ashfall-native-qa",
+    "title": "Native survival acceptance probe",
+    "kind": "smoke",
+    "stageId": "frontier-menu",
+    "tags": [
+     "automated",
+     "isolated-save",
+     "county-survival"
+    ],
+    "description": "Builds a fresh county (seed 777) in an isolated GameWorkbenchQA user directory and drives movement, looting, eating, drinking, melee, a zombie attack, bandaging, barricading, night lighting, the map, a town frame-time sample and save/reload. Writes a JSON report and screenshots.",
+    "launch": {
+     "arguments": [
+      "-ashfall-qa={output}/ashfall-qa.json",
+      "-ashfall-user-dir={output}/GameWorkbenchQA"
+     ]
+    }
+   }
+  ]
+ }
 }

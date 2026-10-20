@@ -1,0 +1,49 @@
+{
+  "platform": "Windows x64",
+  "repository": "unity-ashfall-county",
+  "source_commit": "0972a4c51c532be7f72e2ff4d51f95bc91e3be46",
+  "build": {
+    "repository": "unity-ashfall-county",
+    "engine": "Unity",
+    "version": "6000.6.0f1",
+    "commit": "0972a4c51c532be7f72e2ff4d51f95bc91e3be46",
+    "status": "gameplay-passed",
+    "preflight_log": "D:\\Code\\securelyprogramming\\.local-setup\\native-results\\unity-ashfall-county-preflight.log",
+    "output": "D:\\pt\\r2\\103",
+    "updated": "2026-10-17T19:47:19Z",
+    "build_log": "D:\\Code\\securelyprogramming\\.local-setup\\native-results\\unity-ashfall-county-build-wrapper.log",
+    "executable": "D:\\pt\\r2\\103\\Game.exe",
+    "startup_alive_12s": true,
+    "startup_log": "D:\\Code\\securelyprogramming\\.local-setup\\native-results\\unity-ashfall-county-player.log",
+    "runtime_errors": [],
+    "scope": "Headless player startup only; visual/manual gameplay requires separate checks.",
+    "gameplay_report": "D:\\Code\\securelyprogramming\\.local-setup\\native-results\\unity-ashfall-county-gameplay.json"
+  },
+  "runtime": {
+    "repository": "unity-ashfall-county",
+    "passed": true,
+    "modes": [
+      {
+        "mode": "campaign",
+        "passed": true,
+        "exit_code": 0,
+        "report": "D:\\Code\\securelyprogramming\\.local-setup\\GameWorkbenchQA\\unity-ashfall-county\\20261017T144937\\campaign.json",
+        "checks": 260,
+        "errors": [],
+        "failure": "",
+        "log": "D:\\Code\\securelyprogramming\\.local-setup\\GameWorkbenchQA\\unity-ashfall-county\\20261017T144937\\campaign-player.log"
+      },
+      {
+        "mode": "read",
+        "passed": true,
+        "exit_code": 0,
+        "report": "D:\\Code\\securelyprogramming\\.local-setup\\GameWorkbenchQA\\unity-ashfall-county\\20261017T144937\\read.json",
+        "checks": 14,
+        "errors": [],
+        "failure": "",
+        "log": "D:\\Code\\securelyprogramming\\.local-setup\\GameWorkbenchQA\\unity-ashfall-county\\20261017T144937\\read-player.log"
+      }
+    ]
+  },
+  "scope": "Local native probes and startup only. Human campaign completion, physical controllers, separate-PC networking and release acceptance remain separate."
+}

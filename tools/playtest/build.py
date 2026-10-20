@@ -65,6 +65,18 @@ def restore(project,manifest):
   if not source.is_file():raise RuntimeError('Restore the purchased selection into the private FRONTIER_ASSET_CACHE first: '+str(rel))
   if source.stat().st_size!=r['size']or sha(source)!=r['sha256']:raise RuntimeError('Private licensed source differs from selection: '+str(rel))
   destination=project/'Assets/Resources/LicensedFrontier'/rel;destination.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,destination);restored.append({'path':str(rel),'sha256':r['sha256'],'bytes':r['size']})
+ # Reviewed owned presentation selections (menus, survival characters, zombies, props, weapons, audio), each hash-pinned.
+ for presentationPath in (ROOT/'ContentSource/Art/presentation-selection.json',ROOT/'ContentSource/Art/zomboid-selection.json'):
+  if not presentationPath.is_file():continue
+  presentation=json.loads(presentationPath.read_text(encoding='utf8'));selected=presentation['files']
+  presentationCache=Path(os.environ.get('FRONTIER_PRESENTATION_CACHE',str(Path.home()/'code/game_asset_cache/frontier-presentation'))).expanduser().resolve()/presentation['game_id']
+  if sum(r['size']for r in selected)>250*1024*1024:raise RuntimeError('Purchased presentation exceeds reviewed bound.')
+  for r in selected:
+   rel=PurePosixPath(r['relative_path'])
+   if rel.is_absolute()or'..'in rel.parts or '\\'in r['relative_path']:raise RuntimeError('Unsafe purchased presentation path.')
+   source=presentationCache.joinpath(*rel.parts)
+   if not source.is_file()or source.is_symlink()or source.stat().st_size!=r['size']or sha(source)!=r['sha256']:raise RuntimeError('Run tools/playtest/restore_presentation.py before building: '+str(rel))
+   destination=project/'Assets/Resources/LicensedFrontier'/rel;destination.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,destination);restored.append({'path':rel.as_posix(),'sha256':r['sha256'],'bytes':r['size']})
  return restored
 def main():
  parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--platform',required=True,choices=TARGETS);parser.add_argument('--output',required=True,type=Path);parser.add_argument('--check',action='store_true');args=parser.parse_args();host,target,module,artifact=TARGETS[args.platform]
@@ -82,7 +94,7 @@ def main():
  if not any(p.is_dir()for p in moduleCandidates):raise RuntimeError('The native '+module+' module is not installed. Do not bypass its platform/toolchain checks.')
  manifest=json.loads((ROOT/'ContentSource/Art/selection.json').read_text());plan={'editorVersion':VERSION,'platform':args.platform,'target':target,'output':str(output/artifact),'licensedFiles':len(manifest['files'])}
  if args.check:print(json.dumps(plan));return
- output.mkdir(parents=True,exist_ok=True);logs=output.parent/(output.name+'.logs');logs.mkdir(exist_ok=True);source=logs/('source-'+uuid.uuid4().hex);source.mkdir()
+ output.mkdir(parents=True,exist_ok=True);logs=output.parent/(output.name+'.logs');logs.mkdir(exist_ok=True);source=logs/('src-'+uuid.uuid4().hex[:10]);source.mkdir()
  files,provenance=capture_source(ROOT,source,os.environ.get('MAYO_BUILD_SOURCE_MANIFEST'))
  paid=restore(source/'Game',manifest)
  report={'schemaVersion':1,'status':'building','profile':plan,**provenance,'sourceFiles':files,'licensedRestoration':paid,'sourceSnapshot':str(source),'started':datetime.now(timezone.utc).isoformat()}
@@ -94,7 +106,7 @@ def main():
   imported=subprocess.run(textCmd,stdout=stream,stderr=subprocess.STDOUT,timeout=300)
   if imported.returncode:raise RuntimeError('Native text resources import failed; inspect '+str(logs/'text-import.log'))
  print('Log: '+str(logs/'editor.log'),flush=True)
- with(logs/'process.log').open('w')as stream:result=subprocess.run(cmd,stdout=stream,stderr=subprocess.STDOUT,timeout=900)
+ with(logs/'process.log').open('w')as stream:result=subprocess.run(cmd,stdout=stream,stderr=subprocess.STDOUT,timeout=3600)
  report.update(status='built'if result.returncode==0 and(output/artifact).exists()else'failed',exitCode=result.returncode,finished=datetime.now(timezone.utc).isoformat());reportPath.write_text(json.dumps(report,indent=2)+'\n');print(json.dumps({'status':report['status'],'artifact':str(output/artifact),'log':str(logs/'editor.log')}))
  if report['status']!='built':raise RuntimeError('Native Unity build failed; inspect its preserved editor log.')
 if __name__=='__main__':

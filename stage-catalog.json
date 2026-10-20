@@ -1,0 +1,276 @@
+{
+  "schemaVersion": 1,
+  "slug": "ashfall-county",
+  "title": "Ashfall County",
+  "engine": "Unity",
+  "projectPath": "unity-ashfall-county/Game",
+  "galleryRoot": "_Workspace",
+  "isConcept": false,
+  "status": "three-chapter-development-prototype",
+  "stages": [
+    {
+      "id": "frontier-chapter-1",
+      "title": "Chapter 1: The Last Pharmacy",
+      "kind": "native-development-gameplay-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-chapter1.png",
+          "bytes": 178703,
+          "sha256": "784fa316a038715556f0f6428fde47191f7f53579164d7c54388f80ffd511958",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "Mara reaches a shuttered pharmacy with one promise: nobody leaves the county alone.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: chapter1, chapter 1, simulation tick 240.",
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/ContentSource/campaign.json",
+        "unity-ashfall-county/Game/Assets/Frontier/Core/Chapters.cs",
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/Art/FrontierWorldView.cs"
+      ]
+    },
+    {
+      "id": "frontier-chapter-2",
+      "title": "Chapter 2: The Waterline",
+      "kind": "native-development-gameplay-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-chapter2.png",
+          "bytes": 185723,
+          "sha256": "9533271146b20fd515491c97e0348413b304adb57cfa60af0b41c0c2b7e3e912",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "Ada hears families beyond the flooded road. Supplies must reach the refuge before dusk.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: chapter2, chapter 2, simulation tick 242.",
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/ContentSource/campaign.json",
+        "unity-ashfall-county/Game/Assets/Frontier/Core/Chapters.cs",
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/Art/FrontierWorldView.cs"
+      ]
+    },
+    {
+      "id": "frontier-chapter-3",
+      "title": "Chapter 3: County Evacuation",
+      "kind": "native-development-gameplay-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-chapter3.png",
+          "bytes": 188227,
+          "sha256": "dbfd07bda888bae8cc9545b87c22494274b51ce8f683a09d2b550d62b2a117ff",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "Jonah can start the convoy if the safehouse holds long enough to gather every survivor.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: chapter3, chapter 3, simulation tick 242.",
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/ContentSource/campaign.json",
+        "unity-ashfall-county/Game/Assets/Frontier/Core/Chapters.cs",
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/Art/FrontierWorldView.cs"
+      ]
+    },
+    {
+      "id": "frontier-menu",
+      "title": "Native campaign menu",
+      "kind": "native-development-ui-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-menu.png",
+          "bytes": 130853,
+          "sha256": "7932c645ee86b23e5f77c99ef702e6b8c91f105b911fa244467d673a96c581d0",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: menu, chapter 1, simulation tick 0.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/FrontierUI.cs"
+      ]
+    },
+    {
+      "id": "frontier-story",
+      "title": "Story 1",
+      "kind": "native-development-ui-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-story.png",
+          "bytes": 144288,
+          "sha256": "0fec3a17feac1d19e5054dbbf5844b1bd861ed716eca787655f60b4ec9c7e6d4",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: story, chapter 1, simulation tick 0.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/FrontierUI.cs"
+      ]
+    },
+    {
+      "id": "frontier-victory1",
+      "title": "Chapter victory 1",
+      "kind": "native-development-ui-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-victory1.png",
+          "bytes": 182021,
+          "sha256": "38af0eb5c8bc3e99ffc932dcddec0ca7dc759a2e03da6fdea461b5d509f23e45",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: victory1, chapter 1, simulation tick 328.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/FrontierUI.cs"
+      ]
+    },
+    {
+      "id": "frontier-story2",
+      "title": "Story 2",
+      "kind": "native-development-ui-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-story2.png",
+          "bytes": 155661,
+          "sha256": "7911a351c35227e4ddb1fb70210eb6b6d909d82ab694031abf9dde0cde302dd6",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: story2, chapter 2, simulation tick 2.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/FrontierUI.cs"
+      ]
+    },
+    {
+      "id": "frontier-victory2",
+      "title": "Chapter victory 2",
+      "kind": "native-development-ui-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-victory2.png",
+          "bytes": 185165,
+          "sha256": "7283b2aea6e6391e1bcf0a1d0a81f906683029c724452c9820b3fb507abc5066",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: victory2, chapter 2, simulation tick 398.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/FrontierUI.cs"
+      ]
+    },
+    {
+      "id": "frontier-story3",
+      "title": "Story 3",
+      "kind": "native-development-ui-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-story3.png",
+          "bytes": 163927,
+          "sha256": "59609e972d6603ef9143b06f071f05f5124af0af49abddbfd314090dc2928a4f",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: story3, chapter 3, simulation tick 2.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/FrontierUI.cs"
+      ]
+    },
+    {
+      "id": "frontier-victory3",
+      "title": "Chapter victory 3",
+      "kind": "native-development-ui-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-victory3.png",
+          "bytes": 184125,
+          "sha256": "4f6dd363da7e4d06673e0c02ec326c0f1d2865447f47d033a253dd99e84b7d1b",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: victory3, chapter 3, simulation tick 538.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/FrontierUI.cs"
+      ]
+    },
+    {
+      "id": "frontier-finale",
+      "title": "Native campaign result",
+      "kind": "native-development-ui-capture",
+      "managedBy": "frontier-workbench-v1",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/polish/2026-10-13/ashfall-county/gameplay-finale.png",
+          "bytes": 151154,
+          "sha256": "e8945717b89ede22c4e8edf58c611732f1ec33623f28f2e5dab3255366a71f29",
+          "width": 1440,
+          "height": 900
+        }
+      },
+      "notes": [
+        "The matching native report records three chapters completed through production commands. This capture is a view of the listed chapter, not a playable browser build.",
+        "Fresh polished Unity6000.6 macOS player, 2026-10-13. Actual ScreenCapture: finale, chapter 3, simulation tick 538.",
+        "Physical controller ergonomics, separate-machine LAN, Windows/Linux execution and Steam release acceptance remain separate checks."
+      ],
+      "sourceEvidence": [
+        "unity-ashfall-county/Game/Assets/Frontier/Unity/FrontierUI.cs"
+      ]
+    }
+  ],
+  "runtimeBoundary": "Native captures are references to the standalone development prototype. Workbench workshop edits are separate planning drafts until a runtime adapter is implemented. Physical input, cross-machine LAN, Windows/Linux and Steam release acceptance are tracked separately.",
+  "updated": "2026-10-13"
+}

@@ -14,7 +14,8 @@
     "-frontier-capture",
     "-frontier-lan-role",
     "-frontier-qa",
-    "-frontier-report"
+    "-frontier-report",
+    "-ashfall-qa"
   ],
   "purchasedPanel": {
     "pack": "27_1_5 Game UI Kit / 5 Game UI Kits",

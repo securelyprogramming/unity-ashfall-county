@@ -1,32 +1,56 @@
 # Ashfall County
 
-Scavenge a flooded rural county, rescue stranded neighbors and hold an evacuation safehouse.
+An open-county zombie survival game. Scavenge homes and stores, keep yourself fed, watered, rested and patched up, barricade a safehouse, and decide whether to make for the evacuation convoy at the Ash River bridge, or keep surviving after it has gone.
 
-**Status: development.** Three authored chapters with distinct objectives, original cast and live gameplay rules. This source is being built and playtested toward a premium Steam release; it is not a certified or finished Steam game.
+**Status: development.** This is an original game in the open-world zombie-survival genre. It is not a certified or finished Steam game. See `Docs/ValidationReports` for what has actually been verified natively.
 
-## Story
+## The county
 
-### The Last Pharmacy
+Each new game generates a seeded county: 3 km × 3 km by default (2 km and 1 km options). It contains the Ash River and its highway bridge, the county highway and Route 9, the county seat Cedar Fork, a dozen or more towns and hamlets, farms with barns and fenced crop fields, forests and ponds, and roadside homes and abandoned cars. Every building can be entered and has furnished rooms and searchable containers. Zombies only spawn on land, with density by zone: dense on main streets, sparse in the woods. Only the area around you is simulated and drawn.
 
-Mara reaches a shuttered pharmacy with one promise: nobody leaves the county alone.
+## Surviving
 
-### The Waterline
+- **Needs:** hunger, thirst, fatigue, endurance, panic, pain, boredom, sickness, wetness and carry weight, shown as status cards ("moodles").
+- **Wounds:** scratches, lacerations, bites and glass cuts on body parts. They bleed until bandaged (rags work too), and they can become infected. With infection on, a bite is a death sentence.
+- **Noise:** footsteps, fighting, breaking glass, hammering and above all gunshots carry, even through walls. Sneak (Ctrl) to stay quiet.
+- **Zombies:** they wander, investigate sounds, chase on sight, pound on doors, windows and barricades, and climb through open windows. Shove them (Space), knock them down and finish them on the ground.
+- **Utilities:** the power and water fail on seeded days. Fridges stop keeping food, stoves go cold, and the taps run dry. After that, collect rain, boil river water or drain what is left in the pipes.
+- **Crafting** (B): rip sheets into rags, saw logs into planks, and build spears, spiked bats, campfires, rain collectors and crates. You can also cook a stew. Barricade doors and windows with a hammer, a plank and nails.
+- **Skills:** Melee, Aiming, Carpentry, Cooking, First Aid, Foraging, Sneaking and Fitness improve with use. Your profession gives you a head start.
+- **Story:** Ada Pike's emergency band and Jonah Reed's convoy come through on your hand radio. The convoy waits on the configured day (default Day 5, 8 AM – 2 PM). Death is permanent.
 
-Ada hears families beyond the flooded road. Supplies must reach the refuge before dusk.
+## Controls
 
-### County Evacuation
+| Action | Keyboard / mouse | Controller |
+|---|---|---|
+| Move / aim | WASD / mouse | Left stick / right stick |
+| Attack / aim mode | Left / right mouse | RT / LT |
+| Shove | Space | LB |
+| Run / sneak | Shift / Ctrl | L3 / R3 |
+| Interact (focused) / all actions | E / Q | A / Y |
+| Inventory / crafting / health / map / radio log | Tab or I / B / H / M / J | Select / d-pad left / d-pad right / d-pad down |
+| Reload / flashlight / forage | R / F / G | X / d-pad up |
+| Hotbar / next weapon | 1–6 | RB |
+| Zoom / rotate view | Mouse wheel / Z, X | |
+| Pause | Esc | Start |
 
-Jonah can start the convoy if the safehouse holds long enough to gather every survivor.
+Menus work with keyboard, mouse and controller. You can rebind keys in Controls. Saves autosave every 5 minutes and on quit, and live in the game's own data folder (`Survival/*.sav`). Saves from the earlier chapter game are untouched.
 
-## Play and build
+## Code layout
 
-Unity 6000.6.0f1; project `Game/`. Native Mac: `python3 tools/playtest/build.py --platform macos --output /absolute/fresh/output`. Windows/Linux profiles require native hosts and their corresponding editor modules. Outputs remain outsideGit.
+- `Game/Assets/Ashfall/Core`: the pure C# simulation (no Unity references). World generation, items and loot, survivors, zombies, combat, crafting, saves. It is host-authoritative: owners submit input and commands only.
+- `Game/Assets/Ashfall/Unity`: chunk-streamed county view, characters, camera, lighting, audio, uGUI/TextMeshPro menus and HUD, and the native QA probe.
+- `Game/Assets/Editor/PrepareAshfallArt.cs`: prepares the privately restored owned packs (zombies, survivors, props, weapons, vehicles, trees, HUD sprites, audio) into prefabs at build time. Without them the game uses procedural stand-ins.
+- `tools/AshfallCoreTests`: fast simulation checks that run without Unity: `dotnet run --project tools/AshfallCoreTests -c Release`.
+- `Legacy/`: the retired Frontier chapter-game sources, kept outside the Unity project.
 
-WASD/leftstick move, mouse/rightstick aim, E/A interact, LMB/RT/X attack, B/LB build, Q/RB craft, Escape/Start pause, J/Select journal. Menus accept keyboard, mouse and gamepad; Actions chooses structures, supplier goods, recipes and crafting. Audio/display/rebinding preferences and earned chapter unlocks save locally pergame.
+Owned art and audio stay private. They are pinned by `ContentSource/Art/presentation-selection.json` and `ContentSource/Art/zomboid-selection.json`, and restored by `tools/playtest/build.py` into the isolated build snapshot only. LAN multiplayer is not implemented in the rebuilt game.
 
-1-4 player LAN sessions use an authoritative TCP host, optional UDP discovery and a controller-operable IP keypad. Clients cannot grant themselves resources or control host-only campaign actions. LANmenus do notpause the host; solo pause does. No internet relay, Steam SDK, host migration or online matchmaking is claimed.
+Native acceptance probe, which uses an isolated save directory:
 
-Selected purchased models/textures remain private, pinned by ContentSource/Art/selection.json. Original game characters, story, simulation and view source are versioned. See Docs/VALIDATION.md for actual evidence and remaining acceptance gates.
+```sh
+Game.exe -ashfall-qa=/abs/out/ashfall-qa.json -ashfall-user-dir=/abs/out/GameWorkbenchQA
+```
 
 <!-- frontier-launcher-docs:begin -->
 ## Run current source

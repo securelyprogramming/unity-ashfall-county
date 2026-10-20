@@ -1,0 +1,65 @@
+{
+  "repository": "unity-ashfall-county",
+  "engine": "Unity",
+  "passed": true,
+  "host": "Windows",
+  "release_key": "8d9cae64df7992b3583b33334aef86f5e1a2cd0679e03784649138c6835a04da",
+  "release": "D:\\Code\\Builds\\RepositoryReleases\\ashfall-county\\v1",
+  "source": {
+    "path": "D:\\Code\\securelyprogramming\\unity-ashfall-county",
+    "name": "unity-ashfall-county",
+    "commit": "0972a4c51c532be7f72e2ff4d51f95bc91e3be46",
+    "branch": "main",
+    "dirty": true,
+    "status_sha256": "79c0f67c6235a4ceca3b12b5d859405947578fdec2cb5cbdcc8643077afa04e1",
+    "snapshot_sha256": "848d59fa9efd17438e60be704d4ba0a6c4035c5f0ab833b2926de8ee3aaa2d9b",
+    "snapshot_files": 231,
+    "captured_at": "2026-10-17T22:31:05.203138+00:00",
+    "source_kind": "working-tree-snapshot",
+    "build_platform": "windows",
+    "build_profile_source": "playtest.build.json",
+    "build_config_sha256": "01ee3d54088ee0d45ce3a568e066c15e5b9b13a299c71ce0705663929bf31264",
+    "build_profile_sha256": "a344e3b60c68abe3e6e06ccd33c463d801bd4a8bec51a8b5876ea04087a8f274"
+  },
+  "native_report": "D:\\Code\\Builds\\GameplayValidation\\20261017\\results\\unity-ashfall-county-gameplay.json",
+  "native": {
+    "repository": "unity-ashfall-county",
+    "passed": true,
+    "modes": [
+      {
+        "mode": "campaign",
+        "passed": true,
+        "exit_code": 0,
+        "report": "D:\\Code\\Builds\\GameplayValidation\\20261017\\GameWorkbenchQA\\unity-ashfall-county\\20261017T224759\\campaign.json",
+        "checks": 260,
+        "errors": [],
+        "failure": "",
+        "log": "D:\\Code\\Builds\\GameplayValidation\\20261017\\GameWorkbenchQA\\unity-ashfall-county\\20261017T224759\\campaign-player.log"
+      },
+      {
+        "mode": "read",
+        "passed": true,
+        "exit_code": 0,
+        "report": "D:\\Code\\Builds\\GameplayValidation\\20261017\\GameWorkbenchQA\\unity-ashfall-county\\20261017T224759\\read.json",
+        "checks": 14,
+        "errors": [],
+        "failure": "",
+        "log": "D:\\Code\\Builds\\GameplayValidation\\20261017\\GameWorkbenchQA\\unity-ashfall-county\\20261017T224759\\read-player.log"
+      }
+    ]
+  },
+  "manual": null,
+  "preview": {
+    "folder": "unity-ashfall-county",
+    "connected": true,
+    "source": "D:\\Code\\Builds\\GameplayValidation\\20261017\\GameWorkbenchQA\\unity-ashfall-county\\20261017T224759\\campaign-chapter1.png",
+    "image": "D:\\Code\\securelyprogramming\\_Workspace\\Portfolio\\Previews\\Windows\\20261017\\unity-ashfall-county\\55fbfdc1d4425354.png",
+    "sha256": "55fbfdc1d44253544281c81266d703257e61ad9ab16409196eeaa19694ea2b75",
+    "width": 1280,
+    "height": 720
+  },
+  "scope": [
+    "Existing native gameplay fixtures: see the exact report for mechanics, assertions, campaign and UI coverage."
+  ],
+  "limitations": "Automated production-action fixtures do not establish a complete physical-input playthrough, controller hardware, two-machine LAN, performance budgets or release acceptance."
+}

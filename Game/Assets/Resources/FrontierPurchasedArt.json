@@ -1,0 +1,409 @@
+{
+  "schemaVersion": 1,
+  "gameId": "ashfall-county",
+  "models": [
+    {
+      "id": "Crate",
+      "file": "Shops/SM_Gen_Prop_Crate_01.fbx",
+      "palette": "Shops/Generic_01_A.png",
+      "height": 0.9,
+      "character": false,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false
+    },
+    {
+      "id": "Customer",
+      "file": "Shops/SK_Chr_Shopper_Male_01.fbx",
+      "palette": "Shops/PolygonShops_Texture_01_A.png",
+      "height": 2.15,
+      "character": true,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false
+    },
+    {
+      "id": "Pine",
+      "file": "Shops/SM_Gen_Env_Tree_Pine_01.fbx",
+      "palette": "Shops/Generic_01_A.png",
+      "height": 3.8,
+      "character": false,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false
+    },
+    {
+      "id": "Rock",
+      "file": "Shops/SM_Gen_Env_Rock_01.fbx",
+      "palette": "Shops/Generic_01_A.png",
+      "height": 1,
+      "character": false,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false
+    },
+    {
+      "id": "SurvivorFemale",
+      "file": "Survival/Female_Survival_Unity_SK.fbx",
+      "palette": "Survival/T_Main_A.png",
+      "height": 2.15,
+      "character": true,
+      "renderers": [
+        "CHR_BaseWemale_Head",
+        "CHR_Female_Pant_01A_Long",
+        "CHR_Female_Torso_01AOut",
+        "CHR_Hair_05",
+        "CHR_Shoe_01A"
+      ],
+      "singleBody": false,
+      "goblinLocomotion": false
+    },
+    {
+      "id": "SurvivorMale",
+      "file": "Survival/Male_Survival_Unity_SK.fbx",
+      "palette": "Survival/T_Main_A.png",
+      "height": 2.15,
+      "character": true,
+      "renderers": [
+        "CHR_BaseMale_Head",
+        "CHR_Male_Pant_01A_Long",
+        "CHR_Male_Torso_01AOut",
+        "CHR_Hair_01",
+        "CHR_Shoe_01A"
+      ],
+      "singleBody": false,
+      "goblinLocomotion": false
+    },
+    {
+      "id": "Tree",
+      "file": "Shops/SM_Gen_Env_Tree_01.fbx",
+      "palette": "Shops/Generic_01_A.png",
+      "height": 3.5,
+      "character": false,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false
+    },
+    {
+      "id": "Zombie",
+      "file": "Zombie/advancedCharacter.fbx",
+      "palette": "Zombie/skin_exclusiveZombie.png",
+      "height": 2.15,
+      "character": true,
+      "genericRig": true,
+      "singleBody": false,
+      "goblinLocomotion": false,
+      "renderers": []
+    },
+    {
+      "id": "TownWall",
+      "file": "Structures/Shops/SM_Bld_Base_Wall_01.fbx",
+      "palette": "Structures/Shops/Generic_Brick.png",
+      "height": 1,
+      "character": false,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false,
+      "surfaces": [
+        {
+          "renderer": "SM_Bld_Base_Wall_01",
+          "materials": [
+            {
+              "id": "ce0a83df77763204a92ca89f1eb6e21c",
+              "texture": "Structures/Shops/Generic_Brick.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Brick.mat"
+            },
+            {
+              "id": "55b6a6098e1f4d44486ac3652a215970",
+              "texture": "Structures/Shops/Generic_Plaster.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Plaster.mat"
+            }
+          ]
+        }
+      ],
+      "source_prefab": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_01.prefab"
+    },
+    {
+      "id": "TownWindow",
+      "file": "Structures/Shops/SM_Bld_Base_Wall_Window_01.fbx",
+      "palette": "Structures/Shops/Generic_01_A.png",
+      "height": 1,
+      "character": false,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false,
+      "surfaces": [
+        {
+          "renderer": "SM_Bld_Base_Wall_Window_01",
+          "materials": [
+            {
+              "id": "2a95f9ff80948c643a57b9e94a98eb3f",
+              "texture": "Structures/Shops/Generic_01_A.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Alts/Generic_01_A.mat"
+            },
+            {
+              "id": "ce0a83df77763204a92ca89f1eb6e21c",
+              "texture": "Structures/Shops/Generic_Brick.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Brick.mat"
+            },
+            {
+              "id": "55b6a6098e1f4d44486ac3652a215970",
+              "texture": "Structures/Shops/Generic_Plaster.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Plaster.mat"
+            }
+          ]
+        },
+        {
+          "renderer": "SM_Bld_Base_Wall_Window_01_Glass",
+          "materials": [
+            {
+              "id": "e2afcc913d9479543a183c0cd24461b9",
+              "texture": "",
+              "color": [
+                0.5451228,
+                0.88672835,
+                0.9245283,
+                0.2901961
+              ],
+              "metallic": 0.11299995,
+              "smoothness": 0.389,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Glass.mat"
+            }
+          ]
+        }
+      ],
+      "source_prefab": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Window_01.prefab"
+    },
+    {
+      "id": "TownDoor",
+      "file": "Structures/Shops/SM_Bld_Base_Wall_Door_01.fbx",
+      "palette": "Structures/Shops/Generic_Brick.png",
+      "height": 1,
+      "character": false,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false,
+      "surfaces": [
+        {
+          "renderer": "SM_Bld_Base_Wall_Door_01",
+          "materials": [
+            {
+              "id": "ce0a83df77763204a92ca89f1eb6e21c",
+              "texture": "Structures/Shops/Generic_Brick.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Brick.mat"
+            },
+            {
+              "id": "2a95f9ff80948c643a57b9e94a98eb3f",
+              "texture": "Structures/Shops/Generic_01_A.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Alts/Generic_01_A.mat"
+            },
+            {
+              "id": "55b6a6098e1f4d44486ac3652a215970",
+              "texture": "Structures/Shops/Generic_Plaster.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Plaster.mat"
+            }
+          ]
+        }
+      ],
+      "source_prefab": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Wall_Door_01.prefab"
+    },
+    {
+      "id": "TownRoof",
+      "file": "Structures/Shops/SM_Bld_Base_Roof_Straight_01.fbx",
+      "palette": "Structures/Shops/Generic_01_A.png",
+      "height": 1,
+      "character": false,
+      "renderers": [],
+      "singleBody": false,
+      "goblinLocomotion": false,
+      "surfaces": [
+        {
+          "renderer": "SM_Bld_Base_Roof_Straight_01",
+          "materials": [
+            {
+              "id": "2a95f9ff80948c643a57b9e94a98eb3f",
+              "texture": "Structures/Shops/Generic_01_A.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Alts/Generic_01_A.mat"
+            },
+            {
+              "id": "ce0a83df77763204a92ca89f1eb6e21c",
+              "texture": "Structures/Shops/Generic_Brick.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Brick.mat"
+            },
+            {
+              "id": "55b6a6098e1f4d44486ac3652a215970",
+              "texture": "Structures/Shops/Generic_Plaster.png",
+              "color": [
+                1.0,
+                1.0,
+                1.0,
+                1.0
+              ],
+              "metallic": 0.0,
+              "smoothness": 0.2,
+              "source_material": "Assets/Synty/PolygonGeneric/Materials/Generic_Plaster.mat"
+            }
+          ]
+        }
+      ],
+      "source_prefab": "Assets/Synty/PolygonGeneric/Prefabs/Base/SM_Bld_Base_Roof_Straight_01.prefab",
+      "pitchedRoof": true
+    }
+  ],
+  "bindings": [
+    {
+      "role": "hero",
+      "model": "SurvivorFemale"
+    },
+    {
+      "role": "civilian",
+      "model": "SurvivorMale"
+    },
+    {
+      "role": "customer",
+      "model": "Customer"
+    },
+    {
+      "role": "tree",
+      "model": "Tree"
+    },
+    {
+      "role": "pine",
+      "model": "Pine"
+    },
+    {
+      "role": "rock",
+      "model": "Rock"
+    },
+    {
+      "role": "crate",
+      "model": "Crate"
+    },
+    {
+      "role": "zombie",
+      "model": "Zombie"
+    },
+    {
+      "role": "house-wall",
+      "model": "TownWall"
+    },
+    {
+      "role": "house-window",
+      "model": "TownWindow"
+    },
+    {
+      "role": "house-front",
+      "model": "TownDoor"
+    },
+    {
+      "role": "house-roof",
+      "model": "TownRoof"
+    }
+  ],
+  "images": [
+    {
+      "file": "UI/Panel.png",
+      "border": [
+        90,
+        120,
+        90,
+        120
+      ],
+      "pixelsPerUnit": 700
+    },
+    {
+      "file": "UI/Button.png",
+      "border": [
+        480,
+        200,
+        480,
+        200
+      ],
+      "pixelsPerUnit": 2000
+    }
+  ],
+  "limitations": [
+    "Human locomotion retains snapshot-driven bone animation; purchased Goblin Locomotion is used only by actual goblins.",
+    "Wolf enemies and armored bosses still need matching owned portable character meshes."
+  ]
+}

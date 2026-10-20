@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "game": "ashfall-county",
+  "kind": "native-gameplay-probe",
+  "platform": "WindowsPlayer",
+  "unity": "6000.6.0f1",
+  "recorded": "2026-10-20T04:40:40.434488+00:00",
+  "player": "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\playtests\\ashfall-county\\20261020-043738-6403809349dc\\Game.exe",
+  "nativeBuild": {
+    "status": "Succeeded",
+    "errors": 0,
+    "warnings": 5,
+    "bytes": 362332912
+  },
+  "exitCode": 0,
+  "durationSeconds": 52.7,
+  "status": "passed",
+  "county": {
+    "seed": 777,
+    "mapSize": 3072,
+    "buildings": 2764,
+    "settlements": 17,
+    "zombies": 11534,
+    "generationMs": 1320
+  },
+  "performance": {
+    "averageFrameMs": 16.668716430664062,
+    "worstFrameMs": 16.671201705932617,
+    "simMs": 2.148221015930176,
+    "viewMs": 0.2754856050014496,
+    "uiMs": 0.08212526887655258,
+    "activeZombies": 229,
+    "loadedChunks": 35,
+    "loadedBuildings": 66
+  },
+  "ownedAssets": {
+    "preparedArtRoles": 54,
+    "ownedAudioCues": 47
+  },
+  "checks": [
+    {
+      "name": "title-menu-visible",
+      "pass": true,
+      "detail": "screen=Title"
+    },
+    {
+      "name": "new-game-generates-county",
+      "pass": true,
+      "detail": "ms=1320"
+    },
+    {
+      "name": "county-scale",
+      "pass": true,
+      "detail": "3072m, 2764 buildings, 17 settlements, 11534 zombies"
+    },
+    {
+      "name": "keyboard-movement",
+      "pass": true,
+      "detail": "moved 1.61 m"
+    },
+    {
+      "name": "interact-opens-container",
+      "pass": true,
+      "detail": "items=0 focus=Couch"
+    },
+    {
+      "name": "eat",
+      "pass": true,
+      "detail": "hunger=40"
+    },
+    {
+      "name": "drink",
+      "pass": true,
+      "detail": "thirst=1"
+    },
+    {
+      "name": "gamepad-melee-kills-zombie",
+      "pass": true,
+      "detail": "kills=1 zombieHp=0.00"
+    },
+    {
+      "name": "zombie-perceives-and-wounds",
+      "pass": true,
+      "detail": "wounds=Torso: Scratch zombieState=Attack"
+    },
+    {
+      "name": "bandage-wound",
+      "pass": true,
+      "detail": "no bleeding wound"
+    },
+    {
+      "name": "barricade-window",
+      "pass": true,
+      "detail": "planks=1"
+    },
+    {
+      "name": "map-panel",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "survivor-alive-before-town-sample",
+      "pass": true,
+      "detail": "health=100"
+    },
+    {
+      "name": "frame-time-in-town",
+      "pass": true,
+      "detail": "avg=16.7ms worst=16.7 sim=2.1 view=0.3 ui=0.1 active zombies=229"
+    },
+    {
+      "name": "quit-to-title",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "save-and-reload",
+      "pass": true,
+      "detail": "pos=(1934.50,1576.50) kills=1 zombies=11523/11523"
+    }
+  ],
+  "qaOnlySetup": [
+    "teleported beside a container in the start house",
+    "moved to open ground at (1690.50,1374.50)",
+    "granted baseball bat",
+    "spawned 1 zombie in front",
+    "removed clothing protection; spawned attacker behind",
+    "granted bandages",
+    "after the wound test: health restored and infection cleared so later checks run on a live survivor",
+    "granted hammer, plank, nails; moved to a window",
+    "moved to Cedar Fork for performance capture; restored survivor health so the sample measures a live session"
+  ],
+  "screenshots": [
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\01-title.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\02-start-house.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\03-loot-panel.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\04-combat.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\05-wounded.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\06-barricade.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\07-night.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\08-night-flashlight.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\09-map.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\10-town.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261020-043947\\11-reloaded.png"
+  ],
+  "notProven": [
+    "Physical controller hardware (the probe uses a virtual gamepad device)",
+    "Human playtime and the evacuation outcome over a full multi-hour session",
+    "Linux/macOS native builds, LAN multiplayer (not implemented in the rebuilt game), Steam packaging",
+    "Long-session memory and save growth, and every sandbox option combination"
+  ]
+}

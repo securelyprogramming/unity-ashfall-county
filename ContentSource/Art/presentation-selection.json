@@ -1,0 +1,311 @@
+{
+  "schema_version": 1,
+  "game_id": "ashfall-county",
+  "source_type": "reviewed-owned-art-selection",
+  "licence_state": "User purchased these packs; retain account entitlement privately. Original selected art only; no vendor code imported.",
+  "archives": [
+    {
+      "id": "WoodButton",
+      "file_id": 367906,
+      "name": "WoodButton.png",
+      "format": "raw",
+      "size": 1898444,
+      "sha256": "c7e12e1bcd9fb9a43ce880e7b522449ea9d54e8e206562a543783f85eebc5ad1",
+      "pack": "WOOD UI ELEMENTS",
+      "publisher": "See purchased pack",
+      "source_url": "https://www.gamedevmarket.net/asset/wood-ui-elements/"
+    },
+    {
+      "id": "WoodPanel",
+      "file_id": 367910,
+      "name": "WoodPanel.png",
+      "format": "raw",
+      "size": 1482295,
+      "sha256": "75edd885552d179b0dd31bf2bb573627496abc81e9587393bcb57186e0a72dd4",
+      "pack": "WOOD UI ELEMENTS",
+      "publisher": "See purchased pack",
+      "source_url": "https://www.gamedevmarket.net/asset/wood-ui-elements/"
+    },
+    {
+      "id": "shops",
+      "file_id": 505555,
+      "name": "shops.zip",
+      "format": "zip",
+      "size": 191789275,
+      "sha256": "2ce9dabc456293afb5924df1b510831c56c3e00cef0f13304df45ba9d0bffe21",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios",
+      "library": "http://192.168.1.101:8090/purchases"
+    },
+    {
+      "id": "survival",
+      "file_id": 505610,
+      "name": "survival.unitypackage",
+      "format": "unitypackage",
+      "size": 203401020,
+      "sha256": "199ae44da8e08d561591ba1c88f065aced95e732561b512b11eef631dca3548d",
+      "pack": "POLY - Survival Character & Customizer",
+      "publisher": "Animpic Studio",
+      "library": "http://192.168.1.101:8090/purchases"
+    },
+    {
+      "id": "kenney-zombie-mesh",
+      "file_id": 429886,
+      "name": "advancedCharacter.fbx",
+      "format": "raw",
+      "size": 111424,
+      "sha256": "e7d31fc2ce1cf09b884fa361408ee1f3d68b2bfb9e626ac552216c217912c989",
+      "pack": "Kenney Komplete / Blocky Characters (30 assets)",
+      "publisher": "Kenney",
+      "source_url": "https://kenney.nl/",
+      "licence": "CC0"
+    },
+    {
+      "id": "kenney-zombie-skin",
+      "file_id": 466662,
+      "name": "skin_exclusiveZombie.png",
+      "format": "raw",
+      "size": 20566,
+      "sha256": "ef3b8e1d4820cc7e48ad01ea04314714cce2c1bfac17446875ca8bff51a87ea5",
+      "pack": "Kenney Komplete / Blocky Characters (30 assets)",
+      "publisher": "Kenney",
+      "source_url": "https://kenney.nl/",
+      "licence": "CC0"
+    },
+    {
+      "id": "shops-unity",
+      "file_id": 505554,
+      "name": "shops.unitypackage",
+      "format": "unitypackage",
+      "size": 238856576,
+      "sha256": "0bf2f9035afb63c25bf4bb7175ed5687213579c00b7a3eb8c546143485894ed0",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios",
+      "library": "http://192.168.1.101:8090/purchases"
+    }
+  ],
+  "files": [
+    {
+      "archive": "shops",
+      "source_path": "SourceFiles/Generic/Textures/Generic_01_A.png",
+      "member": "SourceFiles/Generic/Textures/Generic_01_A.png",
+      "relative_path": "Portfolio/Shops/Generic_01_A.png",
+      "size": 241379,
+      "sha256": "fb6eea4cbdd6d86962739d0bc384fdc605fba7651745c1fd950e1f031eece3f1",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops",
+      "source_path": "SourceFiles/Shops/Textures/PolygonShops_Texture_01_A.png",
+      "member": "SourceFiles/Shops/Textures/PolygonShops_Texture_01_A.png",
+      "relative_path": "Portfolio/Shops/PolygonShops_Texture_01_A.png",
+      "size": 3219788,
+      "sha256": "81f92e0536822f0994b3364ac5516283ffdffe0c29ccd97659d5d4d871aefb0c",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops",
+      "source_path": "SourceFiles/Shops/FBX/Characters/Unreal_Characters/SK_Chr_Shopper_Male_01.fbx",
+      "member": "SourceFiles/Shops/FBX/Characters/Unreal_Characters/SK_Chr_Shopper_Male_01.fbx",
+      "relative_path": "Portfolio/Shops/SK_Chr_Shopper_Male_01.fbx",
+      "size": 303312,
+      "sha256": "8f227ea5ff3d1d8b0597994f6faa80c3bf7a9e39df7b555bf24fca653179c877",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops",
+      "source_path": "SourceFiles/Generic/Models/SM_Gen_Env_Rock_01.fbx",
+      "member": "SourceFiles/Generic/Models/SM_Gen_Env_Rock_01.fbx",
+      "relative_path": "Portfolio/Shops/SM_Gen_Env_Rock_01.fbx",
+      "size": 43232,
+      "sha256": "e2393358f9d8e76ccaad0323b9a64d5398d09a274dc04d36f2cd2ea6e3aa8465",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops",
+      "source_path": "SourceFiles/Generic/Models/SM_Gen_Env_Tree_01.fbx",
+      "member": "SourceFiles/Generic/Models/SM_Gen_Env_Tree_01.fbx",
+      "relative_path": "Portfolio/Shops/SM_Gen_Env_Tree_01.fbx",
+      "size": 88128,
+      "sha256": "90ef48a17d63530435aae5e1422d6bdb63cc56450e9a18af3f5659dea2fe16bc",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops",
+      "source_path": "SourceFiles/Generic/Models/SM_Gen_Env_Tree_Pine_01.fbx",
+      "member": "SourceFiles/Generic/Models/SM_Gen_Env_Tree_Pine_01.fbx",
+      "relative_path": "Portfolio/Shops/SM_Gen_Env_Tree_Pine_01.fbx",
+      "size": 98816,
+      "sha256": "0240c20f9b6494acc3fa68f8ebbd390ede9d36599c967ed4a68fcc0530b9ce32",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops",
+      "source_path": "SourceFiles/Generic/Models/SM_Gen_Prop_Crate_01.fbx",
+      "member": "SourceFiles/Generic/Models/SM_Gen_Prop_Crate_01.fbx",
+      "relative_path": "Portfolio/Shops/SM_Gen_Prop_Crate_01.fbx",
+      "size": 61872,
+      "sha256": "4dd46adf613b8d5a032bc0fe15ad9669577faa25351daff91bc2551efcf3e317",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "survival",
+      "source_path": "Assets/Animpic Studio/POLY-Survival Character/Meshes/Female_Survival_Unity_SK.fbx",
+      "member": "91d1a9140e996204f8ac7dc06927260b/asset",
+      "relative_path": "Portfolio/Survival/Female_Survival_Unity_SK.fbx",
+      "size": 11831708,
+      "sha256": "0b4ccb8e710d02fb8c3d968ad9f37f2b12483f2c550d0830d0aaeed41fafa827",
+      "pack": "POLY - Survival Character & Customizer",
+      "publisher": "Animpic Studio"
+    },
+    {
+      "archive": "survival",
+      "source_path": "Assets/Animpic Studio/POLY-Survival Character/Meshes/Male_Survival_Unity_SK.fbx",
+      "member": "af701ad31b49bab45be6d370e302091a/asset",
+      "relative_path": "Portfolio/Survival/Male_Survival_Unity_SK.fbx",
+      "size": 12139888,
+      "sha256": "498b33c1452edef0d2494fd6011f1164ef6d461edb42eacbe59c5a4670eaca52",
+      "pack": "POLY - Survival Character & Customizer",
+      "publisher": "Animpic Studio"
+    },
+    {
+      "archive": "survival",
+      "source_path": "Assets/Animpic Studio/POLY-Survival Character/Textures/T_Main_A.png",
+      "member": "f7f87eed25d31e24d8eb87a3323950ba/asset",
+      "relative_path": "Portfolio/Survival/T_Main_A.png",
+      "size": 350467,
+      "sha256": "1fb65270df81d5348a7280f660dee58ac7d6c51b354ad7103d0a1b79aeaaac6f",
+      "pack": "POLY - Survival Character & Customizer",
+      "publisher": "Animpic Studio"
+    },
+    {
+      "archive": "WoodButton",
+      "source_path": "Humble Bundle assets/Humble Software Bundle_ Game Dev GUI Goodness/WOOD UI ELEMENTS/wooduielements/Wood Ui Elements -by Acasas-/PNG/panel 1.png",
+      "member": "panel 1.png",
+      "relative_path": "Portfolio/UI/Button.png",
+      "size": 1898444,
+      "sha256": "c7e12e1bcd9fb9a43ce880e7b522449ea9d54e8e206562a543783f85eebc5ad1",
+      "pack": "WOOD UI ELEMENTS",
+      "border": [
+        480,
+        200,
+        480,
+        200
+      ]
+    },
+    {
+      "archive": "WoodPanel",
+      "source_path": "Humble Bundle assets/Humble Software Bundle_ Game Dev GUI Goodness/WOOD UI ELEMENTS/wooduielements/Wood Ui Elements -by Acasas-/PNG/panel 5.png",
+      "member": "panel 5.png",
+      "relative_path": "Portfolio/UI/Panel.png",
+      "size": 1482295,
+      "sha256": "75edd885552d179b0dd31bf2bb573627496abc81e9587393bcb57186e0a72dd4",
+      "pack": "WOOD UI ELEMENTS",
+      "border": [
+        90,
+        120,
+        90,
+        120
+      ]
+    },
+    {
+      "archive": "kenney-zombie-mesh",
+      "source_path": "itch.io assets/Kenney Komplete bundle (2016-11-18)/Kenney Game Assets 2/3D assets/Blocky Characters (30 assets)/advancedCharacter.fbx",
+      "member": "advancedCharacter.fbx",
+      "relative_path": "Portfolio/Zombie/advancedCharacter.fbx",
+      "size": 111424,
+      "sha256": "e7d31fc2ce1cf09b884fa361408ee1f3d68b2bfb9e626ac552216c217912c989",
+      "pack": "Kenney Komplete / Blocky Characters",
+      "publisher": "Kenney",
+      "licence": "CC0"
+    },
+    {
+      "archive": "kenney-zombie-skin",
+      "source_path": "itch.io assets/Kenney Komplete bundle (2016-11-18)/Kenney Game Assets 2/3D assets/Blocky Characters (30 assets)/skin_exclusiveZombie.png",
+      "member": "skin_exclusiveZombie.png",
+      "relative_path": "Portfolio/Zombie/skin_exclusiveZombie.png",
+      "size": 20566,
+      "sha256": "ef3b8e1d4820cc7e48ad01ea04314714cce2c1bfac17446875ca8bff51a87ea5",
+      "pack": "Kenney Komplete / Blocky Characters",
+      "publisher": "Kenney",
+      "licence": "CC0"
+    },
+    {
+      "archive": "shops-unity",
+      "source_path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Roof_Straight_01.fbx",
+      "member": "10bc96dc5dcd10d44b14a5740b0d5e02/asset",
+      "relative_path": "Portfolio/Structures/Shops/SM_Bld_Base_Roof_Straight_01.fbx",
+      "size": 35024,
+      "sha256": "c492e7e7f3c78169c009874427cdf44add71b1de207017ac5dde275c083ff12d",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops-unity",
+      "source_path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_01.fbx",
+      "member": "6b9d4b14c61eb8349ac957ab258e2e49/asset",
+      "relative_path": "Portfolio/Structures/Shops/SM_Bld_Base_Wall_01.fbx",
+      "size": 29120,
+      "sha256": "56c02a5363b381f286b7781ce75a8a6fccab3df8954b5c9fa9cfebda6d1e36ee",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops-unity",
+      "source_path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Door_01.fbx",
+      "member": "386ff3bbe203e224d8723dacc75428e7/asset",
+      "relative_path": "Portfolio/Structures/Shops/SM_Bld_Base_Wall_Door_01.fbx",
+      "size": 33776,
+      "sha256": "3b5351875d44ca2cd9e9802dcd8f2446150433ff69ee332e0bc21dcc3a2cc58f",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops-unity",
+      "source_path": "Assets/Synty/PolygonGeneric/Models/Base/SM_Bld_Base_Wall_Window_01.fbx",
+      "member": "40eedd18da05cea44993ed8ed82290d6/asset",
+      "relative_path": "Portfolio/Structures/Shops/SM_Bld_Base_Wall_Window_01.fbx",
+      "size": 39568,
+      "sha256": "45a06496640f93849df560547c8ad2c9350f67c45a0252b55ab9660093650d0d",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops-unity",
+      "source_path": "Assets/Synty/PolygonGeneric/Textures/Alts/Generic_01_A.png",
+      "member": "3fc3c11290504854c9e76317f3f97045/asset",
+      "relative_path": "Portfolio/Structures/Shops/Generic_01_A.png",
+      "size": 241379,
+      "sha256": "fb6eea4cbdd6d86962739d0bc384fdc605fba7651745c1fd950e1f031eece3f1",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops-unity",
+      "source_path": "Assets/Synty/PolygonGeneric/Textures/Generic_Brick.png",
+      "member": "0fc78a37989e18d4a87496cdb6c6612c/asset",
+      "relative_path": "Portfolio/Structures/Shops/Generic_Brick.png",
+      "size": 68608,
+      "sha256": "f962f36210e339d597fe037b49d9f624f850f50efc8143f42e6fb8b8aab59112",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    },
+    {
+      "archive": "shops-unity",
+      "source_path": "Assets/Synty/PolygonGeneric/Textures/Generic_Plaster.png",
+      "member": "19194fafffa69fb4db586eff49fc91c4/asset",
+      "relative_path": "Portfolio/Structures/Shops/Generic_Plaster.png",
+      "size": 98693,
+      "sha256": "4e0dd25778b79df4a9c589bfd6181828bdc783c13f87612b7f86975e9b711351",
+      "pack": "POLYGON - Shops Pack",
+      "publisher": "Synty Studios"
+    }
+  ]
+}

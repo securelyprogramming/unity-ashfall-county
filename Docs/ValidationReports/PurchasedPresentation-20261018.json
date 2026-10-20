@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-18",
+  "scope": "Purchased stylized art integration across 12 Frontier Unity games; source restoration and representative native evidence are distinct.",
+  "status": "implemented-with-listed-art-and-validation-gaps",
+  "editorVersion": "6000.6.0f1",
+  "sourceVerification": "All canonical runtime/build/importer copies match; every selected original file hash and size matches both private cache and ignored project copy; no licensed payload is Git tracked.",
+  "restorationTests": {
+    "passed": 4,
+    "command": "python -m unittest discover -s game-workbench/frontier-runtime/BuildSupport/tests -p test_restore_presentation.py -v"
+  },
+  "remaining": [
+    "No dedicated portable wolf mesh was located. Thornvale wolves retain original presentation.",
+    "Fantasy/Sci-Fi exact-rig source idles are integrated; other human idle poses and human/zombie walk/run use articulated snapshot-driven joint motion. Purchased Goblin Locomotion is reserved for actual goblins. No dedicated portable human walk/run set found among the 152 catalog archive files inspected by the parallel source search.",
+    "Treant trunk/branches/crown use purchased tree geometry, with original articulated arms/roots and face.",
+    "Terrain, some props, original steam train/longship silhouettes, specialized boss detailing, weapons/VFX/audio coverage remain partial.",
+    "Native rendered acceptance is representative; every individual campaign, physical controller, separate-machine LAN, other platforms, performance budgets and release acceptance are not established by this work."
+  ],
+  "fixes": [
+    "Purchased authored characters replace bound generated heroes, civilians, customers, infected, raiders and goblins.",
+    "Purchased Goblin idle/walk uses native humanoid clips and root motion off; Fantasy/Sci-Fi idle subsets are exact original skeleton tracks validated by path.",
+    "Purchased shelters/house modules, retail/kitchen boundary walls, displays, carved fortifications and industrial bulkheads are bound within authored layout footprints.",
+    "Original per-renderer source albedo/material slots are preserved using Standard materials; each half roof is oriented by original mesh ridge and paired into a pitched roof.",
+    "Non-readable bought meshes remain drawn in players instead of being disabled by the procedural static combiner.",
+    "Purchased sliced wood/space panels and buttons retain production menu actions and controller navigation; camera tracks actual player position and shelters cut away while occupied."
+  ],
+  "nativeCaveats": [
+    "An earlier concurrent Ashfall text import suffered a native Unity worker crash, then succeeded sequentially.",
+    "An intermediate Market screenshot was written after the probe's 12-second stability window under host load; that failed run is preserved and not treated as acceptance.",
+    "The first idle-enabled probes passed sampling checks but visual review rejected folded bodies. Playback now applies only explicit bone quaternions, preserves the Sci-Fi imported reference basis, and requires upright head height in native acceptance. Those earlier folded captures are not accepted evidence."
+  ],
+  "commitsCreated": false,
+  "humanLocomotionSourceSearch": {
+    "path": "D:\\Code\\securelyprogramming\\game-workbench\\native-runtime\\validation\\human-locomotion-source-search-20261018.json",
+    "sha256": "5ea3802b939d96539461f41e10712e8a07e92cc5153a609edda23e7d1fe81ad1"
+  },
+  "game": {
+    "gameId": "ashfall-county",
+    "verifiedSelectedFiles": 21,
+    "selectedBytes": 32437487,
+    "models": [
+      "Crate",
+      "Customer",
+      "Pine",
+      "Rock",
+      "SurvivorFemale",
+      "SurvivorMale",
+      "Tree",
+      "Zombie",
+      "TownWall",
+      "TownWindow",
+      "TownDoor",
+      "TownRoof"
+    ],
+    "bindings": [
+      {
+        "role": "hero",
+        "model": "SurvivorFemale"
+      },
+      {
+        "role": "civilian",
+        "model": "SurvivorMale"
+      },
+      {
+        "role": "customer",
+        "model": "Customer"
+      },
+      {
+        "role": "tree",
+        "model": "Tree"
+      },
+      {
+        "role": "pine",
+        "model": "Pine"
+      },
+      {
+        "role": "rock",
+        "model": "Rock"
+      },
+      {
+        "role": "crate",
+        "model": "Crate"
+      },
+      {
+        "role": "zombie",
+        "model": "Zombie"
+      },
+      {
+        "role": "house-wall",
+        "model": "TownWall"
+      },
+      {
+        "role": "house-window",
+        "model": "TownWindow"
+      },
+      {
+        "role": "house-front",
+        "model": "TownDoor"
+      },
+      {
+        "role": "house-roof",
+        "model": "TownRoof"
+      }
+    ],
+    "sourceSha256": {
+      "Unity/Art/FrontierCharacters.cs": "e1beba058dc15f32b327751e7bdb95af95e7661168788e8335494736c2f13343",
+      "Unity/Art/FrontierMeshKit.cs": "8e205b15d97282ab30cccaa1ae63ddbae93c1bb733db46d108e3f986c32540f3",
+      "Unity/Art/FrontierProps.cs": "9b3c124ce10ba8652d098fc1a609a6d21545199c651316d503b499d02481a080",
+      "Unity/Art/FrontierStages.cs": "7b2a4e395d9578bae61dc471b6f365623a8e302750ba24cf90fdc1ffc6cd8b36",
+      "Unity/Art/FrontierWorldView.cs": "d75b068471a50f9797e26ca28095ba2c8a648df10d0e151ec1ae93ae825709e1",
+      "Unity/Art/FrontierPurchasedArt.cs": "d54da7f407230d1269f0d382123edad6426e70edc4fc3b10a6a1f99d2563966f",
+      "Unity/Art/FrontierPurchasedCharacter.cs": "3730c6648a24b020e9465c97557b98e08bb46f4bf84557b60426ac3f95e8724c",
+      "Unity/FrontierUI.cs": "1568285f4279bcd9f16c59c81031c2aa2c265870e77bfcf42fa27ce1f74f473c",
+      "Unity/QA/FrontierNativeProbe.cs": "10ad31cee1b14634fd1c57162d0aca347ee12ead5bdd2f154943689e7d639324",
+      "Editor/PrepareFrontierPurchasedArt.cs": "d6525656fa0720f667a33071a9bdd1f314524d36d7aa1e606390674ab3a83a59",
+      "Editor/PrepareFrontier.cs": "af1648aa526f3e1b12cd604466bbc32f1b1d53f45398ee0b95a63fc37dc2ff5b",
+      "BuildSupport/build.py": "eea0d7aefc363a63672088f25179011f162745ce082dcabbd49537cf95355f2a",
+      "BuildSupport/restore_presentation.py": "d4afe1dca5507c64eb941017c0e0e35c8c1d7abdf1b74b81a2b451c130dd0420"
+    },
+    "manifestSha256": "a2040b2050708e42451b5a7aa85d40118633569c3d3e437a187a4e7344bb6f98",
+    "runtimePlanSha256": "bd841e518721e03b6cfee1800615d7316a4452de3d9650592cc2b17f79407815",
+    "privateBytesIgnored": true,
+    "canonicalCopiesMatch": true,
+    "exactRigIdleModels": [],
+    "nativeBuild": {
+      "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\accepted-ashfall-county.logs\\build-result.json",
+      "sha256": "2fdc01347fb8e105f132757003da56f12ea4599922f8bb551857b747e50a2cde",
+      "status": "built",
+      "artifact": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\accepted-ashfall-county\\Game.exe",
+      "currentRuntimeSourcesMatch": false,
+      "sourceDifferencesSinceBuild": [
+        "Game/Assets/Editor/PrepareFrontierPurchasedArt.cs",
+        "Game/Assets/Frontier/Unity/Art/FrontierPurchasedArt.cs",
+        "Game/Assets/Frontier/Unity/Art/FrontierPurchasedCharacter.cs",
+        "Game/Assets/Frontier/Unity/QA/FrontierNativeProbe.cs"
+      ],
+      "differenceScope": "Optional exact-rig idle extension added after Ashfall/Market builds. Neither plan selects an idle clip; their role bindings, source pins, geometry and surface logic match current source."
+    },
+    "nativePlayerReports": [
+      {
+        "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-visual\\report.json",
+        "sha256": "a691435781693a3ece57903314a9d7aeef4855d027ef2a9d5437f3ea0834021c",
+        "mode": "visual",
+        "status": "passed",
+        "completedChapters": 0,
+        "commandCount": 0,
+        "errors": 0,
+        "checks": 41,
+        "captures": [
+          {
+            "kind": "menu",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-visual\\gameplay-menu.png",
+            "sha256": "b950e1c0b1b441de6baeb5eac28cb2b01d7eabbc554250003b1e8f07a4d37882",
+            "chapter": 1,
+            "tick": 0,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "story",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-visual\\gameplay-story.png",
+            "sha256": "ee5a6c65b1a98f3b4221a02aa21888743106e8323675550ae28fb3b78759284d",
+            "chapter": 1,
+            "tick": 0,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "gameplay",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-visual\\gameplay.png",
+            "sha256": "6a5f7c8a23c8bf8c89d87a445c0a42ca09b7c078b3da5d3e5c9dafcf2134a72b",
+            "chapter": 1,
+            "tick": 20,
+            "width": 1440,
+            "height": 900
+          }
+        ]
+      },
+      {
+        "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\report.json",
+        "sha256": "d8cf59538ab4a0771be000ab108774c6706fa77f0e12baf4a4748c1564693884",
+        "mode": "campaign",
+        "status": "passed",
+        "completedChapters": 3,
+        "commandCount": 860,
+        "errors": 0,
+        "checks": 260,
+        "captures": [
+          {
+            "kind": "menu",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-menu.png",
+            "sha256": "b4ef9cb9289123a32c309e87ec936fcf6cb69ed7dae47f95772e023b9150a966",
+            "chapter": 1,
+            "tick": 0,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "story",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-story.png",
+            "sha256": "9cee6cf042cef78c31676fc2d62f8c6fbfb0a23bf52337520b4534e220f07d3c",
+            "chapter": 1,
+            "tick": 0,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "chapter1",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-chapter1.png",
+            "sha256": "6eacebd03313b66cac4601e2190d6acdd62e6420bc02ef6ad6851f6f0715a0e0",
+            "chapter": 1,
+            "tick": 240,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "gameplay",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay.png",
+            "sha256": "196d105635feffe51bc040f2cd27490f8407208d269098ccc660164217f05fdf",
+            "chapter": 1,
+            "tick": 240,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "victory1",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-victory1.png",
+            "sha256": "d0dbc97252ecd8ca94f9fa891aeedd526042650088837c66d1eea031d4386a73",
+            "chapter": 1,
+            "tick": 328,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "story2",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-story2.png",
+            "sha256": "8b9b92774c11540d27331bc48e8c6ebcbacd39e8211340650c1b5a179448b290",
+            "chapter": 2,
+            "tick": 2,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "chapter2",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-chapter2.png",
+            "sha256": "169334bd95cdddaa185e032e031eaf868221b2d2be001bd2295a878b09cfecae",
+            "chapter": 2,
+            "tick": 242,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "victory2",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-victory2.png",
+            "sha256": "20b5721b947f6ab306e76025865f259057d72622b828f130715db9a1452273e8",
+            "chapter": 2,
+            "tick": 398,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "story3",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-story3.png",
+            "sha256": "c26f71014bf1c7ec8936bba590b1fb8aedecd4ce6de75dad364ab2303c8b775e",
+            "chapter": 3,
+            "tick": 2,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "chapter3",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-chapter3.png",
+            "sha256": "ce03f77a067d67b9c55e8931b34b452f17701950486d6301a73a38b4540329e0",
+            "chapter": 3,
+            "tick": 242,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "victory3",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-victory3.png",
+            "sha256": "1a75e5c8f9d2818f3cc1f14eac12f857666b675d198830d2dd489c5f2dea76ac",
+            "chapter": 3,
+            "tick": 538,
+            "width": 1440,
+            "height": 900
+          },
+          {
+            "kind": "finale",
+            "path": "D:\\Code\\playtest_temp\\FrontierPurchased20261018\\GameWorkbenchQA\\final-ashfall-county-campaign\\gameplay-finale.png",
+            "sha256": "55dd61d505a2f96ef0964f7af76e4783356cc7aa1bf50d173a87b387247302bb",
+            "chapter": 3,
+            "tick": 538,
+            "width": 1440,
+            "height": 900
+          }
+        ]
+      }
+    ],
+    "visualReview": "Reviewed accepted native captures for correct purchased surfaces, applicable pitched roofs, purchased characters and usable idle poses."
+  }
+}

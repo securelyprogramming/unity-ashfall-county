@@ -1,0 +1,113 @@
+{
+  "folder": "unity-ashfall-county",
+  "engine": "Unity",
+  "started": "2026-10-17T22:30:54.051Z",
+  "job": {
+    "id": "90aad0c3-fe0d-44f5-99a4-911f5be1a02d",
+    "kind": "repository-build",
+    "key": "D:\\Code\\securelyprogramming\\unity-ashfall-county",
+    "status": "completed",
+    "phase": "Playtest started",
+    "platform": "windows",
+    "mode": "current",
+    "error": "",
+    "build_root": "D:\\Code\\Builds",
+    "capacity": {
+      "source_bytes": 5573143,
+      "source_files": 231,
+      "engine": "Unity",
+      "build_required_bytes": 17185442327,
+      "temp_required_bytes": 8589934592,
+      "volumes": [
+        {
+          "destinations": [
+            {
+              "role": "build storage",
+              "path": "D:\\Code\\Builds",
+              "checked_path": "D:\\Code\\Builds",
+              "required_bytes": 17185442327
+            },
+            {
+              "role": "system temporary storage",
+              "path": "D:\\Code\\Builds\\Temp",
+              "checked_path": "D:\\Code\\Builds\\Temp",
+              "required_bytes": 8589934592
+            }
+          ],
+          "required_bytes": 25775376919,
+          "available_bytes": 722560827392
+        }
+      ],
+      "estimate_only": true
+    },
+    "scenario": {
+      "id": "menu",
+      "title": "Start menu",
+      "kind": "menu",
+      "stageId": "frontier-menu",
+      "tags": [
+        "normal-entry"
+      ]
+    },
+    "version": "v1",
+    "workspace_relative": ".b/90aad0c3fe0d44f599a4911f5be1a02d",
+    "output_relative": "o",
+    "log_path": "D:\\Code\\Builds\\.b\\90aad0c3fe0d44f599a4911f5be1a02d\\build.log",
+    "source": {
+      "path": "D:\\Code\\securelyprogramming\\unity-ashfall-county",
+      "name": "unity-ashfall-county",
+      "commit": "0972a4c51c532be7f72e2ff4d51f95bc91e3be46",
+      "branch": "main",
+      "dirty": true,
+      "status_sha256": "79c0f67c6235a4ceca3b12b5d859405947578fdec2cb5cbdcc8643077afa04e1",
+      "snapshot_sha256": "848d59fa9efd17438e60be704d4ba0a6c4035c5f0ab833b2926de8ee3aaa2d9b",
+      "snapshot_files": 231,
+      "captured_at": "2026-10-17T22:31:05.203138+00:00",
+      "source_kind": "working-tree-snapshot",
+      "build_platform": "windows",
+      "build_profile_source": "playtest.build.json",
+      "build_config_sha256": "01ee3d54088ee0d45ce3a568e066c15e5b9b13a299c71ce0705663929bf31264",
+      "build_profile_sha256": "a344e3b60c68abe3e6e06ccd33c463d801bd4a8bec51a8b5876ea04087a8f274"
+    },
+    "release_key": "8d9cae64df7992b3583b33334aef86f5e1a2cd0679e03784649138c6835a04da",
+    "path": "D:\\Code\\Builds\\RepositoryReleases\\ashfall-county\\v1",
+    "session_id": "df586e60-5ee4-4f21-bcf7-a144982d8c05"
+  },
+  "buildAndPlay": {
+    "pid": 43520,
+    "executable": "D:\\Code\\Builds\\RepositoryReleases\\ashfall-county\\v1\\Game.exe",
+    "alive_15s": true,
+    "children": [
+      {
+        "pid": 31908,
+        "executable": "D:\\Code\\Builds\\RepositoryReleases\\ashfall-county\\v1\\UnityCrashHandler64.exe"
+      }
+    ],
+    "cleanup": "forced termination after normal termination timed out"
+  },
+  "playCurrent": {
+    "pid": 40240,
+    "executable": "D:\\Code\\Builds\\RepositoryReleases\\ashfall-county\\v1\\Game.exe",
+    "alive_15s": true,
+    "children": [
+      {
+        "pid": 41640,
+        "executable": "D:\\Code\\Builds\\RepositoryReleases\\ashfall-county\\v1\\UnityCrashHandler64.exe"
+      }
+    ],
+    "cleanup": "forced termination after normal termination timed out"
+  },
+  "passed": true,
+  "finished": "2026-10-17T22:33:13.258Z",
+  "host": "Windows",
+  "scope": "Native build, build-and-play startup, and saved-build startup; 15 seconds per launch. Test processes were intentionally closed. This does not establish a full gameplay playthrough or separate-PC LAN acceptance.",
+  "engine_version": "6000.6.0f1",
+  "unity_player_log": {
+    "folder": "unity-ashfall-county",
+    "matched": true,
+    "player_log": "C:\\Users\\Quent\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\LocalLow\\Mayo Games\\Ashfall County\\Player.log",
+    "archive": "D:\\Code\\Builds\\ValidationLogs\\unity-ashfall-county\\Player.log",
+    "sha256": "afaa3521d6eef6476d01d31ea6b162d2351703dad9e44b9fa784e2e2875252ca",
+    "startup_errors": []
+  }
+}

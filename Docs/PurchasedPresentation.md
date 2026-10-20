@@ -1,0 +1,24 @@
+# Purchased presentation — ashfall-county
+
+Each Frontier game supplies `Game/Assets/Resources/FrontierPurchasedArt.json` with reviewed role bindings, selected modular character parts, model heights and menu slicing. Its `ContentSource/Art/presentation-selection.json` pins every original archive and selected file by SHA-256 and byte count. POLY and Synty packs remain within a stylized low-poly presentation. Kenney Komplete's authored exclusive-zombie skin is used for the infected in Ashfall County, Dead Orbit and Havenfall Coalition; it is a purchased bundle source with a retained CC0 notice.
+
+Structural model surface recipes follow the material slot order in the original purchased Unity prefabs. Original brick, plaster, glass, timber planks and roofing replace the incorrect single-palette mapping. The importer requires every active material slot and ignores unused trailing slots retained in some original prefabs. Surface albedo, color, metallic and smoothness values are adapted to the existing built-in Standard shader. Paired original pitched roof slopes meet at a normalized ridge; vendor shader code is not imported. Non-readable imported static meshes retain their own renderer instead of being disabled by the procedural mesh combiner.
+
+`PrepareFrontierPurchasedArt` creates materials and normalized, selected-part prefabs under ignored `Game/Assets/Resources/LicensedFrontier/Portfolio`. It never imports or runs vendor scripts, packages or sample scenes. The read-only snapshot view instances these prefabs for heroes, customers, civilians, raiders, zombies and goblins where bound. The existing simulation still owns collision, movement, damage, interactions, rewards, progression and multiplayer authority. Trees, rocks, crates, retail shelves, kitchen counters and bread use corresponding selected source art where bound. Purchased Synty wall/window/door/roof modules replace shelter and house geometry within the existing authored footprints. Retail/kitchen room boundaries and shopfronts use purchased modules; Guild fortifications use carved Viking walls. Dead Orbit bulkheads use compatible purchased POLY industrial metal wall art. Treant bodies/crowns use the purchased tree with original animated roots/arms and glowing face. Authored terrain and unbound props remain in use.
+
+Goblin enemies use purchased Synty Goblin Locomotion idle/walk clips with root motion disabled. The Fantasy ranger uses its original FemaleStudioIdle pose clip; the Sci-Fi engineer uses its original time-varying SciFiIdle. Only original skeleton transform tracks with matching paths are retained; customizer, renderer and actor tracks are excluded. Other human idle poses and all human/zombie walking retain snapshot-driven joint animation. Survival, Shops and Viking character sources contain no matching idle/walk set. The complete catalog archive search found goblin locomotion and no dedicated portable human walk/run source. Dedicated wolf art, role-specific purchased human locomotion, complete environment replacement and individual weapon/VFX/audio coverage remain follow-up work; the manifest is not evidence that those slots are finished.
+
+Wood UI Elements supplies rural, fantasy, retail and kitchen panels/buttons. Space Assets supplies Dead Orbit and Rift Runners. Menus preserve the existing uGUI layout, controller focus, event bindings and settings. Native captures exposed a camera offset that obscured the local hero and incorrect source pixel density for the sliced wood buttons; the view now centers on the local player's real world position, cuts away opaque shelters while the local player stands inside, and imports each sprite with its reviewed density.
+
+Restore on a fresh machine with the bundled Python runtime or a real Python 3 installation:
+
+```powershell
+python tools/playtest/restore_presentation.py
+python tools/playtest/build.py --platform windows --output D:/fresh-playtest-output
+```
+
+The default selected cache is `~/code/game_asset_cache/frontier-presentation/<game-id>`. `FRONTIER_PRESENTATION_CACHE` overrides the parent directory. Original archives use `~/code/game_asset_cache/archives/frontier-presentation`; `--archives` can select another private archive cache. `--offline` requires pinned original archives or an already verified selection. Builds require verified cached sources and create fresh isolated snapshots; they never silently download new art. Licensed payloads and prepared prefabs remain ignored. Keep proof of account entitlement privately for distribution.
+
+Source-only checks, editor import, a Windows player build and native rendered gameplay are separate evidence levels. Physical controllers, all campaigns, separate-machine LAN, playtime, other platforms and Steam release acceptance remain unverified by this art work.
+
+Dated evidence and exact remaining scope: [Purchased presentation validation](ValidationReports/PurchasedPresentation-20261018.json).

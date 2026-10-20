@@ -2,20 +2,32 @@
   "schemaVersion": 1,
   "id": "ashfall-county",
   "title": "Ashfall County",
-  "genre": "zombie-survival",
-  "brief": "Scavenge a flooded rural county, rescue stranded neighbors and hold an evacuation safehouse.",
+  "genre": "open-world-zombie-survival",
+  "brief": "Survive the dead in a seeded 3 km x 3 km rural county: scavenge homes and stores, manage hunger, thirst, fatigue and wounds, barricade a safehouse, and reach the evacuation convoy at the Ash River bridge, or keep surviving after it leaves.",
   "status": "development",
-  "runtimeFamily": "unity-frontier",
+  "runtimeFamily": "unity-ashfall-survival",
   "world": {
-    "classification": "county-survival",
+    "classification": "open-county-survival",
     "configFile": "game-workbench.json",
-    "defaultMode": "authored",
-    "randomization": {
-      "workbench": "seeded-region-v1",
-      "runtime": "adapter-required; not established by authoring config",
-      "preserveAuthoredObjectives": true
+    "defaultMode": "procedural",
+    "generator": "Game/Assets/Ashfall/Core/WorldGen.cs (version 1, deterministic per seed)",
+    "size": {
+      "defaultTiles": 3072,
+      "options": [
+        1024,
+        2048,
+        3072
+      ],
+      "tileMeters": 1
     },
-    "stageIds": [
+    "contents": "Ash River with sand banks and a highway bridge, county highway and Route 9, a county seat (Cedar Fork) plus towns and hamlets scaled to map size, farms with barns and fenced fields, forests, ponds, roadside homes and abandoned cars.",
+    "rules": [
+      "Zombie spawns are land-only: never water, walls or furniture, never within 28 m of the start or inside the start house.",
+      "Population density follows zones: commercial > town > suburb > farm > wild > forest; water has none.",
+      "Containers roll loot lazily from the seed the first time anyone opens them.",
+      "Saves regenerate the county from its seed and store only changed state."
+    ],
+    "legacyStageIds": [
       "frontier-chapter-1",
       "frontier-chapter-2",
       "frontier-chapter-3",
@@ -31,70 +43,60 @@
       "ashfall-pharmacy-doorway-20261014",
       "ashfall-interior-pause-20261014",
       "ashfall-safehouse-800x600-20261014"
-    ]
+    ],
+    "legacyNote": "The previous three-chapter Frontier stages are retired from the build; their sources are kept in Legacy/."
   },
   "characters": {
     "player": {
-      "name": "Mara Vale",
-      "role": "paramedic",
-      "movementDesignTarget": "genre-specific 3D movement, collision and camera",
+      "name": "Player-named survivor (default Mara Vale)",
+      "role": "Profession chosen at New Game: paramedic, carpenter, sheriff's deputy, farmer, firefighter, line cook or unemployed",
+      "movementDesignTarget": "Isometric walk/run/sneak with wall sliding, window climbing and fence hopping; encumbrance, endurance and leg wounds slow movement.",
       "nativeAcceptance": "required"
     },
     "npcs": [
       {
-        "name": "Jonah Reed",
-        "role": "mechanic",
-        "source": "ContentSource/campaign.json",
-        "movementAcceptance": "Verify role-appropriate idle, locomotion, pathfinding and interaction reach in native stages; authored cast alone does not prove runtime NPC presence.",
-        "interactionsAcceptance": "Verify dialogue, quest state and role-specific interactions without bypassing game economy."
-      },
-      {
         "name": "Ada Pike",
         "role": "radio operator",
-        "source": "ContentSource/campaign.json",
-        "movementAcceptance": "Verify role-appropriate idle, locomotion, pathfinding and interaction reach in native stages; authored cast alone does not prove runtime NPC presence.",
-        "interactionsAcceptance": "Verify dialogue, quest state and role-specific interactions without bypassing game economy."
+        "source": "Emergency broadcasts in Simulation.Story",
+        "runtimePresence": "Radio voice only; no runtime NPC body.",
+        "interactionsAcceptance": "Broadcasts reach survivors carrying a hand radio; verify in native play."
+      },
+      {
+        "name": "Jonah Reed",
+        "role": "mechanic, convoy organiser",
+        "source": "Emergency broadcasts in Simulation.Story",
+        "runtimePresence": "Radio voice and the evacuation outcome; no runtime NPC body.",
+        "interactionsAcceptance": "Evacuation triggers within 14 m of the bridge rally point on the convoy day 08:00-14:00."
       }
     ],
     "enemies": [
       {
         "archetype": "zombie",
-        "acceptance": "Verify spawn rules, locomotion/navigation, combat, animation and rewards per stage."
+        "behaviour": "Idle, wander, investigate noise, chase on sight, attack, thump doors/windows/barricades, climb open windows, knocked down by shoves and heavy weapons, eat the dead.",
+        "acceptance": "Verify spawn rules, perception, pathing to openings, combat, animation and corpses natively."
       }
     ]
   },
   "story": {
-    "source": "ContentSource/campaign.json",
-    "chapters": [
-      {
-        "number": 1,
-        "title": "The Last Pharmacy",
-        "story": "Mara reaches a shuttered pharmacy with one promise: nobody leaves the county alone.",
-        "layoutSeed": 101,
-        "acceptance": "native completion and save/reload required"
-      },
-      {
-        "number": 2,
-        "title": "The Waterline",
-        "story": "Ada hears families beyond the flooded road. Supplies must reach the refuge before dusk.",
-        "layoutSeed": 274,
-        "acceptance": "native completion and save/reload required"
-      },
-      {
-        "number": 3,
-        "title": "County Evacuation",
-        "story": "Jonah can start the convoy if the safehouse holds long enough to gather every survivor.",
-        "layoutSeed": 447,
-        "acceptance": "native completion and save/reload required"
-      }
+    "source": "Game/Assets/Ashfall/Core/Simulation.cs (Story) and World/SandboxSettings",
+    "premise": "Ashfall County has been sealed by the Guard. Utilities fail within days. Ada Pike's emergency band and Jonah Reed's convoy offer one way out.",
+    "goal": "Reach the Ash River highway bridge (west bank) on the configured evacuation day between 08:00 and 14:00. After the convoy leaves, free play continues; endless mode has no rescue.",
+    "events": [
+      "Radio broadcasts",
+      "Power and water shut-off on seeded days",
+      "Helicopter event on day 2-3 that draws zombies toward the survivor",
+      "Weather: rain and morning fog"
     ],
-    "sideQuests": {
-      "status": "design and runtime acceptance required",
-      "requirements": [
-        "Separate optional quest state from main story gates",
-        "Verify NPC giver, prerequisites, rewards, persistence and multiplayer authority where applicable"
-      ]
-    }
+    "outcomes": [
+      "evacuated",
+      "dead (permadeath; save marked dead)",
+      "survival continues"
+    ],
+    "legacyChapters": [
+      "The Last Pharmacy",
+      "The Waterline",
+      "County Evacuation"
+    ]
   },
   "studioIntro": {
     "enabled": true,
@@ -106,21 +108,27 @@
     "nativeAcceptance": "required"
   },
   "systems": {
-    "coreLoopSource": "Scavenge a flooded rural county, rescue stranded neighbors and hold an evacuation safehouse.",
-    "worldRules": "Game-specific authored levels and optional seeded workshops; preserve runtime gameplay until an adapter is integrated.",
-    "playerControls": "Keyboard/mouse and controller navigation require native acceptance for this genre.",
-    "npcRules": "Verify cast presence, navigation, locomotion, interaction reach, dialogue and quest roles in native scenes.",
-    "progression": "Campaign gates, rewards, retries and save/reload must be tested per chapter.",
-    "sideQuests": "Optional quest chains must have explicit giver, prerequisites, state transitions, rewards and persistence."
+    "coreLoop": "Scavenge, eat and drink, avoid or fight the dead, treat wounds, fortify, sleep, and decide when to travel.",
+    "needs": "Hunger, thirst, fatigue, endurance, panic, pain, boredom, sickness, wetness, encumbrance; moodles in the HUD.",
+    "health": "Body-part wounds (scratch, laceration, bite, glass cut) that bleed, can be bandaged, disinfected, stitched and infected; zombie infection is fatal when enabled.",
+    "combat": "Melee weapons with arc, reach, knockdown and wear; shove; stomping downed zombies; firearms with ammo, reload, spread and very loud noise.",
+    "noise": "Footsteps, combat, glass, barricading, chopping and gunshots emit noise that zombies hear through walls at reduced range.",
+    "resources": "Weighted loot tables per room/container type; perishable food spoils (fridges slow it while the grid is up); tap water until shut-off, then stored pipe water (tainted), rain collectors (clean) and river water (tainted, boil it).",
+    "crafting": "Rags, planks, spear, spiked bat, campfire, rain collector, wooden crate, stew, first aid kit; barricading with hammer, plank and nails.",
+    "skills": "Melee, Aiming, Carpentry, Cooking, First Aid, Foraging, Sneaking, Fitness, levelled by use.",
+    "interaction": "E performs the focused action; Q opens every nearby action. All requests are host commands validated for reach, line of sight, tools and ownership.",
+    "authority": "Host-authoritative simulation (Simulation.Submit/SetInput). Clients would send input and commands only; LAN is not implemented for the rebuilt game.",
+    "saves": "Atomic, versioned, gzip-compressed seed + delta saves in the per-game persistent data directory (Survival/*.sav); autosave every 5 minutes, on sleep start and on quit. Legacy Campaigns data is untouched."
   },
   "playtime": {
-    "campaignTargetMinutes": 180,
+    "campaignTargetMinutes": 225,
+    "designBasis": "Default evacuation day 5 with 45-minute days is about 3.4 hours of in-game time before the convoy; endless survival continues afterwards.",
     "measuredCampaignMinutes": null,
-    "freePlay": "Define genre-appropriate replay or free-play progression; not yet accepted",
+    "freePlay": "Endless survival after or instead of evacuation; sandbox options for population, speed, day length, utilities, loot, infection and migration.",
     "acceptance": "Measure normal play sessions; automated smoke duration and repeated captures do not establish playtime."
   },
   "assets": {
-    "policy": "Use compatible owned art for characters, buildings, weapons, animations, audio and menu presentation. Keep gameplay logic, controls, hitboxes and progression owned by the game.",
+    "policy": "Use compatible owned art for characters, props, weapons, vehicles, animations, audio and HUD sprites. Keep gameplay logic, controls, collision and progression owned by the game; procedural stand-ins are used when a private pack is not restored.",
     "candidateKeys": [
       "local:INTERFACE_Apocalypse_HUD_Source_Sprites_v3.zip",
       "local:POLYGON_Prototype_Unreal_5_3_v1_8_0.zip",
@@ -128,19 +136,24 @@
       "item:809",
       "item:808"
     ],
-    "provenance": "Hash-pin selected original files, licence source and native references. Owned/downloaded/candidate is not proof of runtime integration."
+    "provenance": "Hash-pin selected original files, licence source and native references. Owned/downloaded/candidate is not proof of runtime integration.",
+    "presentationSelection": "ContentSource/Art/presentation-selection.json",
+    "runtimeBindings": "Generated at build time: Game/Assets/Resources/AshfallArt.json (role -> prepared prefab) by Game/Assets/Editor/PrepareAshfallArt.cs",
+    "survivalSelection": "ContentSource/Art/zomboid-selection.json",
+    "licenceNotes": "Leartes glass-break WAVs: confirm the licence allows non-Unreal use before shipping."
   },
   "acceptance": {
     "steamReady": false,
-    "multiplayerAdvertised": true,
+    "multiplayerAdvertised": false,
     "requiredChecks": [
-      "Every advertised story stage: start, objectives, victory/failure, retry, save/reload",
-      "Selected seed and alternate seeds: biome rules, sea exclusion, spawn clearance, routes and resource availability",
-      "Purchased characters/items: import, runtime reference, animation, collision and interaction",
-      "Menus: keyboard, mouse, physical controller, resolution and accessibility",
-      "Multiplayer if advertised: two machines on LAN, authority, disconnect/rejoin, persistence and progression",
-      "Measured playtime, performance, platform builds, distribution signing and Steam depot/release acceptance"
+      "Native new game on each county size: generation, start house, spawn clearance and water exclusion",
+      "Keyboard/mouse and physical controller: movement, aiming, combat, interaction and every menu",
+      "Looting, eating, drinking, cooking, crafting, barricading, sleeping, wounds and treatment",
+      "Zombie perception, pathing to doors and windows, thumping, climbing, combat and corpses",
+      "Evacuation outcome on the convoy day, death outcome, save/reload and autosave",
+      "Purchased characters/items: import, runtime reference, animation and interaction",
+      "Measured playtime, performance in towns, platform builds, distribution signing and Steam acceptance"
     ],
-    "latestValidation": "Docs/ValidationReports; distinguish current native evidence from historical reports"
+    "latestValidation": "Docs/ValidationReports; distinguish current native evidence from historical (Frontier-era) reports"
   }
 }

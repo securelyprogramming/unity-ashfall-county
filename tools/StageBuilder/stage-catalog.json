@@ -9,6 +9,23 @@
   "status": "three-chapter-development-prototype",
   "stages": [
     {
+      "id": "windows-runtime-preview",
+      "title": "Windows native runtime preview",
+      "kind": "native-development-runtime-capture",
+      "images": {
+        "preview": {
+          "path": "Portfolio/Previews/Windows/20261017/unity-ashfall-county/55fbfdc1d4425354.png",
+          "sha256": "55fbfdc1d44253544281c81266d703257e61ad9ab16409196eeaa19694ea2b75",
+          "bytes": 140496,
+          "width": 1280,
+          "height": 720
+        }
+      },
+      "notes": [
+        "Genuine Windows native player frame captured during local validation on 2026-10-17. This image alone does not establish full campaign or multiplayer acceptance."
+      ]
+    },
+    {
       "id": "frontier-chapter-1",
       "title": "Chapter 1: The Last Pharmacy",
       "kind": "native-development-gameplay-capture",
