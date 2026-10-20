@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Fast type check of the Unity-side scripts against the installed Unity 6000.6.0f1 managed assemblies.
+       It does not replace a native Unity build; it catches compile errors in seconds.
+       Usage: dotnet build tools/UnityCompileCheck -c Release
+       Requires a Game/Library from one editor import (for InputSystem/uGUI/TextMeshPro assemblies). -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <DefineConstants>UNITY_EDITOR;UNITY_STANDALONE;UNITY_STANDALONE_WIN;UNITY_6000_0_OR_NEWER;ENABLE_INPUT_SYSTEM</DefineConstants>
+    <NoWarn>CS0414;CS0649;CS0169;CS0067;CS0618;CS8632</NoWarn>
+    <UnityEditorDir Condition="'$(UnityEditorDir)' == ''">C:\Program Files\Unity\Hub\Editor\6000.6.0f1\Editor</UnityEditorDir>
+    <GameDir>$(MSBuildThisFileDirectory)..\..\Game\</GameDir>
+    <!-- Package assemblies come from an imported Library; a git worktree can point UNITY_GAME_LIBRARY at the main checkout's Game\Library. -->
+    <GameLibrary Condition="'$(UNITY_GAME_LIBRARY)' != ''">$(UNITY_GAME_LIBRARY)\</GameLibrary>
+    <GameLibrary Condition="'$(GameLibrary)' == ''">$(GameDir)Library\</GameLibrary>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(GameDir)Assets\Ashfall\**\*.cs" />
+    <Compile Include="$(GameDir)Assets\Editor\**\*.cs" />
+    <Compile Include="$(GameDir)Assets\StudioIntro\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="$(UnityEditorDir)\Data\Managed\UnityEngine\*.dll" Private="false" />
+    <Reference Include="$(GameLibrary)ScriptAssemblies\Unity.InputSystem.dll" Private="false" />
+    <Reference Include="$(GameLibrary)ScriptAssemblies\Unity.InputSystem.ForUI.dll" Private="false" />
+    <Reference Include="$(GameLibrary)ScriptAssemblies\UnityEngine.UI.dll" Private="false" />
+    <Reference Include="$(GameLibrary)ScriptAssemblies\Unity.TextMeshPro.dll" Private="false" />
+  </ItemGroup>
+</Project>
