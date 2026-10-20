@@ -122,11 +122,11 @@ static class Program
     static void Needs()
     {
         var w = NewWorld(); var sim = Clear(w); var s = w.survivors[0];
-        float hunger = s.hunger, thirst = s.thirst;
+        float fatigue = s.fatigue;
         double start = w.minutes;
         for (int i = 0; i < 20 * 60 * 4; i++) sim.Tick(Simulation.Step);   // 4 real minutes
         Check(w.minutes > start + 60, "time advances (" + (w.minutes - start).ToString("0") + " game minutes)");
-        Check(s.hunger > hunger && s.thirst > thirst, "hunger and thirst rise");
+        Check(s.fatigue > fatigue && s.hunger == 0 && s.thirst == 0, "fatigue rises; retired hunger and thirst stay at zero");
         Check(s.alive && s.health > 95, "idle survivor stays healthy");
     }
 
@@ -237,7 +237,7 @@ static class Program
         sim.Submit(s.id, new Command { kind = CommandKind.Craft, recipe = "rip_sheet" });
         for (int i = 0; i < 20 * 4; i++) sim.Tick(Simulation.Step);
         Check(s.inventory.Count("rag") == 4 && s.inventory.Count("sheet") == 0, "ripping a sheet yields rags");
-        sim.Submit(s.id, new Command { kind = CommandKind.Craft, recipe = "nailed_bat" }); sim.Tick(Simulation.Step);
+        sim.Submit(s.id, new Command { kind = CommandKind.Craft, recipe = "rip_tshirt" }); sim.Tick(Simulation.Step);
         Check(s.action == null, "missing ingredients refuse crafting");
         foreach (var r in Recipe.All) { foreach (var i in r.inputs) if (!i.IsTag) Check(ItemCatalog.Exists(i.item), "recipe input exists " + i.item); if (!r.places) Check(ItemCatalog.Exists(r.result), "recipe result exists " + r.result); }
     }
@@ -245,18 +245,18 @@ static class Program
     static void EatDrink()
     {
         var w = NewWorld(); var sim = Clear(w); var s = w.survivors[0];
-        s.hunger = 60; s.thirst = 60;
+        s.endurance = 20;
         var chips = s.inventory.Find("chips");
         sim.Submit(s.id, new Command { kind = CommandKind.Use, item = chips.uid });
         for (int i = 0; i < 20 * 5; i++) sim.Tick(Simulation.Step);
-        Check(s.hunger < 55, "eating reduces hunger (" + s.hunger.ToString("0") + ")");
-        var bottle = s.inventory.Find("water_bottle");
+        Check(s.endurance > 30 && s.inventory.Find("chips") == null, "eating restores stamina (" + s.endurance.ToString("0") + ")");
+        var bottle = s.inventory.Find("water_bottle"); s.endurance = 20;
         sim.Submit(s.id, new Command { kind = CommandKind.Use, item = bottle.uid });
         for (int i = 0; i < 20 * 4; i++) sim.Tick(Simulation.Step);
-        Check(s.thirst < 30 && bottle.water < 10, "drinking reduces thirst (" + s.thirst.ToString("0") + ")");
+        Check(s.endurance > 25 && bottle.water < 10, "drinking restores a little stamina (" + s.endurance.ToString("0") + ")");
         var beans = ItemCatalog.Make("canned_beans"); s.inventory.Add(beans);
         sim.Submit(s.id, new Command { kind = CommandKind.Use, item = beans.uid }); sim.Tick(Simulation.Step);
-        Check(s.action == null || s.action.duration > 5, "cans need an opener or a slow knife");
+        Check(s.action != null && s.action.duration < 5, "cans no longer need an opener");
     }
 
     static void Paths()

@@ -85,7 +85,8 @@ namespace Ashfall.Core
                     }
                 case CommandKind.Craft:
                     {
-                        var r = Recipe.Get(c.recipe); if (r == null) return;
+                        var r = Recipe.Get(c.recipe); if (r == null) { if (WorkshopRecipe.Get(c.recipe) != null) CraftAtWorkshop(s, c.recipe); return; }
+                        if (r.retired.Length > 0) { world.Message(s, r.retired); return; }
                         var missing = r.Missing(s, NearHeat(s));
                         if (missing.Count > 0) { world.Message(s, "Can't craft " + r.name + ": need " + string.Join(", ", missing) + "."); return; }
                         if (r.places && !CanPlace(s, r.place)) return;
@@ -203,24 +204,9 @@ namespace Ashfall.Core
                         if (crop == null || crop.kind != PropKind.Crops || !ReachProp(s, crop)) return;
                         Begin(s, ActionKind.Harvest, 3, crop.id); break;
                     }
-                case CommandKind.Cook: case CommandKind.Boil:
-                    {
-                        var item = inv.ByUid(c.item); if (item == null) return;
-                        if (!NearHeat(s)) { world.Message(s, "You need a lit campfire or a working stove nearby."); return; }
-                        if (c.kind == CommandKind.Cook && (string.IsNullOrEmpty(item.Def.cooksInto) || item.cooked)) return;
-                        if (c.kind == CommandKind.Boil && (item.Def.waterCapacity == 0 || !item.tainted || item.water == 0)) return;
-                        Begin(s, c.kind == CommandKind.Cook ? ActionKind.Cook : ActionKind.Boil, (c.kind == CommandKind.Cook ? 6 : 8) * (1 - s.Level(Skill.Cooking) * .05f), -1, item.uid);
-                        break;
-                    }
-                case CommandKind.FillWater:
-                    {
-                        var item = inv.ByUid(c.item); if (item == null || item.Def.waterCapacity == 0) return;
-                        var src = c.target >= 0 && c.target < world.map.props.Count ? world.map.props[c.target] : null;
-                        if (src != null && (!src.IsWaterSource || !ReachProp(s, src))) return;
-                        if (src == null && !NearWater(s)) { world.Message(s, "No water source here."); return; }
-                        Begin(s, ActionKind.FillWater, 2.5f, src == null ? -1 : src.id, item.uid);
-                        break;
-                    }
+                // Retired with the Zomboid needs: cooking, boiling and collecting water.
+                case CommandKind.Cook: world.Message(s, "No need to cook: eat food as you find it, and the base Kitchen keeps morale up."); break;
+                case CommandKind.Boil: case CommandKind.FillWater: world.Message(s, "Water no longer needs collecting or boiling."); break;
                 case CommandKind.LightFire:
                     {
                         var fire = c.target >= 0 && c.target < world.map.props.Count ? world.map.props[c.target] : null;
@@ -265,19 +251,22 @@ namespace Ashfall.Core
         {
             var item = s.inventory.ByUid(uid); if (item == null) return;
             var d = item.Def;
-            if (d.category == ItemCategory.Food || d.category == ItemCategory.Drink && d.waterCapacity == 0)
+            // Rucksacks go to the base stock.
+            if (d.resource >= 0) { if (AtBase(s)) DepositRucksacks(s, uid); else world.Message(s, "Carry the " + d.name + " home and deposit it at the base."); return; }
+            // Food and drink give a quick boost of stamina and a little health (no hunger or thirst any more).
+            if (d.category == ItemCategory.Food || d.category == ItemCategory.Drink && d.waterCapacity == 0 || d.stamina > 0 && d.category != ItemCategory.Medical)
             {
-                if (!string.IsNullOrEmpty(d.needsTool) && s.inventory.FindTag(d.needsTool) == null)
-                {
-                    if (s.inventory.FindTag("knife") == null && s.inventory.FindTag("screwdriver") == null) { world.Message(s, "You need a can opener (or a knife) to open this."); return; }
-                    Begin(s, ActionKind.Eat, 9, -1, uid); world.Message(s, "You work the can open with a blade..."); return;
-                }
-                Begin(s, d.category == ItemCategory.Drink ? ActionKind.Drink : ActionKind.Eat, d.category == ItemCategory.Drink ? 2 : 3.5f, -1, uid); return;
+                Begin(s, d.category == ItemCategory.Food ? ActionKind.Eat : ActionKind.Drink, d.category == ItemCategory.Food ? 2.5f : 1.5f, -1, uid); return;
             }
-            if (d.waterCapacity > 0) { if (item.water == 0) { world.Message(s, "It's empty."); return; } Begin(s, ActionKind.Drink, 2.5f, -1, uid); return; }
-            if (d.id == "painkillers") { Begin(s, ActionKind.Pills, 1.5f, -1, uid); return; }
-            if (d.id == "antibiotics") { Begin(s, ActionKind.Pills, 1.5f, -1, uid); return; }
-            if (d.id == "magazine") { Begin(s, ActionKind.Read, 6, -1, uid); return; }
+            if (d.waterCapacity > 0) { if (item.water == 0) { world.Message(s, "It's empty."); return; } Begin(s, ActionKind.Drink, 1.5f, -1, uid); return; }
+            if (d.plagueCure > 0)
+            {
+                if (!s.plagueInfected) { world.Message(s, "You don't have the blood plague. Keep the cure for when you do."); return; }
+                Begin(s, ActionKind.Pills, 2, -1, uid); return;
+            }
+            if (d.id == "painkillers" || d.id == "antibiotics") { Begin(s, ActionKind.Pills, 1.5f, -1, uid); return; }
+            if (d.disinfect > 0 && d.bandageQuality <= 0) { world.Message(s, "Wounds no longer get infected. Bandage bleeding wounds instead."); return; }
+            if (d.id == "magazine") { world.Message(s, "You flip through the magazine. Nothing useful."); return; }
             if (d.id == "battery")
             {
                 var light = s.inventory.items.FirstOrDefault(i => i.Def.category == ItemCategory.Light && i.condition < .99f);
@@ -286,19 +275,21 @@ namespace Ashfall.Core
             }
             if (d.category == ItemCategory.Light) { s.secondary = uid; Execute(s, Command.Of(CommandKind.ToggleLight)); return; }
             if (d.category == ItemCategory.Clothing || d.category == ItemCategory.Bag) { Execute(s, new Command { kind = CommandKind.Wear, item = uid }); return; }
-            if (d.bandageQuality > 0 || d.disinfect > 0 || d.id == "suture_kit")
+            if (d.bandageQuality > 0 || d.id == "suture_kit")
             {
-                // Treat the most urgent wound that this item helps.
+                // Treat the most urgent wound that this item helps; a kit with no wound to dress heals instead.
                 int best = -1;
                 for (int i = 0; i < s.wounds.Count; i++)
                 {
                     var w = s.wounds[i];
-                    bool helps = d.bandageQuality > 0 ? !w.bandaged || w.dirtyBandage : d.disinfect > 0 ? !w.disinfected : !w.sutured && w.kind != WoundKind.Scratch;
+                    bool helps = d.bandageQuality > 0 ? !w.bandaged : !w.sutured && w.kind != WoundKind.Scratch;
                     if (helps && (best < 0 || w.bleeding && !s.wounds[best].bleeding)) best = i;
                 }
+                if (best < 0 && d.heal > 1 && (s.health < s.MaxHealth || s.injury > 0)) { Begin(s, ActionKind.Pills, 2.5f, -1, uid); return; }
                 if (best < 0) { world.Message(s, "No wound needs that."); return; }
                 Execute(s, new Command { kind = CommandKind.Treat, item = uid, target = best }); return;
             }
+            if (d.Has("throwable")) { world.Message(s, "Throw it (G) at a point."); return; }
             if (d.IsWeapon) { Execute(s, new Command { kind = CommandKind.Equip, item = uid }); return; }
             if (d.Has("map")) { world.Message(s, "Press M to read your map."); return; }
             if (d.Has("radio")) { world.Message(s, "The radio hisses. Emergency broadcasts will come through while you carry it."); return; }
@@ -310,49 +301,38 @@ namespace Ashfall.Core
             if (CompleteSurvival(s, a)) return;
             switch (a.kind)
             {
-                case ActionKind.Eat:
+                case ActionKind.Eat: case ActionKind.Drink:
                     {
+                        // Food and drink: a quick boost of stamina and a little health. energy_drink carries its own stamina value.
                         if (item == null) return; var d = item.Def;
-                        float quality = item.Rotten ? .3f : item.Stale ? .6f : 1;
-                        if (item.cooked || d.id == "stew" || d.id.EndsWith("_cooked") || d.id == "potato_baked") quality *= 1 + s.Level(Skill.Cooking) * .04f;
-                        s.hunger = MathUtil.Clamp(s.hunger + d.hunger * quality, 0, 100);
-                        s.thirst = MathUtil.Clamp(s.thirst + d.thirst, 0, 100);
-                        s.boredom = MathUtil.Clamp(s.boredom + d.boredom, 0, 100);
-                        if (d.raw && !item.cooked) { s.sickness = Math.Min(100, s.sickness + (d.id == "potato" || d.id == "rice" ? 8 : 30)); world.Message(s, "That was raw. Your stomach turns."); }
-                        if (item.Rotten) { s.sickness = Math.Min(100, s.sickness + 35); world.Message(s, "That was rotten..."); }
-                        inv.Take(item.uid, 1); world.Emit(EventKind.Eat, s.pos, s.id, d.name);
-                        break;
-                    }
-                case ActionKind.Drink:
-                    {
-                        if (item == null) return; var d = item.Def;
-                        if (d.waterCapacity > 0)
-                        {
-                            int sips = 0;
-                            while (item.water > 0 && s.thirst > 3 && sips < 10) { item.water--; s.thirst = Math.Max(0, s.thirst - 9); sips++; if (item.tainted) s.sickness = Math.Min(100, s.sickness + 9); }
-                            if (item.water == 0) item.tainted = false;
-                            if (sips > 0 && item.tainted) world.Message(s, "The water tasted foul. You should have boiled it.");
-                            if (sips == 0) world.Message(s, "You're not thirsty.");
-                        }
-                        else { s.thirst = MathUtil.Clamp(s.thirst + d.thirst, 0, 100); s.hunger = MathUtil.Clamp(s.hunger + d.hunger, 0, 100); s.fatigue = MathUtil.Clamp(s.fatigue + d.fatigue, 0, 100); s.boredom = MathUtil.Clamp(s.boredom + d.boredom, 0, 100); inv.Take(item.uid, 1); }
-                        world.Emit(EventKind.Drink, s.pos, s.id, d.name);
+                        float boost = Math.Abs(d.hunger) + Math.Abs(d.thirst) * .5f;
+                        float stamina = d.stamina > 0 ? d.stamina : 8 + boost * .5f, heal = 1 + boost * .12f;
+                        if (d.waterCapacity > 0) { int sips = Math.Min(2, item.water); item.water -= sips; if (item.water == 0) item.tainted = false; stamina = 6 * sips; heal = 0; }
+                        else inv.Take(item.uid, 1);
+                        s.endurance = Math.Min(100, Math.Max(s.endurance, Math.Min(StaminaCap(s) + 15, s.endurance + stamina)));
+                        s.health = Math.Min(s.MaxHealth, s.health + heal);
+                        if (d.fatigue < 0) s.fatigue = MathUtil.Clamp(s.fatigue + d.fatigue, 0, 100);
+                        world.Emit(a.kind == ActionKind.Eat ? EventKind.Eat : EventKind.Drink, s.pos, s.id, d.name);
                         break;
                     }
                 case ActionKind.Pills:
-                    if (item == null) return;
-                    if (item.def == "painkillers") { s.stress += 40; world.Message(s, "The painkillers dull the ache."); }
-                    else { foreach (var w in s.wounds) { w.infected = false; } s.sickness = Math.Max(0, s.sickness - 20); world.Message(s, "You take the antibiotics. Wound infections will clear." + (s.zombieInfected ? " You feel no better." : "")); }
-                    inv.Take(item.uid, 1); break;
-                case ActionKind.Read: if (item == null) return; s.boredom = Math.Max(0, s.boredom - 35); inv.Take(item.uid, 1); world.Message(s, "You read the magazine cover to cover."); break;
+                    {
+                        // Medicine heals: painkillers restore health, antibiotics and kits treat injuries, the cure ends the blood plague.
+                        if (item == null) return; var d = item.Def;
+                        if (d.plagueCure > 0) { if (!s.plagueInfected) return; inv.Take(item.uid, 1); CurePlague(s, "The plague cure burns going down. The fever breaks."); break; }
+                        if (item.def == "painkillers") { s.stress += 40; s.health = Math.Min(s.MaxHealth, s.health + 10); world.Message(s, "The painkillers dull the ache."); }
+                        else if (item.def == "antibiotics") { s.injury = Math.Max(0, s.injury - 12); world.Message(s, "You take the antibiotics. Your injuries will mend faster."); }
+                        else { s.health = Math.Min(s.MaxHealth, s.health + d.heal); s.injury = Math.Max(0, s.injury - 8); world.Message(s, "You patch yourself up with the " + d.name + "."); }
+                        inv.Take(item.uid, 1); GainXp(s, Skill.FirstAid, 2); break;
+                    }
+                case ActionKind.Read: break;
                 case ActionKind.Bandage:
                     {
                         if (item == null || a.target >= s.wounds.Count) return; var w = s.wounds[a.target];
-                        w.bandaged = true; w.dirtyBandage = false; w.bandageAge = -s.Level(Skill.FirstAid) * 1.5f; w.bleeding = false;
+                        w.bandaged = true; w.dirtyBandage = false; w.bandageAge = 0; w.bleeding = false; w.infected = false;
                         w.severity -= .1f * item.Def.bandageQuality * (1 + s.Level(Skill.FirstAid) * .08f);
-                        if (item.Def.disinfect > 0) w.disinfected = true;
-                        if (item.Def.heal > 0) s.health = Math.Min(100, s.health + item.Def.heal);
-                        if (item.def == "rag" && world.rng.Chance(.08f) && !w.disinfected) w.infected = true;
-                        inv.Take(item.uid, 1); GainXp(s, Skill.FirstAid, 6); world.Message(s, "You bandage your " + Wound.Part(w.part).ToLowerInvariant() + ".");
+                        if (item.Def.heal > 0) { s.health = Math.Min(s.MaxHealth, s.health + item.Def.heal); s.injury = Math.Max(0, s.injury - 8); }
+                        inv.Take(item.uid, 1); GainXp(s, Skill.FirstAid, 6); world.Message(s, "You bandage your " + Wound.Part(w.part).ToLowerInvariant() + ". The bleeding stops.");
                         break;
                     }
                 case ActionKind.Disinfect:
@@ -365,7 +345,7 @@ namespace Ashfall.Core
                 case ActionKind.Suture:
                     {
                         if (item == null || a.target >= s.wounds.Count) return; var w = s.wounds[a.target];
-                        w.sutured = true; w.bleeding = false; w.severity *= .7f; inv.Take(item.uid, 1); GainXp(s, Skill.FirstAid, 10); world.Message(s, "You stitch the wound closed."); break;
+                        w.sutured = true; w.bleeding = false; w.severity *= .7f; s.injury = Math.Max(0, s.injury - 5); inv.Take(item.uid, 1); GainXp(s, Skill.FirstAid, 10); world.Message(s, "You stitch the wound closed."); break;
                     }
                 case ActionKind.Wear:
                     {
@@ -434,7 +414,6 @@ namespace Ashfall.Core
                         if (world.rng.Chance(.55f * bonus)) { inv.Add(ItemCatalog.Make("branch", world.rng.Range(1, 3))); found++; }
                         if (world.rng.Chance(.3f * bonus)) { inv.Add(ItemCatalog.Make("berries", 1)); found++; }
                         if (world.rng.Chance(.18f * bonus)) { inv.Add(ItemCatalog.Make("mushrooms", 1)); found++; }
-                        if (world.rng.Chance(.22f * bonus)) { inv.Add(ItemCatalog.Make("worms", world.rng.Range(1, 4))); found++; }
                         world.Message(s, found == 0 ? "You find nothing useful." : "You forage " + found + " useful thing" + (found > 1 ? "s." : "."));
                         GainXp(s, Skill.Foraging, 3 + found * 2); break;
                     }
@@ -454,36 +433,9 @@ namespace Ashfall.Core
                         crop.removed = true; crop.modified = true;
                         bool potato = world.rng.Chance(.5f);
                         inv.Add(ItemCatalog.Make(potato ? "potato" : "carrots", world.rng.Range(1, 3)));
-                        // Gone-to-seed field crops are the main way to start a garden without looting seed packets.
-                        if (world.rng.Chance(.3f + s.Level(Skill.Farming) * .04f)) { inv.Add(ItemCatalog.Make(potato ? "seeds_potato" : "seeds_carrot")); world.Message(s, "Some of the plants have gone to seed. You save a packet."); }
                         GainXp(s, Skill.Foraging, 3); GainXp(s, Skill.Farming, 2); break;
                     }
-                case ActionKind.Cook:
-                    {
-                        if (item == null || string.IsNullOrEmpty(item.Def.cooksInto)) return;
-                        var cooked = ItemCatalog.Make(item.Def.cooksInto); cooked.cooked = true;
-                        inv.Take(item.uid, 1); inv.Add(cooked); GainXp(s, Skill.Cooking, 5); world.Message(s, "Cooked: " + cooked.Def.name + ".");
-                        break;
-                    }
-                case ActionKind.Boil: if (item != null) { item.tainted = false; GainXp(s, Skill.Cooking, 3); world.Message(s, "The water is safe to drink now."); } break;
-                case ActionKind.FillWater:
-                    {
-                        if (item == null) return; var d = item.Def;
-                        var src = a.target >= 0 ? world.map.props[a.target] : null;
-                        int space = d.waterCapacity - item.water; if (space <= 0) { world.Message(s, "It's already full."); return; }
-                        bool piped = src != null && (src.kind == PropKind.Sink || src.kind == PropKind.Toilet);
-                        if (src == null) { if (item.water == 0 || item.tainted) item.tainted = true; item.water = d.waterCapacity; item.tainted = true; world.Message(s, "You fill it from the river. Boil before drinking."); }
-                        else if (piped && world.WaterOn) { item.water = d.waterCapacity; world.Message(s, "You fill the " + d.name + " from the tap."); }
-                        else
-                        {
-                            int take = Math.Min(space, (int)src.water);
-                            if (take <= 0) { world.Message(s, "It's dry."); return; }
-                            src.water -= take; src.modified = true; bool foul = piped;   // standing water in pipes goes bad after the shutoff
-                            if (foul) item.tainted = true; else if (item.water == 0) item.tainted = false;
-                            item.water += take; world.Message(s, foul ? "You drain what's left in the pipes. Boil it first." : "You collect fresh rain water.");
-                        }
-                        break;
-                    }
+                case ActionKind.Cook: case ActionKind.Boil: case ActionKind.FillWater: break;   // retired (actions from before the rebuild end quietly)
                 case ActionKind.Hotwire: case ActionKind.Refuel: CompleteVehicleAction(s, a); break;
                 case ActionKind.Light: { var f = world.map.props[a.target]; f.lit = true; f.modified = true; world.Emit(EventKind.Fire, f.Center, s.id); break; }
                 case ActionKind.Craft:

@@ -3,7 +3,10 @@ using System.Linq;
 
 namespace Ashfall.Core
 {
-    /// <summary>Static crop balance data. Growth is in in-game days and only advances while the plot is watered.</summary>
+    // Personal farm plots are retired: the base Garden (Community.cs) produces Food for the whole community. These
+    // types stay for phase 1 because the view, the save codec and QA still reference them; nothing creates plots now.
+
+    /// <summary>Static crop balance data (retired). Growth is in in-game days and only advanced while the plot was watered.</summary>
     public sealed class CropDef
     {
         public string id, name, seed, produce;
@@ -27,7 +30,7 @@ namespace Ashfall.Core
         public const float WiltHours = 30;
     }
 
-    /// <summary>A dug plot on a FarmPlot prop. The host owns it; saves store every plot.</summary>
+    /// <summary>A dug plot on a FarmPlot prop (retired; old plots no longer grow). Saves still store every plot.</summary>
     [Serializable]
     public sealed class FarmPlot
     {
