@@ -10,8 +10,9 @@ namespace Ashfall.Core
     public static class SaveCodec
     {
         const uint Magic = 0x41534846; // "ASHF"
-        /// <summary>2: farm plots, traits, skill books and smoking ("survival" section) and farming/fishing skills. Version 1 saves are refused.</summary>
-        public const int Version = 2;
+        /// <summary>3: open-county rebuild (community, factions, bestiary, world events; "playerId" in the summary block).
+        /// 2: farm plots, traits, skill books and smoking. Older saves are refused and left untouched.</summary>
+        public const int Version = 3;
 
         public sealed class Summary { public string name = "", profession = "", clock = "", outcome = ""; public int day, kills, seed, mapSize; public double hours; public bool alive; public long savedAtTicks; }
 
@@ -49,7 +50,7 @@ namespace Ashfall.Core
         {
             if (b.ReadUInt32() != Magic) throw new InvalidDataException("Not an Ashfall County save.");
             int version = b.ReadInt32();
-            if (version < Version) throw new InvalidDataException("This survivor was saved by an older build (save version " + version + ", this build reads " + Version + "). Farming, fishing, traits and skill books changed the save format, so it cannot be loaded. Start a new survivor; the old file is left untouched.");
+            if (version < Version) throw new InvalidDataException("This survivor was saved by an older build (save version " + version + ", this build reads " + Version + "). The open-county rebuild (community, factions and the new bestiary) changed the save format, so it cannot be loaded. Start a new community; the old file is left untouched.");
             if (version > Version) throw new InvalidDataException("This survivor was saved by a newer build (save version " + version + ", this build reads " + Version + "). Update the game to load it.");
             int gen = b.ReadInt32(); if (gen != WorldGen.Version) throw new InvalidDataException("This save was made with a different county generator (" + gen + ").");
         }
@@ -94,6 +95,12 @@ namespace Ashfall.Core
             // Optional tagged sections follow; a reader stops at "" or the end of an older save.
             b.Write("vehicles"); w.WriteVehicles(b);
             b.Write("survival"); WriteSurvival(w, b);
+            b.Write("bestiary"); w.WriteBestiary(b);
+            b.Write("humans"); w.WriteHumans(b);
+            b.Write("community"); w.WriteCommunity(b);
+            b.Write("events"); w.WriteEvents(b);
+            b.Write("player"); b.Write(w.playerId);
+            b.Write("roles"); b.Write(w.survivors.Count); foreach (var s in w.survivors) { b.Write(s.faction); b.Write((byte)s.ai); b.Write(s.character ?? ""); }
             b.Write("");
         }
 
@@ -150,6 +157,16 @@ namespace Ashfall.Core
             {
                 if (section == "vehicles") { w.ReadVehicles(b); vehicles = true; }
                 else if (section == "survival") { ReadSurvival(w, b); survival = true; }
+                else if (section == "bestiary") w.ReadBestiary(b);
+                else if (section == "humans") w.ReadHumans(b);
+                else if (section == "community") w.ReadCommunity(b);
+                else if (section == "events") w.ReadEvents(b);
+                else if (section == "player") w.playerId = b.ReadInt32();
+                else if (section == "roles")
+                {
+                    int n = b.ReadInt32(); if (n != w.survivors.Count) throw new InvalidDataException("Save survivor roles do not match.");
+                    foreach (var s in w.survivors) { s.faction = b.ReadInt32(); s.ai = (AiRole)b.ReadByte(); s.character = b.ReadString(); }
+                }
                 else throw new InvalidDataException("Unknown save section \"" + section + "\".");
             }
             if (!vehicles) w.SetupVehicles();   // saves from before drivable cars

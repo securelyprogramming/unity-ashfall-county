@@ -9,12 +9,21 @@ namespace Ashfall.Core
     [Serializable]
     public sealed class Settlement { public string name = ""; public int x, y, radius; public ZoneKind zone; }
 
+    /// <summary>Named points of interest beyond ordinary towns. Consumers (Humans, Bestiary, Community, WorldEvents, views)
+    /// must tolerate kinds that a generator version does not place.</summary>
+    public enum LandmarkKind : byte { Town, MilitaryBase, Airfield, Hospital, RadioStation, Garage, RaiderCompound, Warehouse, Church, School, Farmstead, Campground, Quarry }
+    public sealed class Landmark { public string name = ""; public LandmarkKind kind; public int x, y, radius; public List<int> buildings = new List<int>(); public Vec2 Center { get { return new Vec2(x + .5f, y + .5f); } } }
+    /// <summary>A named drop point on the New Game map (PUBG-style landing choice).</summary>
+    public sealed class LandingZone { public string name = ""; public int x, y; public string description = ""; public Vec2 Center { get { return new Vec2(x + .5f, y + .5f); } } }
+
     /// <summary>Seeded generator for the whole county: river, highway, towns, farms, forests, buildings and furniture.</summary>
     public sealed class WorldGen
     {
         public const int Version = 1;
         readonly Map map; readonly Rng rng; readonly int seed;
         public readonly List<Settlement> settlements = new List<Settlement>();
+        public readonly List<Landmark> landmarks = new List<Landmark>();
+        public readonly List<LandingZone> landingZones = new List<LandingZone>();
         public Rect bridge;
         public Vec2 evacuationPoint;
         readonly List<Rect> reserved = new List<Rect>();
@@ -124,6 +133,7 @@ namespace Ashfall.Core
                 else { int y = rng.Range(40, H - 40); RoadsideLot(routeX + (rng.Chance(.5f) ? 5 : -5), y, rng.Chance(.5f) ? Facing.West : Facing.East); }
             }
             Forests();
+            DefaultLandmarks();
             Cars(highwayY, routeX);
         }
 
@@ -643,6 +653,26 @@ namespace Ashfall.Core
         }
 
         /// <summary>A safe-ish starting house away from the busiest streets.</summary>
+        /// <summary>Every settlement is a town landmark and a landing zone; specialised landmarks are added by later generator passes.</summary>
+        void DefaultLandmarks()
+        {
+            foreach (var t in settlements)
+            {
+                var lm = new Landmark { name = t.name, kind = LandmarkKind.Town, x = t.x, y = t.y, radius = t.radius };
+                foreach (var b in map.buildings) if (Vec2.Distance(new Vec2(b.rect.x, b.rect.y), new Vec2(t.x, t.y)) < t.radius) lm.buildings.Add(b.id);
+                landmarks.Add(lm);
+                landingZones.Add(new LandingZone { name = t.name, x = t.x, y = t.y, description = "Town" });
+            }
+        }
+
+        /// <summary>Home site for a new community: a building near the chosen landing zone (random zone when -1).</summary>
+        public static Building StartSite(Map map, WorldGen gen, Rng rng, int landingZone)
+        {
+            if (gen == null || gen.landingZones.Count == 0) return StartHouse(map, rng);
+            var zone = gen.landingZones[landingZone >= 0 && landingZone < gen.landingZones.Count ? landingZone : rng.Range(0, gen.landingZones.Count)];
+            var homes = map.buildings.Where(b => b.kind == BuildingKind.House || b.kind == BuildingKind.Farmhouse).OrderBy(b => Vec2.Distance(new Vec2(b.rect.x, b.rect.y), zone.Center)).Take(4).ToList();
+            return homes.Count == 0 ? StartHouse(map, rng) : homes[rng.Range(0, homes.Count)];
+        }
         public static Building StartHouse(Map map, Rng rng)
         {
             var homes = map.buildings.Where(b => b.kind == BuildingKind.House && map.ZoneAt(b.rect.x, b.rect.y) == ZoneKind.Suburb).ToList();

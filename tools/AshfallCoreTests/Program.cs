@@ -40,6 +40,11 @@ static class Program
         Run("skill-books", () => SurvivalTests.SkillBooks(Check));
         Run("survival-save-load", () => SurvivalTests.SaveLoad(Check));
         Run("old-save-refused", () => SurvivalTests.OldSaveRefused(Check));
+        // Open-county systems: each area registers its own cases.
+        WorldTests.All(Run, Check);
+        BestiaryTests.All(Run, Check);
+        HumanTests.All(Run, Check);
+        CommunityTests.All(Run, Check);
         Console.WriteLine("Ashfall core: " + passes + " checks passed, " + failures + " failed.");
         foreach (var kv in report) Console.WriteLine("  " + kv.Key + " = " + kv.Value);
         return failures == 0 ? 0 : 1;

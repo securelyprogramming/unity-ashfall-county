@@ -5,6 +5,8 @@ using System.Linq;
 namespace Ashfall.Core
 {
     public enum Population { Low, Normal, High, Insane }
+    /// <summary>Community stock types. Rucksacks (ItemDef.resource) deliver them to the home base (Community.cs).</summary>
+    public enum Resource : byte { Food, Meds, Ammo, Materials, Fuel }
     public enum ZombieSpeed { Shamblers, FastShamblers, Sprinters }
 
     /// <summary>Sandbox options chosen on the New Game screen. The host owns them for the whole session.</summary>
@@ -21,10 +23,23 @@ namespace Ashfall.Core
         public float lootAbundance = 1;
         public bool infection = true;
         public bool respawn = true;
+        // Open-county options (PUBG-scale world, State of Decay community).
+        public int landingZone = -1;          // index into WorldGen.landingZones chosen on the drop map; -1 = random
+        public bool airdrops = true;          // Guard supply drops (WorldEvents.cs)
+        public bool redZones = true;          // Guard artillery cleansing zones (WorldEvents.cs)
+        public float humanDensity = 1;        // rival squads, raiders and enclaves (Humans.cs)
+        public float freakDensity = 1;        // screamers, bloaters, ferals, juggernauts and plague hearts (Bestiary.cs)
+        public int startingMembers = 3;       // community members at the start, including the leader (Community.cs)
         public float PopulationScale { get { switch (population) { case Population.Low: return .45f; case Population.High: return 1.7f; case Population.Insane: return 2.8f; default: return 1; } } }
     }
 
-    public enum EventKind { Message, Swing, Hit, Kill, Gunshot, Empty, Groan, Door, Glass, Thump, Hurt, Bite, Death, Craft, Eat, Drink, LevelUp, Radio, Helicopter, Footstep, Shove, Break, Barricade, Evacuated, Fire, Rain, Engine, Crash }
+    public enum EventKind
+    {
+        Message, Swing, Hit, Kill, Gunshot, Empty, Groan, Door, Glass, Thump, Hurt, Bite, Death, Craft, Eat, Drink, LevelUp, Radio, Helicopter, Footstep, Shove, Break, Barricade, Evacuated, Fire, Rain, Engine, Crash,
+        // Open-county additions. text carries a short detail ("warn", "land", ...); see Docs/DESIGN.md for the vocabulary.
+        Scream, Explosion, Gas, Pounce, Charge, Grab, Heart, HeartDestroyed, Plague, Airdrop, Artillery, Tracer, KillFeed,
+        Recruit, Facility, Mission, Morale, Influence, Switch, Talk, Trade, Siege, Legacy
+    }
 
     public struct SimEvent
     {
@@ -46,7 +61,13 @@ namespace Ashfall.Core
         Transfer, Equip, Unequip, Wear, Unwear, Use, Drop, Craft, ToggleDoor, Climb, BreakWindow, ClearGlass, Barricade, Unbarricade, Pry,
         Sleep, Wake, Reload, ToggleLight, Forage, Chop, Cook, Boil, FillWater, Harvest, AddFuel, LightFire, Cancel, OpenContainer, CloseContainer, Treat, DropAll,
         EnterVehicle, ExitVehicle, ToggleEngine, Hotwire, Refuel,
-        DigPlot, Plant, WaterPlot, Fish
+        DigPlot, Plant, WaterPlot, Fish,
+        // Community (Community.cs): target = survivor id / building id / facility kind; recipe = extra string argument.
+        SwitchCharacter, Recruit, BuildFacility, UpgradeFacility, ClaimOutpost, AbandonOutpost, DepositRucksack, AcceptMission, AbandonMission, Rest, CraftAtWorkshop,
+        // Humans (Humans.cs): target = survivor id; slot = CompanionOrder / trade option.
+        Talk, Trade, CompanionOrder, SetCompanion,
+        // Combat (SimCombat.cs): item = throwable uid, x/y = target point.
+        Throw
     }
     public enum InvKind { Player, Container, Pile, Corpse }
 
@@ -62,6 +83,7 @@ namespace Ashfall.Core
     public struct Command
     {
         public CommandKind kind; public int item, target, count, slot; public InvRef from, to; public string recipe;
+        public float x, y;   // world point for aimed requests (Throw)
         public static Command Of(CommandKind kind, int item = -1, int target = -1) { return new Command { kind = kind, item = item, target = target, count = 1, recipe = "" }; }
     }
 
@@ -87,7 +109,8 @@ namespace Ashfall.Core
         public int generatedProps;
         public HashSet<string> flags = new HashSet<string>();
         public int initialPopulation;
-        public string outcome = "";            // "", "evacuated", "dead"
+        public string outcome = "";            // "", "legacy" (county cleansed), "dead" (whole community lost); "evacuated" only in pre-refactor saves
+        public int playerId;                   // survivor the local owner currently controls (switching community members changes it)
         public ZombieIndex index;
 
         public int Day { get { return (int)(minutes / 1440) + 1; } }
@@ -134,11 +157,17 @@ namespace Ashfall.Core
             w.powerOffDay = settings.utilitiesMaxDay <= 0 ? 0 : w.rng.Range(settings.utilitiesMinDay, settings.utilitiesMaxDay + 1);
             w.waterOffDay = settings.utilitiesMaxDay <= 0 ? 0 : w.rng.Range(settings.utilitiesMinDay, settings.utilitiesMaxDay + 1);
             w.helicopterDay = w.rng.Range(2, 4); w.helicopterMinute = w.rng.Range(9 * 60, 17 * 60);
-            var home = WorldGen.StartHouse(w.map, w.rng);
+            // The drop: the community sets down at the chosen landing zone and claims a nearby home site.
+            var home = WorldGen.StartSite(w.map, gen, w.rng, settings.landingZone);
             var s = w.AddSurvivor(name, profession, female, home, traits);
+            w.playerId = s.id;
             w.SpawnZombies(s.pos, home);
+            w.SetupBestiary(home);          // Bestiary.cs: zombie kinds, plague hearts, hordes
             w.index = new ZombieIndex(w);
             w.SetupVehicles();
+            w.SetupCommunity(s, home);      // Community.cs: extra members, home base, stock
+            w.SetupHumans();                // Humans.cs: factions, enclaves, named characters, rival squads
+            w.SetupWorldEvents();           // WorldEvents.cs: airdrop and red-zone schedule
             return w;
         }
 

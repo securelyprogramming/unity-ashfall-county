@@ -36,6 +36,14 @@ namespace Ashfall.Core
         // Skill books: reading multiplies experience for a skill while its level is in [bookMinLevel, bookMaxLevel).
         public int bookSkill = -1, bookMinLevel, bookMaxLevel; public float bookMultiplier = 1;
         public int stack = 1;
+        // Open-county contract: loot rarity, consumable effects, armour, rucksacks and throwables.
+        public int tier;                    // 0 common, 1 uncommon, 2 rare, 3 military/airdrop
+        public float stamina;               // consumable: endurance restored
+        public float armor;                 // worn: fraction of damage absorbed (vests, helmets)
+        public int resource = -1;           // rucksack: (int)Resource delivered to the community stock, -1 = not a rucksack
+        public float resourceAmount;        // rucksack: stock units delivered
+        public float blastRadius, blastDamage; public float fuse;   // throwables (grenade, molotov, pipe bomb)
+        public float plagueCure;            // consumable: blood plague removed (0..100)
         public bool Has(string tag) { return Array.IndexOf(tags, tag) >= 0; }
         public bool Edible { get { return category == ItemCategory.Food || category == ItemCategory.Drink; } }
         public bool IsWeapon { get { return category == ItemCategory.Weapon || category == ItemCategory.Firearm || damage > 0; } }

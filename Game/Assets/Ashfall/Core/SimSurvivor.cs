@@ -135,7 +135,8 @@ namespace Ashfall.Core
             foreach (var item in s.inventory.items) pile.inventory.Add(item);
             s.inventory.items.Clear(); s.primary = s.secondary = -1; s.worn.Clear();
             world.Emit(EventKind.Death, s.pos, s.id, cause);
-            if (world.survivors.All(x => !x.alive) && world.outcome == "") world.outcome = "dead";
+            OnSurvivorKilled(s, cause);   // Humans.cs: kill feed, faction reactions
+            CommunityOnDeath(s);          // Community.cs: morale, switching, "dead" outcome when the community is gone
             // An infected survivor rises again.
             if (s.zombieInfected) { var z = world.AddZombie(s.pos, world.rng); z.female = s.female; z.variant = 0; z.state = ZombieState.Idle; z.timer = 30; }
         }

@@ -350,7 +350,7 @@ static class SurvivalTests
             try { SaveCodec.Peek(path); } catch (InvalidDataException e) { peek = e.Message; }
             check(load.Contains("older build") && load.Contains("save version 1"), "loading a version 1 save is refused clearly (" + load + ")");
             check(peek == load, "the load menu shows the same refusal");
-            check(SaveCodec.Version == 2, "save version is 2");
+            check(SaveCodec.Version == 3, "save version is 3");
             check(File.Exists(path), "refusing leaves the old save untouched");
         }
         finally { if (File.Exists(path)) File.Delete(path); }

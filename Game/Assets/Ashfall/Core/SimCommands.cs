@@ -13,6 +13,7 @@ namespace Ashfall.Core
             if (s.sleeping && c.kind != CommandKind.Wake) return;
             if (s.vehicle >= 0 && !AllowedInVehicle(c.kind)) return;
             if (VehicleCommand(s, c)) return;
+            if (ExecuteCommunity(s, c) || ExecuteHumans(s, c)) return;   // Community.cs, Humans.cs
             if (ExecuteSurvival(s, c)) return;
             switch (c.kind)
             {

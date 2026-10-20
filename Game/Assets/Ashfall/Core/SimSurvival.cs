@@ -61,6 +61,19 @@ namespace Ashfall.Core
 
         // ---------------------------------------------------------------- commands
         /// <summary>Validates and starts survival requests. Returns false when the command belongs to the general handler.</summary>
+        /// <summary>Hourly community/survival upkeep (food ageing, campfires, crops). Migration lives in Bestiary.cs.</summary>
+        void HourlySurvival()
+        {
+            var w = world;
+            foreach (var s in w.survivors) foreach (var i in s.inventory.items) if (i.Def.perishDays > 0) i.ageHours += 1;
+            foreach (var c in w.map.containers)
+                if (c.generated) foreach (var i in c.inventory.items) if (i.Def.perishDays > 0) i.ageHours += c.cold && w.PowerOn ? .2f : 1;
+            foreach (var p in w.piles.Values) foreach (var i in p.inventory.items) if (i.Def.perishDays > 0) i.ageHours += 1;
+            foreach (var p in w.map.props)
+                if (p.kind == PropKind.Campfire && p.lit && !p.removed) { p.fuel -= 1; p.modified = true; if (p.fuel <= 0) { p.lit = false; p.fuel = 0; } }
+            GrowPlots();
+        }
+
         bool ExecuteSurvival(Survivor s, Command c)
         {
             var inv = s.inventory;

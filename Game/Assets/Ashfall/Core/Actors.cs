@@ -61,10 +61,20 @@ namespace Ashfall.Core
         public float Progress { get { return duration <= 0 ? 1 : MathUtil.Clamp01(elapsed / duration); } }
     }
 
+    /// <summary>How a survivor is driven. None = an owner's input (the local player); every other role is a host AI brain
+    /// that submits the same InputState/Command requests a player would (Humans.cs).</summary>
+    public enum AiRole : byte { None, Companion, Resident, Rival, Enclave, Raider, Trader, Hunter }
+
     [Serializable]
-    public sealed class Survivor
+    public sealed partial class Survivor
     {
         public int id; public string name = "Mara Vale", profession = "paramedic";
+        // Community/faction contract (shared by Humans.cs, Community.cs and the views).
+        public int faction;                 // 0 = the player's community; other ids index World.factions (Humans.cs)
+        public AiRole ai = AiRole.None;     // None = driven by the owner's input
+        public string character = "";       // named character key (Characters in Humans.cs), "" for generic survivors
+        public bool offscreen;              // far from every player-controlled survivor: simulated abstractly by Humans.cs
+        public int lastHitBy = -1;          // survivor id that last damaged this survivor (-1 = none/zombie)
         public bool female = true;
         public Vec2 pos; public float facing, speed;
         public bool running, sneaking, aiming, alive = true, sleeping, inVehicle;
@@ -119,9 +129,11 @@ namespace Ashfall.Core
     public enum ZombieState : byte { Idle, Wander, Investigate, Chase, Attack, Thump, Climb, Knocked, Dead, Lunge, Eating }
 
     [Serializable]
-    public sealed class Zombie
+    public sealed partial class Zombie
     {
         public int id; public Vec2 pos, target; public float facing;
+        // Bestiary contract (Bestiary.cs): kind decides stats/behaviour; plague zombies spread blood plague.
+        public ZombieKind kind = ZombieKind.Walker; public float maxHp = 1.2f; public bool plague;
         public ZombieState state; public float hp = 1.2f, timer, speed, attackClock, repath, stagger, groan, lostSight;
         public int targetSurvivor = -1, thumping = -1, variant;
         public bool female, crawler, dormant = true;

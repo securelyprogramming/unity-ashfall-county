@@ -8,10 +8,13 @@ namespace Ashfall.Core
     public enum PropKind : byte
     {
         Tree, Bush, Counter, Fridge, Stove, Sink, Toilet, MedicineCabinet, Bed, Couch, Dresser, Wardrobe, Shelf, Crate,
-        Desk, Table, Bin, Toolbox, Workbench, Car, GasPump, HayBale, Campfire, RainCollector, WoodCrate, Cashier, Locker, Mailbox, Crops, FarmPlot
+        Desk, Table, Bin, Toolbox, Workbench, Car, GasPump, HayBale, Campfire, RainCollector, WoodCrate, Cashier, Locker, Mailbox, Crops, FarmPlot,
+        // Open-county additions (appended; byte values of earlier kinds are stable).
+        SupplyCrate, MilitaryCrate, Sandbags, Barrier, Tent, Watchtower, GardenBed, MedicalBed, RadioSet, Generator, OutpostFlag, AmmoBox, Bunk
     }
     public enum RoomType : byte { Living, Kitchen, Bedroom, Bathroom, Garage, Grocery, Pharmacy, Hardware, Diner, GasStation, Police, Barn, Storage, Office, Clothing }
-    public enum BuildingKind : byte { House, Farmhouse, Barn, Grocery, Pharmacy, Hardware, Diner, GasStation, Police, Clothing, Shed, Office }
+    public enum BuildingKind : byte { House, Farmhouse, Barn, Grocery, Pharmacy, Hardware, Diner, GasStation, Police, Clothing, Shed, Office,
+        Warehouse, Church, School, Hospital, Barracks, Armory, Hangar, RadioStation, Garage, Motel, Compound }
 
     /// <summary>A door or window on a tile edge. State is authoritative on the host.</summary>
     [Serializable]
@@ -233,5 +236,5 @@ namespace Ashfall.Core
         public bool Indoors(Vec2 p) { return RoomAt(p) != null; }
     }
 
-    public enum ZoneKind : byte { Wild, Forest, Farm, Suburb, Town, Commercial, Water }
+    public enum ZoneKind : byte { Wild, Forest, Farm, Suburb, Town, Commercial, Water, Military }
 }

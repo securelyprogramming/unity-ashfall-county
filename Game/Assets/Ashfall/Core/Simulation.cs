@@ -16,7 +16,8 @@ namespace Ashfall.Core
         public readonly Dictionary<int, HashSet<int>> visible = new Dictionary<int, HashSet<int>>();
         float accumulator, perceptionClock, hourClock;
         public int ActiveZombies { get { return active.Count; } }
-        public bool FastForward { get { return world.survivors.Count > 0 && world.survivors.All(s => !s.alive || s.sleeping); } }
+        /// <summary>Time races while the controlled survivor sleeps (AI survivors never block it).</summary>
+        public bool FastForward { get { var p = Survivor(world.playerId); return p != null && p.alive && p.sleeping; } }
         public const float ActiveRadius = 72;
 
         public Simulation(World world)
@@ -46,16 +47,21 @@ namespace Ashfall.Core
             while (commands.Count > 0) { var c = commands.Dequeue(); var s = Survivor(c.Key); if (s != null && s.alive) Execute(s, c.Value); }
             Weather(hours);
             Story();
-            foreach (var s in world.survivors) if (s.alive) UpdateSurvivor(s, dt, hours);
+            perceptionClock -= dt;
+            bool perceive = perceptionClock <= 0; if (perceive) perceptionClock = .2f;
+            // AI brains (companions, residents, rivals, raiders, enclaves) submit input/commands before survivors move.
+            UpdateHumans(dt, hours, perceive);
+            UpdateCommunity(dt, hours);
+            foreach (var s in world.survivors) if (s.alive && !s.offscreen) UpdateSurvivor(s, dt, hours);
             UpdateVehicles(dt);
             CollectActive();
             searches = 0;
-            perceptionClock -= dt;
-            bool perceive = perceptionClock <= 0; if (perceive) perceptionClock = .2f;
             foreach (var z in active) UpdateZombie(z, dt, perceive);
+            UpdateBestiary(dt, hours);
+            UpdateWorldEvents(dt, hours);
             Separate();
             ProcessNoise();
-            if (perceive) foreach (var s in world.survivors) if (s.alive) UpdateVisibility(s);
+            if (perceive) foreach (var s in world.survivors) if (s.alive && s.id == world.playerId) UpdateVisibility(s);
             if (hourClock >= 1) { hourClock -= 1; Hourly(); }
             if (world.corpses.Count > 400) world.corpses.RemoveRange(0, world.corpses.Count - 400);
         }
@@ -68,7 +74,7 @@ namespace Ashfall.Core
             var seen = new HashSet<int>();
             foreach (var s in world.survivors)
             {
-                if (!s.alive) continue;
+                if (!s.alive || s.offscreen) continue;
                 world.index.Query(s.pos, ActiveRadius, query);
                 foreach (var z in query) if (seen.Add(z.id)) { z.dormant = false; active.Add(z); }
             }
@@ -90,63 +96,10 @@ namespace Ashfall.Core
                     if (p.kind == PropKind.RainCollector && !p.removed) { p.water = Math.Min(40, p.water + hours * 8 * world.rainIntensity); p.modified = true; }
         }
 
-        void Story()
-        {
-            var w = world; double since = w.HoursSurvived;
-            Broadcast("radio-1", since > .05, "Ada Pike, Ashfall County emergency band. The county line is closed by the Guard. Stay indoors, lock your doors and keep quiet. They follow noise.");
-            Broadcast("radio-2", since > 3, "Ada again. Water and power crews have walked off. Fill every bottle and bathtub you can while the taps still run.");
-            if (w.settings.evacuationDay > 0)
-            {
-                Broadcast("radio-3", since > 9, "This is Jonah Reed in Cedar Fork. We are fixing up buses for a convoy. Day " + w.settings.evacuationDay + ", eight in the morning to two in the afternoon, the Ash River highway bridge. West bank. Be there.");
-                Broadcast("radio-4", w.Day == w.settings.evacuationDay - 1 && w.HourOfDay > 18, "Jonah Reed: convoy leaves the Ash River bridge tomorrow, eight to two. Travel in daylight. Do not bring them with you.");
-                Broadcast("radio-5", w.Day == w.settings.evacuationDay && w.HourOfDay > 7.5f, "Jonah Reed: we're at the bridge. Engines running. Come now.");
-                if (w.Day == w.settings.evacuationDay && w.HourOfDay >= 8 && w.HourOfDay <= 14 && w.outcome == "")
-                    foreach (var s in w.survivors)
-                        if (s.alive && Vec2.Distance(s.pos, w.gen.evacuationPoint) < 14)
-                        {
-                            w.outcome = "evacuated"; w.Emit(EventKind.Evacuated, s.pos, s.id, s.name + " boarded Jonah Reed's convoy.");
-                        }
-                if ((w.Day > w.settings.evacuationDay || w.Day == w.settings.evacuationDay && w.HourOfDay > 14) && w.outcome == "")
-                    Broadcast("radio-6", true, "Jonah Reed: we waited as long as we could. Convoy is moving out. Whoever is still out there... keep surviving.");
-            }
-            Broadcast("power-off", !w.PowerOn, "The lights flicker and die. The county grid is down.");
-            Broadcast("water-off", !w.WaterOn, "The taps sputter and run dry. The water is off.");
-            // Helicopter: a loud event that drags zombies across the county toward the survivor.
-            double heliStart = (w.helicopterDay - 1) * 1440 + w.helicopterMinute;
-            if (w.minutes > heliStart && w.minutes < heliStart + 30)
-            {
-                if (w.flags.Add("heli")) foreach (var s in w.survivors) if (s.alive) w.Message(s, "A helicopter thunders overhead, circling... it seems to be following you.");
-                if (w.rng.Chance(.06f))
-                    foreach (var s in w.survivors) if (s.alive) { var p = s.pos + Vec2.FromAngle(w.rng.Range(0, 6.28f)) * w.rng.Range(10, 30); w.MakeNoise(p, 85); w.Emit(EventKind.Helicopter, p, s.id); }
-            }
-        }
-        void Broadcast(string flag, bool condition, string text)
-        {
-            if (!condition || world.flags.Contains(flag)) return;
-            world.flags.Add(flag);
-            foreach (var s in world.survivors)
-                if (s.alive && (s.HasTag("radio") || flag == "power-off" || flag == "water-off"))
-                    world.Emit(flag.StartsWith("radio") ? EventKind.Radio : EventKind.Message, s.pos, s.id, text);
-        }
-
         void Hourly()
         {
-            var w = world;
-            // Food ages; refrigerators slow spoilage while the grid is up.
-            foreach (var s in w.survivors) foreach (var i in s.inventory.items) if (i.Def.perishDays > 0) i.ageHours += 1;
-            foreach (var c in w.map.containers)
-                if (c.generated) foreach (var i in c.inventory.items) if (i.Def.perishDays > 0) i.ageHours += c.cold && w.PowerOn ? .2f : 1;
-            foreach (var p in w.piles.Values) foreach (var i in p.inventory.items) if (i.Def.perishDays > 0) i.ageHours += 1;
-            foreach (var p in w.map.props)
-                if (p.kind == PropKind.Campfire && p.lit && !p.removed) { p.fuel -= 1; p.modified = true; if (p.fuel <= 0) { p.lit = false; p.fuel = 0; } }
-            GrowPlots();
-            // Slow migration: a few dormant zombies drift; the dead are slowly replaced from the county edges.
-            if (w.settings.respawn && w.Day > 2 && w.LivingZombies < w.initialPopulation * .8f)
-                for (int i = 0; i < 6; i++)
-                {
-                    int x = w.rng.Chance(.5f) ? w.rng.Range(4, 40) : w.map.width - w.rng.Range(4, 40), y = w.rng.Range(4, w.map.height - 4);
-                    if (!w.map.TileBlocked(x, y) && w.survivors.All(s => Vec2.Distance(s.pos, new Vec2(x, y)) > 120)) w.AddZombie(new Vec2(x + .5f, y + .5f), w.rng);
-                }
+            HourlySurvival();   // SimSurvival.cs (community upkeep)
+            HourlyBestiary();   // Bestiary.cs (migration, hordes, heart growth)
         }
 
         // ---------------------------------------------------------------- noise and perception
