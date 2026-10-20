@@ -101,8 +101,9 @@ namespace Ashfall.Core
             var forward = Vec2.FromAngle(z.facing);
             foreach (var s in world.survivors)
             {
-                if (!s.alive) continue;
-                var to = s.pos - z.pos; float d = to.Length;
+                if (!s.alive || s.offscreen) continue;
+                var to = s.pos - z.pos; if (to.SqrLength > 48 * 48) continue;   // beyond any notice range (32 m lit x 1.3 sight)
+                float d = to.Length;
                 float range = NoticeRange(s) * z.sight;
                 if (d > range) continue;
                 bool cone = d < 2.2f || Vec2.Dot(to * (1 / Math.Max(.01f, d)), forward) > .15f;
