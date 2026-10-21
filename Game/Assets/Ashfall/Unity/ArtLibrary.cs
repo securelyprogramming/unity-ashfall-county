@@ -48,6 +48,36 @@ namespace Ashfall.View
             n = 0; while (prefabs.ContainsKey(prefix + "/" + n)) n++; variantCounts[prefix] = n; return n;
         }
         public static string Variant(string prefix, int seed) { int n = Variants(prefix); return n == 0 ? null : prefix + "/" + (Math.Abs(seed) % n); }
+        /// <summary>A "human/&lt;group&gt;/&lt;n&gt;" role of the right gender: prepared group outfits alternate male (even n)
+        /// and female (odd n). Falls back to any variant of the group, then null.</summary>
+        public static string HumanVariant(string group, int seed, bool female)
+        {
+            string prefix = "human/" + group; int n = Variants(prefix); if (n == 0) return null;
+            int matching = female ? n / 2 : (n + 1) / 2;
+            if (matching == 0) return Variant(prefix, seed);
+            return prefix + "/" + ((Math.Abs(seed) % matching) * 2 + (female ? 1 : 0));
+        }
+        /// <summary>True when the prepared prefab's animator has the named parameter (for example the zombie "Special"
+        /// trigger: screamer scream, bloater burst, feral pounce, juggernaut charge).</summary>
+        public static bool HasParameter(Animator animator, string name)
+        {
+            if (animator == null || animator.runtimeAnimatorController == null) return false;
+            foreach (var p in animator.parameters) if (p.name == name) return true;
+            return false;
+        }
+
+        static readonly Dictionary<(Material, int), Material> tinted = new Dictionary<(Material, int), Material>();
+        /// <summary>A shared copy of a purchased material multiplied by a tint (faction colours, plague flush). Cached per
+        /// source and colour, so many actors with the same look share one material.</summary>
+        public static Material Tinted(Material source, Color tint)
+        {
+            if (source == null) return null;
+            Color32 c = tint; var key = (source, c.r << 24 | c.g << 16 | c.b << 8 | c.a);
+            Material m; if (tinted.TryGetValue(key, out m) && m != null) return m;
+            m = new Material(source) { name = source.name + " tinted" };
+            if (m.HasProperty("_Color")) m.color = source.color * tint;
+            tinted[key] = m; return m;
+        }
         public static GameObject Spawn(string role, Transform parent)
         {
             GameObject prefab; if (!prefabs.TryGetValue(role, out prefab)) return null;
