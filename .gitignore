@@ -34,3 +34,6 @@ Game/Assets/Resources/AshfallArt.json.meta
 tools/UnityCompileCheck/bin/
 tools/UnityCompileCheck/obj/
 !tools/UnityCompileCheck/UnityCompileCheck.csproj
+!tools/UnityCompileCheck/Core/AshfallCoreCheck.csproj
+tools/UnityCompileCheck/Core/bin/
+tools/UnityCompileCheck/Core/obj/

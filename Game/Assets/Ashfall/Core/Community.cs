@@ -134,7 +134,7 @@ namespace Ashfall.Core
         public bool plagueInfected;
         public float injury;        // 0..100: lowers maximum health until rested/treated
         public float MaxHealth { get { return Math.Max(10, 100 - injury); } }
-        internal float healthSeen = -1;   // health after the last survival update; a sharp drop since then is a serious hit
+        public float healthSeen = -1;     // health after the last survival update; a sharp drop since then is a serious hit
     }
 
     public sealed partial class World

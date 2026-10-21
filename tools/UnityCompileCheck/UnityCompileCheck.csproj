@@ -18,9 +18,13 @@
     <GameLibrary Condition="'$(GameLibrary)' == ''">$(GameDir)Library\</GameLibrary>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(GameDir)Assets\Ashfall\**\*.cs" />
+    <Compile Include="$(GameDir)Assets\Ashfall\Unity\**\*.cs" />
     <Compile Include="$(GameDir)Assets\Editor\**\*.cs" />
     <Compile Include="$(GameDir)Assets\StudioIntro\**\*.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- Ashfall.Core is a separate assembly in Unity (asmdef), so internal members stay invisible here too. -->
+    <ProjectReference Include="Core\AshfallCoreCheck.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(UnityEditorDir)\Data\Managed\UnityEngine\*.dll" Private="false" />
