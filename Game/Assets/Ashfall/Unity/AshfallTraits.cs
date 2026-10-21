@@ -80,7 +80,7 @@ namespace Ashfall.View
                 bool blocked = !on && Trait.Validate(new List<string>(chosenTraits) { t.id }) != "";
                 string cost = t.cost > 0 ? "costs " + t.cost : "gives " + (-t.cost);
                 UIKit.SetLabel(traitButtons[t.id], (on ? "<color=#9fe08a>●</color> " : blocked ? "<color=#555>○</color> " : "<color=#777>○</color> ") + "<b>" + t.name + "</b>  <color=#aaa><size=18>" + cost + "</size></color>\n<size=17><color=" + (blocked ? "#777" : "#c8c4b8") + ">" + t.description + "</color></size>");
-                traitButtons[t.id].GetComponent<Image>().color = on ? new Color(1.5f, 1.2f, .8f) : Color.white;
+                UIKit.SetActive(traitButtons[t.id], on);
             }
             RefreshTraitRow();
         }

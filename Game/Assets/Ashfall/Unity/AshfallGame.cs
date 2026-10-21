@@ -24,7 +24,15 @@ namespace Ashfall.View
         public string lastTraits = "";   // comma-separated trait ids from the last New Game
     }
 
-    public enum Screen { Title, NewGame, Load, Loading, Playing, Dead, Evacuated }
+    /// <summary>Top-level screens. Evacuated is kept only for pre-refactor saves (shown as a neutral ending).</summary>
+    public enum Screen { Title, NewGame, Load, Loading, Playing, Dead, Evacuated, DropMap, Legacy }
+
+    /// <summary>The county layout generated for the New Game drop map: landing zones, landmarks and a rendered overview.</summary>
+    public sealed class DropPreview
+    {
+        public int seed, size, mapWidth, mapHeight, texWidth, texHeight;
+        public WorldGen gen; public Color32[] pixels;
+    }
 
     public sealed class ContextAction { public string label; public Action run; public bool enabled = true; public string reason = ""; }
     public sealed class Interactable { public string label; public Vector3 pos; public float score; public readonly List<ContextAction> actions = new List<ContextAction>(); }
@@ -41,7 +49,8 @@ namespace Ashfall.View
         public Preferences Prefs { get; private set; }
         public Screen Screen { get; private set; }
         public bool Paused { get; set; }
-        public Survivor Player { get { return World == null || World.survivors.Count == 0 ? null : World.survivors[LocalId]; } }
+        /// <summary>The controlled community member (World.playerId; it changes when the player switches or the member dies).</summary>
+        public Survivor Player { get { return World == null ? null : World.Controlled; } }
         /// <summary>The community member the local owner controls (switching members changes it).</summary>
         public int LocalId { get { return World == null ? 0 : World.playerId; } }
         public Camera Cam { get; private set; }
@@ -59,7 +68,7 @@ namespace Ashfall.View
         static float Smooth(float a, float b) { return a * .9f + b * .1f; }
         public readonly List<string> Radio = new List<string>();
 
-        InputAction move, look, run, sneak, aim, attack, shove, interact, context, inventory, crafting, health, mapKey, journal, pause, reload, light, hotbarNext, zoomAxis, forage, cancel;
+        InputAction move, look, run, sneak, aim, attack, shove, interact, context, inventory, community, mapKey, missions, companion, throwKey, pause, reload, light, zoomAxis, cancel;
         Light sun, playerGlow, flashlight;
         ParticleSystem rain;
         ActorView playerView;
@@ -69,7 +78,8 @@ namespace Ashfall.View
         readonly Dictionary<int, float> lastSeen = new Dictionary<int, float>();
         Task<World> loading;
         Action<World> loaded;
-        float zoom = 13, interactClock, autosaveClock, shake, orbit;
+        float zoom = 13, interactClock, autosaveClock, shake, orbit, throwHeld = -1, loadingStarted;
+        int lastControlled = -1;
         Vector3 camFocus;
         bool usingGamepadAim;
         int hotbarIndex;
@@ -199,30 +209,31 @@ namespace Ashfall.View
             shove = Gameplay.AddAction("Shove", InputActionType.Button, "<Keyboard>/space"); shove.AddBinding("<Gamepad>/leftShoulder");
             interact = Gameplay.AddAction("Interact", InputActionType.Button, "<Keyboard>/e"); interact.AddBinding("<Gamepad>/buttonSouth");
             context = Gameplay.AddAction("Actions Menu", InputActionType.Button, "<Keyboard>/q"); context.AddBinding("<Gamepad>/buttonNorth");
+            // RB: tap cycles weapons, hold aims a throw and releases it (Docs/DESIGN.md controls).
+            throwKey = Gameplay.AddAction("Throw", InputActionType.Button, "<Keyboard>/g"); throwKey.AddBinding("<Gamepad>/rightShoulder");
+            companion = Gameplay.AddAction("Companion Order", InputActionType.Button, "<Keyboard>/c"); companion.AddBinding("<Gamepad>/dpad/up");
             inventory = Gameplay.AddAction("Inventory", InputActionType.Button, "<Keyboard>/tab"); inventory.AddBinding("<Keyboard>/i"); inventory.AddBinding("<Gamepad>/select");
-            crafting = Gameplay.AddAction("Crafting", InputActionType.Button, "<Keyboard>/b"); crafting.AddBinding("<Gamepad>/dpad/left");
-            health = Gameplay.AddAction("Health", InputActionType.Button, "<Keyboard>/h"); health.AddBinding("<Gamepad>/dpad/right");
+            community = Gameplay.AddAction("Community", InputActionType.Button, "<Keyboard>/k"); community.AddBinding("<Gamepad>/dpad/left");
             mapKey = Gameplay.AddAction("Map", InputActionType.Button, "<Keyboard>/m"); mapKey.AddBinding("<Gamepad>/dpad/down");
-            journal = Gameplay.AddAction("Radio Log", InputActionType.Button, "<Keyboard>/j");
+            missions = Gameplay.AddAction("Missions", InputActionType.Button, "<Keyboard>/j"); missions.AddBinding("<Gamepad>/dpad/right");
             pause = Gameplay.AddAction("Pause", InputActionType.Button, "<Keyboard>/escape"); pause.AddBinding("<Gamepad>/start");
             reload = Gameplay.AddAction("Reload", InputActionType.Button, "<Keyboard>/r"); reload.AddBinding("<Gamepad>/buttonWest");
-            light = Gameplay.AddAction("Flashlight", InputActionType.Button, "<Keyboard>/f"); light.AddBinding("<Gamepad>/dpad/up");
-            hotbarNext = Gameplay.AddAction("Next Weapon", InputActionType.Button, "<Gamepad>/rightShoulder");
-            forage = Gameplay.AddAction("Forage", InputActionType.Button, "<Keyboard>/g");
+            light = Gameplay.AddAction("Flashlight", InputActionType.Button, "<Keyboard>/f");
             cancel = Gameplay.AddAction("Back", InputActionType.Button, "<Gamepad>/buttonEast");
             zoomAxis = Gameplay.AddAction("Zoom", InputActionType.Value, "<Mouse>/scroll/y");
+            // Deterministic binding ids so saved overrides survive restarts; the salt changes whenever the binding set does (v2: open-county controls).
             using (var hash = SHA256.Create())
                 foreach (var action in Gameplay.actions)
                     for (int i = 0; i < action.bindings.Count; i++)
                     {
                         var b = action.bindings[i];
-                        var digest = hash.ComputeHash(Encoding.UTF8.GetBytes("AshfallInput/v1/" + action.name + "/" + b.name + "/" + b.path));
+                        var digest = hash.ComputeHash(Encoding.UTF8.GetBytes("AshfallInput/v2/" + action.name + "/" + b.name + "/" + b.path));
                         b.id = new Guid(digest.Take(16).ToArray()); action.ChangeBinding(i).To(b);
                     }
             if (!string.IsNullOrEmpty(Prefs.bindings)) try { Gameplay.LoadBindingOverridesFromJson(Prefs.bindings); } catch (Exception) { Notice = "Saved key bindings could not be read; defaults restored."; }
             Gameplay.Enable();
         }
-        public IEnumerable<InputAction> RebindableActions { get { return new[] { run, sneak, aim, attack, shove, interact, context, inventory, crafting, health, mapKey, journal, reload, light, forage }; } }
+        public IEnumerable<InputAction> RebindableActions { get { return new[] { run, sneak, aim, attack, shove, interact, context, throwKey, companion, inventory, community, mapKey, missions, reload, light }; } }
         public bool PausePressed { get { return pause.WasPressedThisFrame(); } }
         public bool BackPressed { get { return cancel.WasPressedThisFrame(); } }
         public bool InventoryPressed { get { return inventory.WasPressedThisFrame(); } }
@@ -232,30 +243,82 @@ namespace Ashfall.View
         {
             traits = traits ?? new string[0];
             Prefs.lastName = name; Prefs.lastProfession = profession; Prefs.lastFemale = female; Prefs.lastTraits = string.Join(",", traits); SavePrefs();
-            BeginLoading("Generating Ashfall County (" + settings.mapSize + " × " + settings.mapSize + " m)...", Task.Run(() => World.Create(settings, name, profession, female, traits)),
+            CancelDropMap();
+            var p = Preview; bool known = p != null && p.seed == settings.seed && p.size == settings.mapSize && settings.landingZone >= 0 && settings.landingZone < p.gen.landingZones.Count;
+            string where = known ? "Dropping into " + p.gen.landingZones[settings.landingZone].name : "Dropping into Ashfall County";
+            Preview = null;
+            BeginLoading(where + " · generating " + settings.mapSize + " × " + settings.mapSize + " m", AfterSurvey(() => World.Create(settings, name, profession, female, traits)),
                 w => { CurrentSave = Path.Combine(SaveDirectory, Slug(name) + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + ".sav"); Radio.Clear(); Enter(w); SaveNow(); });
+        }
+
+        // ---------------------------------------------------------------- drop map
+        /// <summary>The county layout for the drop map, once generated (null while generating).</summary>
+        public DropPreview Preview { get; private set; }
+        public bool PreviewPending { get { return previewTask != null; } }
+        public float PreviewSeconds { get { return previewTask == null ? 0 : Time.realtimeSinceStartup - previewStarted; } }
+        Task<DropPreview> previewTask; float previewStarted; int wantSeed, wantSize;
+        /// <summary>Generation runs on worker threads; a new session waits for any survey still running so the two never overlap.</summary>
+        Task<World> AfterSurvey(Func<World> work)
+        {
+            var survey = previewTask;
+            return Task.Run(() => { if (survey != null) try { survey.Wait(); } catch (Exception) { } return work(); });
+        }
+
+        /// <summary>Generates the county layout in the background (same seed and size World.Create will use) and opens the drop map.</summary>
+        public void OpenDropMap(SandboxSettings settings)
+        {
+            int seed = settings.seed, size = settings.mapSize; wantSeed = seed; wantSize = size;
+            if ((Preview == null || Preview.seed != seed || Preview.size != size) && previewTask == null) StartSurvey(seed, size);
+            else if (previewTask != null) Preview = null;   // a survey for other settings is running: PollPreview starts the right one after it
+            Show(Screen.DropMap);
+        }
+        void StartSurvey(int seed, int size)
+        {
+            {
+                Preview = null; previewStarted = Time.realtimeSinceStartup;
+                previewTask = Task.Run(() =>
+                {
+                    WorldGen gen; var map = WorldGen.Generate(seed, size, out gen);
+                    var d = new DropPreview { seed = seed, size = size, gen = gen, mapWidth = map.width, mapHeight = map.height };
+                    d.pixels = UiMapRender.Render(map, 1024, out d.texWidth, out d.texHeight);
+                    return d;   // the Map itself is released here: World.Create regenerates it deterministically
+                });
+            }
+        }
+        void CancelDropMap() { wantSeed = wantSize = 0; }
+        void PollPreview()
+        {
+            if (previewTask == null || !previewTask.IsCompleted) return;
+            var task = previewTask; previewTask = null;
+            if (task.IsFaulted) { Notice = "Could not survey the county: " + task.Exception.GetBaseException().Message; Debug.LogError(task.Exception); if (Screen == Screen.DropMap) Show(Screen.NewGame); return; }
+            if (wantSize == 0) return;   // the player left the drop map
+            if (task.Result.seed != wantSeed || task.Result.size != wantSize) { StartSurvey(wantSeed, wantSize); return; }
+            Preview = task.Result; UI.PreviewReady();
         }
         public void LoadGame(string path)
         {
-            BeginLoading("Restoring " + Path.GetFileNameWithoutExtension(path) + "...", Task.Run(() => SaveCodec.Load(path)), w => { CurrentSave = path; Radio.Clear(); Enter(w); });
+            BeginLoading("Restoring " + Path.GetFileNameWithoutExtension(path) + "...", AfterSurvey(() => SaveCodec.Load(path)), w => { CurrentSave = path; Radio.Clear(); Enter(w); });
         }
         void BeginLoading(string text, Task<World> task, Action<World> done)
         {
-            LoadingText = text; loading = task; loaded = done; Show(Screen.Loading);
+            LoadingText = text; loading = task; loaded = done; loadingStarted = Time.realtimeSinceStartup; Show(Screen.Loading);
         }
         static string Slug(string name) { var s = new string((name ?? "survivor").ToLowerInvariant().Select(c => char.IsLetterOrDigit(c) ? c : '-').ToArray()).Trim('-'); return s.Length == 0 ? "survivor" : s; }
+
+        public float LoadingSeconds { get { return loading == null ? 0 : Time.realtimeSinceStartup - loadingStarted; } }
 
         void Enter(World w)
         {
             DestroyBackdrop(); ClearSession();
-            World = w; Sim = new Simulation(w);
+            World = w; Sim = new Simulation(w); lastControlled = w.playerId;
             View = new GameObject("County View").AddComponent<WorldView>(); View.transform.SetParent(transform, false); View.Initialize(w);
             var s = Player;
             BeginPresentation(w);   // AshfallGame.Present.cs
             camFocus = Pos(s.pos);
             for (int i = 0; i < 12; i++) View.Refresh(camFocus, -CameraForward(), 6);
             autosaveClock = 0;
-            Show(w.outcome == "dead" || !s.alive ? Screen.Dead : Screen.Playing);
+            UI.BeginSession(w);
+            Show(w.outcome == "dead" || CommunityGone ? Screen.Dead : Screen.Playing);
             Debug.Log("ASHFALL_SESSION seed=" + w.settings.seed + " size=" + w.settings.mapSize + " zombies=" + w.LivingZombies + " buildings=" + w.map.buildings.Count);
         }
 
@@ -263,7 +326,7 @@ namespace Ashfall.View
         {
             if (View != null) { View.Clear(); Destroy(View.gameObject); View = null; }
             ClearPresentation();    // AshfallGame.Present.cs
-            World = null; Sim = null; Focus = null; Nearby.Clear(); lastSeen.Clear();
+            World = null; Sim = null; Focus = null; Nearby.Clear(); lastSeen.Clear(); lastControlled = -1; throwHeld = -1;
         }
 
         public bool SaveNow()
@@ -271,6 +334,11 @@ namespace Ashfall.View
             if (World == null || string.IsNullOrEmpty(CurrentSave)) return false;
             try { SaveCodec.Save(World, CurrentSave); UI.Toast("Game saved."); return true; }
             catch (Exception e) { UI.Toast("Save failed: " + e.Message); Debug.LogError("Save failed: " + e); return false; }
+        }
+        /// <summary>True when no member of the player's community is alive (the session is over).</summary>
+        public bool CommunityGone
+        {
+            get { if (World == null) return false; foreach (var m in World.survivors) if (m.faction == 0 && m.alive) return false; return true; }
         }
         public void QuitToTitle(bool save)
         {
@@ -292,6 +360,7 @@ namespace Ashfall.View
                 if (task.IsFaulted) { Notice = "Could not start: " + task.Exception.GetBaseException().Message; Debug.LogError(task.Exception); Show(Screen.Title); }
                 else loaded(task.Result);
             }
+            PollPreview();
             if (backdropView != null && World == null) UpdateBackdrop(dt);
             if (World == null) { UI.Tick(); return; }
             if (Screen == Screen.Playing)
@@ -304,8 +373,10 @@ namespace Ashfall.View
                     Events();
                     autosaveClock += dt; if (autosaveClock > 300 && !QaActive) { autosaveClock = 0; SaveNow(); }
                 }
-                if (World.outcome == "dead" || !Player.alive) { if (Screen != Screen.Dead) { Audio.Play("death", Player.pos); if (!QaActive) SaveNow(); Show(Screen.Dead); } }
-                else if (World.outcome == "evacuated" && !World.flags.Contains("evac-shown")) { World.flags.Add("evac-shown"); SaveNow(); Show(Screen.Evacuated); }
+                WatchControl();
+                if (World.outcome == "dead" || CommunityGone) { if (Screen != Screen.Dead) { var p = Player; if (p != null) Audio.Play("death", p.pos); if (!QaActive) SaveNow(); Show(Screen.Dead); } }
+                else if (World.outcome == "legacy" && World.flags.Add("legacy-shown")) { if (!QaActive) SaveNow(); Show(Screen.Legacy); }
+                else if (World.outcome == "evacuated" && World.flags.Add("evac-shown")) { if (!QaActive) SaveNow(); Show(Screen.Evacuated); }
             }
             timer.Restart(); Present(dt); ViewMs = Smooth(ViewMs, (float)timer.Elapsed.TotalMilliseconds);
             timer.Restart(); UI.Tick(); UiMs = Smooth(UiMs, (float)timer.Elapsed.TotalMilliseconds);
@@ -325,6 +396,16 @@ namespace Ashfall.View
                 a.Pose(new Vector3(z.pos.x, 0, z.pos.y) + drift, z.facing * Mathf.Rad2Deg + Mathf.Sin(Time.time * .3f + i) * 30, .4f, false, false, false, false, dt);
             }
             Lighting(.55f, false, Vector3.zero);
+        }
+
+        /// <summary>Notices when control passes to another member (a switch at base, or the controlled member dying).</summary>
+        void WatchControl()
+        {
+            int id = World.playerId;
+            if (id == lastControlled) return;
+            var old = lastControlled >= 0 && lastControlled < World.survivors.Count ? World.survivors[lastControlled] : null;
+            lastControlled = id; Focus = null; Nearby.Clear(); throwHeld = -1;
+            UI.ControlChanged(old, Player);
         }
 
         public static Vector3 Pos(Vec2 p, float y = 0) { return new Vector3(p.x, y, p.y); }
@@ -369,13 +450,14 @@ namespace Ashfall.View
                     if (plane.Raycast(ray, out t)) { var p = ray.GetPoint(t); var d = new Vector2(p.x - s.pos.x, p.z - s.pos.y); if (d.sqrMagnitude > .04f) input.face = Mathf.Atan2(d.y, d.x); }
                 }
                 float scroll = zoomAxis.ReadValue<float>();
-                if (Mathf.Abs(scroll) > .01f && !pointerOverUi) zoom = Mathf.Clamp(zoom - Mathf.Sign(scroll) * 1.2f, 6, 30);
+                // The county is large: the camera pulls out further than the old town view.
+                if (Mathf.Abs(scroll) > .01f && !pointerOverUi) zoom = Mathf.Clamp(zoom - Mathf.Sign(scroll) * 1.5f, 6, 36);
                 if (interact.WasPressedThisFrame()) DoPrimary();
                 if (context.WasPressedThisFrame()) UI.OpenContext();
                 if (reload.WasPressedThisFrame()) Sim.Submit(s.id, Command.Of(CommandKind.Reload));
                 if (light.WasPressedThisFrame()) Sim.Submit(s.id, Command.Of(CommandKind.ToggleLight));
-                if (forage.WasPressedThisFrame()) Sim.Submit(s.id, Command.Of(CommandKind.Forage));
-                if (hotbarNext.WasPressedThisFrame()) CycleWeapon();
+                if (companion.WasPressedThisFrame()) CycleCompanionOrder();
+                ThrowInput(s);
                 if (Keyboard.current != null)
                 {
                     for (int i = 0; i < 6; i++) if (Keyboard.current[Key.Digit1 + i].wasPressedThisFrame) UseHotbar(i);
@@ -386,10 +468,9 @@ namespace Ashfall.View
             if (!UI.TextEntryActive)
             {
                 if (inventory.WasPressedThisFrame()) UI.Toggle("inventory");
-                if (crafting.WasPressedThisFrame()) UI.Toggle("crafting");
-                if (health.WasPressedThisFrame()) UI.Toggle("health");
+                if (community.WasPressedThisFrame()) UI.Toggle("community");
                 if (mapKey.WasPressedThisFrame()) UI.Toggle("map");
-                if (journal.WasPressedThisFrame()) UI.Toggle("journal");
+                if (missions.WasPressedThisFrame()) UI.Toggle("missions");
                 if (cancel.WasPressedThisFrame()) UI.CloseTopPanel();
             }
             // Driving: the stick/WASD become throttle (y) and steering (x); Space brakes, R toggles the engine.
@@ -408,6 +489,55 @@ namespace Ashfall.View
             return s.inventory.items.Where(i => i.Def.IsWeapon && i.Def.category != ItemCategory.Material || i.Def.category == ItemCategory.Light).OrderBy(i => i.Def.category == ItemCategory.Light ? 1 : 0).ThenByDescending(i => i.Def.damage).Take(6).ToList();
         }
         void UseHotbar(int i) { var bar = Hotbar(); if (i < bar.Count) Sim.Submit(LocalId, new Command { kind = bar[i].Def.category == ItemCategory.Light ? CommandKind.ToggleLight : CommandKind.Equip, item = bar[i].uid, slot = 0 }); }
+        /// <summary>G throws at the mouse ground point. RB tapped cycles weapons; RB held aims about 12 m ahead and throws on release.</summary>
+        void ThrowInput(Survivor s)
+        {
+            if (throwKey.WasPressedThisFrame())
+            {
+                bool pad = throwKey.activeControl != null && throwKey.activeControl.device is Gamepad;
+                if (pad) throwHeld = 0; else ThrowAt(s, MouseGround());
+            }
+            if (throwHeld < 0) return;
+            throwHeld += Time.unscaledDeltaTime;
+            if (!throwKey.IsPressed())
+            {
+                if (throwHeld < .3f) CycleWeapon();
+                else ThrowAt(s, ThrowAimPoint);
+                throwHeld = -1;
+            }
+        }
+        /// <summary>True while a controller throw is being aimed (the HUD shows the landing point).</summary>
+        public bool ThrowAiming { get { return throwHeld >= .3f; } }
+        public Vector3 ThrowAimPoint { get { var s = Player; if (s == null) return Vector3.zero; return Pos(s.pos) + new Vector3(Mathf.Cos(s.facing), 0, Mathf.Sin(s.facing)) * 12; } }
+        Vector3 MouseGround()
+        {
+            if (Mouse.current == null) return ThrowAimPoint;
+            var ray = Cam.ScreenPointToRay(Mouse.current.position.ReadValue()); float t;
+            return new Plane(Vector3.up, Vector3.zero).Raycast(ray, out t) ? ray.GetPoint(t) : ThrowAimPoint;
+        }
+        /// <summary>The first throwable carried (grenade, molotov, pipe bomb), or null.</summary>
+        public ItemStack Throwable()
+        {
+            var s = Player; if (s == null) return null;
+            foreach (var i in s.inventory.items) if (i.Def.Has("throwable") || i.Def.blastRadius > 0) return i;
+            return null;
+        }
+        public void ThrowAt(Survivor s, Vector3 at)
+        {
+            var item = Throwable();
+            if (item == null) { UI.Toast("Nothing to throw. Grenades, molotovs and pipe bombs turn up in military loot and airdrops."); Audio.Ui("deny"); return; }
+            Sim.Submit(s.id, new Command { kind = CommandKind.Throw, item = item.uid, x = at.x, y = at.z, recipe = "" });
+        }
+        /// <summary>C / d-pad up: the companion's order cycles Follow, Hold, Attack.</summary>
+        void CycleCompanionOrder()
+        {
+            int c = World.community.companion; var mate = c >= 0 && c < World.survivors.Count ? World.survivors[c] : null;
+            if (mate == null || !mate.alive) { UI.Toast("No companion. Pick one in the Community panel (K)."); Audio.Ui("deny"); return; }
+            var next = (CompanionOrder)(((int)mate.order + 1) % 3);
+            Submit(new Command { kind = CommandKind.CompanionOrder, target = mate.id, slot = (int)next, recipe = "" });
+            UI.Toast(mate.name + ": " + AshfallUI.OrderName(next));
+        }
+
         void CycleWeapon() { var bar = Hotbar().Where(i => i.Def.category != ItemCategory.Light).ToList(); if (bar.Count == 0) return; hotbarIndex = (hotbarIndex + 1) % bar.Count; Sim.Submit(LocalId, new Command { kind = CommandKind.Equip, item = bar[hotbarIndex].uid }); }
 
         public void Submit(Command c) { if (Sim != null) Sim.Submit(LocalId, c); }

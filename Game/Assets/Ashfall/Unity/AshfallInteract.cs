@@ -55,7 +55,7 @@ namespace Ashfall.View
                 var target = fe.Value; Add(it, "Climb over fence", () => ClimbFence(target));
                 Score(it, s, forward); Nearby.Add(it);
             }
-            // Furniture, containers, water, heat, beds, trees and crops.
+            // Furniture, containers (supply crates included), beds, the workbench and the radio set.
             for (int x = px - 2; x <= px + 2; x++)
                 for (int y = py - 2; y <= py + 2; y++)
                 {
@@ -69,21 +69,23 @@ namespace Ashfall.View
             foreach (var c in World.corpses)
             {
                 if (Vector2.Distance(new Vector2(c.pos.x, c.pos.y), new Vector2(s.pos.x, s.pos.y)) > 1.6f) continue;
-                var it = new Interactable { label = "Zombie corpse", pos = Pos(c.pos, .3f) }; Add(it, "Search corpse", () => UI.OpenInventory());
+                var it = new Interactable { label = c.zombie ? "Zombie corpse" : "Body", pos = Pos(c.pos, .3f) }; Add(it, "Search corpse", () => UI.OpenInventory());
                 Score(it, s, forward); it.score += .4f; Nearby.Add(it);
             }
             var pile = World.PileAt(px, py, false);
             if (pile != null && pile.inventory.items.Count > 0) { var it = new Interactable { label = "Items on the floor", pos = Pos(s.pos, .2f) }; Add(it, "Pick up items", () => UI.OpenInventory()); it.score = .5f; Nearby.Add(it); }
-            // The survivor's own context: foraging, sleeping rough, drinking from the river.
+            // Other people: talk, trade, recruit; community members: companion orders and switching.
+            PeopleInteractions(s, forward);   // AshfallSurvivalActions.cs
+            // The survivor's own context: base actions (deposit, switch, rest), outposts and sleeping rough.
             var self = new Interactable { label = "Yourself", pos = Pos(s.pos, 1.8f), score = 99 };
-            if (!map.Indoors(s.pos)) Add(self, "Forage here (G)", () => Submit(Command.Of(CommandKind.Forage)));
-            SurvivalSelfActions(self, s);
-            if (Sim.NearWater(s)) foreach (var bottle in inv.items.Where(i => i.Def.waterCapacity > 0 && i.water < i.Def.waterCapacity).Take(2)) { int uid = bottle.uid; Add(self, "Fill " + bottle.Def.name + " from the river", () => Submit(new Command { kind = CommandKind.FillWater, item = uid, target = -1 })); }
-            Add(self, "Sleep on the ground", () => Submit(new Command { kind = CommandKind.Sleep, target = -1 }), s.fatigue >= 30, "Not tired enough");
+            CommunitySelfActions(self, s);    // AshfallSurvivalActions.cs
+            if (!Sim.AtBase(s)) Add(self, "Sleep on the ground", () => Submit(new Command { kind = CommandKind.Sleep, target = -1 }), s.fatigue >= 30, "Not tired enough");
             if (inv.items.Any(i => i.Def.category == ItemCategory.Light)) Add(self, s.lightOn ? "Turn flashlight off (F)" : "Turn flashlight on (F)", () => Submit(Command.Of(CommandKind.ToggleLight)));
             Nearby.Add(self);
             Nearby.Sort((a, b) => a.score.CompareTo(b.score));
             Focus = Nearby.FirstOrDefault(n => n != self && n.actions.Any(a => a.enabled));
+            // Base actions are worth a single press when nothing else is in reach (deposit rucksacks, claim an outpost).
+            if (Focus == null && self.actions.Count > 0 && self.actions[0].enabled && self.score < 99) Focus = self;
         }
 
         bool PropReach(Survivor s, Prop p)
@@ -99,27 +101,22 @@ namespace Ashfall.View
             int id = p.id;
             var car = p.kind == PropKind.Car ? World.VehicleOfProp(p.id) : null;
             if (car != null) CarInteractions(it, s, car);
-            if (p.container >= 0) { int cid = p.container; Add(it, car != null ? "Search trunk" : "Search " + it.label.ToLowerInvariant(), () => { Submit(new Command { kind = CommandKind.OpenContainer, target = cid }); UI.OpenInventory(); }); }
-            if (p.CanSleep) Add(it, "Sleep", () => Submit(new Command { kind = CommandKind.Sleep, target = id }), s.fatigue >= 30, "Not tired enough");
-            if (p.IsWaterSource)
+            bool atBase = Sim.AtBase(s);
+            if (p.container >= 0)
             {
-                bool flowing = (p.kind == PropKind.Sink || p.kind == PropKind.Toilet) && World.WaterOn;
-                string state = flowing ? "running" : p.water >= 1 ? (int)p.water + " units left" : "dry";
-                it.label += " (" + state + ")";
-                foreach (var bottle in inv.items.Where(i => i.Def.waterCapacity > 0 && i.water < i.Def.waterCapacity).Take(3)) { int uid = bottle.uid; Add(it, "Fill " + bottle.Def.name, () => Submit(new Command { kind = CommandKind.FillWater, item = uid, target = id }), flowing || p.water >= 1, "No water"); }
+                int cid = p.container; bool crate = p.kind == PropKind.SupplyCrate || p.kind == PropKind.MilitaryCrate;
+                Add(it, car != null ? "Search trunk" : (crate ? "Open " : "Search ") + it.label.ToLowerInvariant(), () => { Submit(new Command { kind = CommandKind.OpenContainer, target = cid }); UI.OpenInventory(); });
+                // A car parked at base: DepositRucksack with item -1 takes every carried rucksack plus the trunk's.
+                if (car != null && atBase) Add(it, "Unload rucksacks into the base stock", () => Submit(new Command { kind = CommandKind.DepositRucksack, item = -1, recipe = "" }));
             }
-            if (p.IsHeat)
-            {
-                bool hot = p.kind == PropKind.Campfire ? p.lit : World.PowerOn;
-                if (p.kind == PropKind.Stove) it.label += hot ? " (working)" : " (no power)";
-                if (p.kind == PropKind.Campfire) { it.label += p.lit ? " (burning, " + p.fuel.ToString("0.0") + " h)" : " (cold)"; if (!p.lit) Add(it, "Light campfire", () => Submit(new Command { kind = CommandKind.LightFire, target = id }), inv.FindTag("fire") != null && p.fuel > 0, p.fuel <= 0 ? "Add fuel first" : "Needs a lighter or matches"); foreach (var f in inv.items.Where(i => i.def == "branch" || i.def == "plank" || i.def == "log" || i.def == "magazine").Take(3)) { int uid = f.uid; Add(it, "Add " + f.Def.name + " as fuel", () => Submit(new Command { kind = CommandKind.AddFuel, target = id, item = uid })); } }
-                foreach (var food in inv.items.Where(i => !string.IsNullOrEmpty(i.Def.cooksInto) && !i.cooked).Take(4)) { int uid = food.uid; Add(it, "Cook " + food.Def.name, () => Submit(new Command { kind = CommandKind.Cook, item = uid }), hot, "Not lit"); }
-                foreach (var water in inv.items.Where(i => i.Def.waterCapacity > 0 && i.tainted && i.water > 0).Take(2)) { int uid = water.uid; Add(it, "Boil " + water.Def.name, () => Submit(new Command { kind = CommandKind.Boil, item = uid }), hot, "Not lit"); }
-                if (Recipe.Get("stew").Missing(s, hot).Count == 0) Add(it, "Cook hearty stew", () => Submit(new Command { kind = CommandKind.Craft, recipe = "stew" }));
-            }
+            bool bed = p.CanSleep || p.kind == PropKind.Bunk || p.kind == PropKind.MedicalBed;
+            if (bed && atBase) Add(it, "Rest at base (recover fatigue and injuries)", () => Submit(new Command { kind = CommandKind.Rest, target = id, recipe = "" }), s.fatigue >= 15 || s.injury >= 1 || s.health < s.MaxHealth - 1, "Already rested");
+            else if (p.CanSleep) Add(it, "Sleep", () => Submit(new Command { kind = CommandKind.Sleep, target = id }), s.fatigue >= 30, "Not tired enough");
+            if (p.kind == PropKind.Workbench && atBase) Add(it, "Use the workshop", () => UI.OpenCommunityTab("workshop"));
+            if (p.kind == PropKind.RadioSet) Add(it, "Listen to the radio (missions)", () => UI.OpenPanel("missions"));
+            if (p.kind == PropKind.Campfire && !p.lit) Add(it, "Light campfire", () => Submit(new Command { kind = CommandKind.LightFire, target = id }), inv.FindTag("fire") != null && p.fuel > 0, p.fuel <= 0 ? "Needs fuel" : "Needs a lighter or matches");
             if (p.kind == PropKind.Tree) { var axe = s.Primary; Add(it, "Chop down tree", () => Submit(new Command { kind = CommandKind.Chop, target = id }), axe != null && axe.Def.Has("chop"), "Equip an axe"); }
             if (p.kind == PropKind.Crops) Add(it, "Harvest crops", () => Submit(new Command { kind = CommandKind.Harvest, target = id }));
-            if (p.kind == PropKind.FarmPlot) PlotActions(it, s, p);
             return it;
         }
 
@@ -157,7 +154,9 @@ namespace Ashfall.View
             {
                 case PropKind.MedicineCabinet: return "Medicine cabinet"; case PropKind.WoodCrate: return "Wooden crate"; case PropKind.RainCollector: return "Rain collector";
                 case PropKind.GasPump: return "Gas pump"; case PropKind.HayBale: return "Hay bale"; case PropKind.Bin: return "Garbage bin"; case PropKind.Cashier: return "Register";
-                case PropKind.Car: return "Abandoned car (trunk)"; case PropKind.Crops: return "Crops"; case PropKind.FarmPlot: return "Farm plot";
+                case PropKind.Car: return "Abandoned car (trunk)"; case PropKind.Crops: return "Crops"; case PropKind.FarmPlot: return "Garden plot";
+                case PropKind.SupplyCrate: return "Supply drop crate"; case PropKind.MilitaryCrate: return "Military crate"; case PropKind.AmmoBox: return "Ammo box";
+                case PropKind.MedicalBed: return "Medical bed"; case PropKind.RadioSet: return "Radio set"; case PropKind.GardenBed: return "Garden bed"; case PropKind.OutpostFlag: return "Outpost flag";
                 default: return k.ToString();
             }
         }
