@@ -61,6 +61,13 @@ namespace Ashfall.Core
         public bool Contains(Vec2 p) { return p.x >= x && p.y >= y && p.x < x + w && p.y < y + h; }
         public bool Overlaps(Rect o, int margin = 0) { return x - margin < o.MaxX && o.x - margin < MaxX && y - margin < o.MaxY && o.y - margin < MaxY; }
         public Vec2 Center { get { return new Vec2(x + w * .5f, y + h * .5f); } }
+        public Rect Expand(int m) { return new Rect(x - m, y - m, w + 2 * m, h + 2 * m); }
+        /// <summary>Distance from p to the nearest point of the rectangle (0 inside).</summary>
+        public float DistanceTo(Vec2 p)
+        {
+            float dx = Math.Max(0, Math.Max(x - p.x, p.x - MaxX)), dy = Math.Max(0, Math.Max(y - p.y, p.y - MaxY));
+            return (float)Math.Sqrt(dx * dx + dy * dy);
+        }
     }
 
     public static class MathUtil
