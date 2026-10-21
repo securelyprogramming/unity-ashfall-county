@@ -197,8 +197,14 @@ namespace Ashfall.Core
         void BreakGrab(Zombie z, Survivor by)
         {
             var prey = Survivor(z.grabbed);
-            z.grabbed = -1; z.act = FreakAct.Recover; z.actTimer = 1; z.grabCooldown = world.rng.Range(5f, 8f);
-            if (prey != null) prey.knockedDown = Math.Min(prey.knockedDown, .4f);
+            // Breaking the grab staggers the juggernaut long enough for the victim to get clear.
+            z.grabbed = -1; z.act = FreakAct.Recover; z.actTimer = 1; z.grabCooldown = world.rng.Range(5f, 8f); z.stagger = 1.2f; z.attackClock = 2.5f;
+            if (prey != null)
+            {
+                prey.knockedDown = Math.Min(prey.knockedDown, .4f);
+                // The juggernaut reels back from its victim, which gives them room to run.
+                var away = (z.pos - prey.pos).Normalized; z.pos = world.map.Slide(z.pos, away * 1.5f, Zombie.Radius); world.index.Moved(z);
+            }
             world.Emit(EventKind.Grab, z.pos, by.id, "break", z.id);
         }
 

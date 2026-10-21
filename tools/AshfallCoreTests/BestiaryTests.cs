@@ -217,12 +217,12 @@ static class BestiaryTests
         var w = NewWorld(); Simulation sim; var s = Arena(w, out sim);
         var j = Spawn(w, s.pos + new Vec2(1, 0), ZombieKind.Juggernaut, 3.14f); j.grabCooldown = 99;
         int downs = 0;
-        for (int i = 0; i < 30; i++) { s.health = 100; s.knockedDown = 0; s.shoveCooldown = 0; sim.SetInput(s.id, new InputState { face = Face(s.pos, j.pos), shove = true }); sim.Tick(Simulation.Step); if (j.state == ZombieState.Knocked) downs++; }
+        for (int i = 0; i < 30; i++) { s.health = 100; s.injury = 0; s.knockedDown = 0; s.shoveCooldown = 0; sim.SetInput(s.id, new InputState { face = Face(s.pos, j.pos), shove = true }); sim.Tick(Simulation.Step); if (j.state == ZombieState.Knocked) downs++; }
         Check(downs == 0, "juggernauts ignore shoves");
         sim.HitZombie(j, s, 1, 1, false);
         Check(j.state != ZombieState.Knocked && j.stagger == 0, "melee hits neither floor nor stagger a juggernaut");
         // Grab: a weakened survivor is killed outright.
-        s.health = 25; s.knockedDown = 0; j.grabCooldown = 0; j.pos = s.pos + new Vec2(1, 0); w.index.Moved(j); j.state = ZombieState.Chase; j.targetSurvivor = s.id; j.attackClock = 0;
+        s.health = 25; s.injury = 0; s.healthSeen = -1; s.knockedDown = 0; j.grabCooldown = 0; j.pos = s.pos + new Vec2(1, 0); w.index.Moved(j); j.state = ZombieState.Chase; j.targetSurvivor = s.id; j.attackClock = 0;
         Tick(sim, 6, () => !s.alive, () => sim.SetInput(s.id, new InputState { face = 0 }));
         Check(Saw(w, EventKind.Grab, "start"), "an adjacent juggernaut grabs");
         Check(!s.alive && Saw(w, EventKind.Grab, "kill"), "it kills a survivor below 35% health outright");
@@ -230,7 +230,7 @@ static class BestiaryTests
         var w2 = NewWorld(); Simulation sim2; var a = Arena(w2, out sim2);
         var b = w2.AddSurvivor("Doc Hollis", "paramedic", false, null); b.pos = a.pos + new Vec2(-1.5f, 0); b.ai = AiRole.Companion;
         var j2 = Spawn(w2, a.pos + new Vec2(1, 0), ZombieKind.Juggernaut, 3.14f); j2.state = ZombieState.Chase; j2.targetSurvivor = a.id; j2.attackClock = 0;
-        a.health = 25;
+        a.health = 25; a.injury = 0; a.healthSeen = -1;
         Tick(sim2, 3, () => j2.act == FreakAct.Grab);
         Check(j2.act == FreakAct.Grab && a.knockedDown > 0, "the grabbed survivor is held");
         sim2.HitZombie(j2, b, .5f, 0, false);
@@ -271,7 +271,7 @@ static class BestiaryTests
         Check(h.discovered, "seen within 30 m, a heart is discovered");
         Check(Saw(w, EventKind.Heart, "pulse") && w.zombies.Any(z => z.Alive && z.plague && Vec2.Distance(z.pos, h.pos) < 6), "a heart pulses and spawns plague zombies near a survivor");
         // The spawn cap holds.
-        for (int i = 0; i < 40; i++) { h.spawnClock = 0; Tick(sim, .55f, null, () => { sim.SetInput(s.id, new InputState { face = 0 }); s.health = 100; }); }
+        for (int i = 0; i < 40; i++) { h.spawnClock = 0; Tick(sim, .55f, null, () => { sim.SetInput(s.id, new InputState { face = 0 }); s.health = 100; s.injury = 0; s.plague = 0; s.plagueInfected = false; s.knockedDown = 0; }); }
         int plague = w.zombies.Count(z => z.Alive && z.plague && Vec2.Distance(z.pos, h.pos) < 30);
         Check(plague <= Bestiary.HeartSpawnCap, "spawning is capped (" + plague + ")");
         foreach (var z in w.zombies) if (z.Alive) { z.state = ZombieState.Dead; w.index.Remove(z); }

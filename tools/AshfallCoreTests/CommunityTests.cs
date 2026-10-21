@@ -389,13 +389,14 @@ static class CommunityTests
         check(rescue.status == MissionStatus.Completed && lost.faction == 0 && c.members.Contains(lost.id), "reaching them completes the rescue and they join");
         check(c.influence == influence + rescue.rewardInfluence && Has(w, EventKind.Mission, "completed"), "the reward is paid");
         // Clear infestation: destroy the heart.
-        w.hearts.Add(new PlagueHeart { id = 0, pos = Away(w, 150) });
+        w.hearts.Clear(); w.hearts.Add(new PlagueHeart { id = 0, pos = Away(w, 150) });
         var clear = sim.OfferMission(MissionKind.ClearInfestation);
         check(clear != null && clear.targetId == 0 && w.hearts[0].discovered, "a clear-infestation mission marks the heart");
         Submit(sim, Command.Of(CommandKind.AcceptMission, -1, clear.id)); Tick(sim);
         sim.DamageHeart(w.hearts[0], s, 999); Tick(sim, 12);
         check(clear.status == MissionStatus.Completed, "destroying the heart completes it");
         // Kill a freak: offered only when one exists; expires if ignored.
+        foreach (var z in w.zombies) if (z.Alive && Bestiary.Get(z.kind).threat >= 3) { z.state = ZombieState.Dead; w.index.Remove(z); }
         check(sim.OfferMission(MissionKind.KillFreak) == null, "no freak, no freak mission");
         var feral = w.AddZombie(Away(w, 100), w.rng); feral.kind = ZombieKind.Feral; feral.state = ZombieState.Idle; feral.timer = 999;
         var hunt = sim.OfferMission(MissionKind.KillFreak);
@@ -516,7 +517,7 @@ static class CommunityTests
         var w = NewWorld(); var sim = Quiet(w); var c = w.community;
         Hours(sim, .5f);
         check(w.outcome == "", "no legacy without hearts");
-        w.hearts.Add(new PlagueHeart { id = 0, pos = Away(w, 200) }); w.hearts.Add(new PlagueHeart { id = 1, pos = Away(w, 220) });
+        w.hearts.Clear(); w.hearts.Add(new PlagueHeart { id = 0, pos = Away(w, 200) }); w.hearts.Add(new PlagueHeart { id = 1, pos = Away(w, 220) });
         sim.DamageHeart(w.hearts[0], w.Controlled, 999); float influence = c.influence; Tick(sim, 12);
         check(w.outcome == "" && c.heartsDestroyed == 1 && c.influence >= influence, "one heart down, one to go");
         check(w.events.Any(e => e.kind == EventKind.Radio && e.text.Contains("1 remains")), "legacy progress on the radio");
