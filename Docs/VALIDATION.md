@@ -1,3 +1,24 @@
+# Ashfall County open-county rebuild: native Windows validation (2026-10-21)
+
+The game was rebuilt again as an open-county community survival game: drop map, community and base, bestiary, AI humans, airdrops and red zones (`Docs/DESIGN.md`). The single-survivor evidence below is history for the systems that were retired.
+
+**First native open-county probe (2026-10-21 02:31 UTC): [AshfallOpenCounty-WindowsPlayer-20261021-023154.json](ValidationReports/AshfallOpenCounty-WindowsPlayer-20261021-023154.json). 25/33 checks passed; status failed.**
+- **Build:** Unity 6000.6.0f1 Windows development player from `tools/playtest/build.py`, 0 errors, with 115/115 prepared owned art roles. Core: 2334 quick checks and 2346 full checks passed.
+- **County:** seed 777, 4096 m, 3,603 buildings, 21 towns, 12 landing zones, 46 landmarks, 15,627 zombies (13,588 walkers, 25 juggernauts), 11 plague hearts, 65 AI survivors in 20 factions, all 8 named characters. Generation took 1.7 s.
+- **Passed natively:**
+  - Title, traits and the drop map.
+  - Landmarks, the founded community, factions and AI, the bestiary.
+  - Movement, containers, rucksack deposit and the community panel.
+  - Companion follow, member switching, the screamer's scream and rifle tracers.
+  - An airdrop landing with tier-2+ loot, red-zone shelling and destroying a plague heart (+150 influence).
+  - Night lighting, a town frame-time sample (16.9 ms average, 225 active zombies), quit to title, and save/reload of community, factions, hearts and airdrops.
+- **Failed:**
+  - Six failures are from virtual input lost after a window focus change: missions/map panels, gamepad melee, juggernaut-drawn-large, gamepad grenade and car entry.
+  - talk-to-enclave failed on probe placement.
+  - Raiders didn't fire on the leader, because they only engaged at 12 m.
+  - Fixed in `7f06838`; night brightness fixed in `0df2200`. A clean rerun is still needed.
+- **Staged scenes:** freaks, the airdrop, the red zone, raiders and the plague heart were set up next to the leader and kept alive (listed as QA setup). These captures show real native rendering, not natural encounter rates.
+
 # Ashfall County survival rebuild: native Windows validation (2026-10-20)
 
 The game was rebuilt as an open-county zombie survival game (`Game/Assets/Ashfall`). Everything below about the

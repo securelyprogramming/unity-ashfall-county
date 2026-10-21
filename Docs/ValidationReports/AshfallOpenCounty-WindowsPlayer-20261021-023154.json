@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "game": "ashfall-county",
+  "kind": "native-gameplay-probe",
+  "platform": "WindowsPlayer",
+  "unity": "6000.6.0f1",
+  "recorded": "2026-10-21T02:33:58.9096312Z",
+  "player": "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\builds\\ashfall-main-20261020-212827\\out\\Game.exe",
+  "sourceCommit": "8e526baf9ae93d831cb3e25e72bf4f9ed561dcd6 (build snapshot taken from the working tree at 21:28 local; source matched 4535597 plus uncommitted docs)",
+  "nativeBuild": {
+    "status": "Succeeded",
+    "errors": 0,
+    "warnings": 5,
+    "bytes": 395613493
+  },
+  "status": "failed",
+  "county": {
+    "seed": 777,
+    "mapSize": 4096,
+    "buildings": 3603,
+    "settlements": 21,
+    "zombies": 15627,
+    "generationMs": 1687,
+    "landingZones": 12,
+    "hearts": 11,
+    "humans": 65,
+    "factions": 20,
+    "landmarks": [
+      "MilitaryBase:Fort Ashby",
+      "RaiderCompound:Red Talon Yard",
+      "Airfield:Ashfall Regional Airfield",
+      "Hospital:Ashfall County Hospital",
+      "RadioStation:KAFC Radio Station",
+      "Garage:Reed's Garage",
+      "Warehouse:Ash Valley Freight",
+      "Warehouse:Cedar Fork Feed & Supply",
+      "Warehouse:Route 9 Distribution",
+      "Warehouse:Harlan Cold Storage",
+      "Church:St. Brigid's Church",
+      "Church:First Baptist Church",
+      "Church:Grace Chapel",
+      "School:Ashfall County High School",
+      "School:Cedar Fork Elementary",
+      "Motel:Starlite Motel",
+      "Motel:Ashfall Motor Inn",
+      "Campground:Ash River Campground",
+      "Campground:Pine Ridge Campground",
+      "Campground:Kettle Lake Campground",
+      "Farmstead:Miller Farm",
+      "Farmstead:Calder Ranch",
+      "Farmstead:Hollis Orchard",
+      "Farmstead:Pruitt Dairy",
+      "Farmstead:Vance Homestead"
+    ]
+  },
+  "performance": {
+    "averageFrameMs": 16.856008529663086,
+    "worstFrameMs": 83.34939575195312,
+    "simMs": 0.8357972502708435,
+    "viewMs": 0.4219557046890259,
+    "uiMs": 0.06369657069444656,
+    "activeZombies": 225,
+    "loadedChunks": 35,
+    "loadedBuildings": 78
+  },
+  "ownedAssets": {
+    "preparedArtRoles": 115,
+    "ownedAudioCues": 78
+  },
+  "checks": [
+    {
+      "name": "title-menu-visible",
+      "pass": true,
+      "detail": "screen=Title"
+    },
+    {
+      "name": "trait-picker",
+      "pass": true,
+      "detail": "picked strong,smoker"
+    },
+    {
+      "name": "trait-picker-closes-with-back",
+      "pass": true,
+      "detail": "screen=NewGame"
+    },
+    {
+      "name": "drop-map-landing-zones",
+      "pass": true,
+      "detail": "12 zones: Cedar Fork, Fort Ashby, Ashfall Regional Airfield, Ashfall County Hospital, KAFC Radio Station, Reed's Garage, Pruitt Dairy, Vance Homestead, Grant's Mill, Elk Ridge, Harlan Springs, Marrow Bend"
+    },
+    {
+      "name": "new-game-generates-county",
+      "pass": true,
+      "detail": "ms=1687 landing zone 0"
+    },
+    {
+      "name": "county-scale",
+      "pass": true,
+      "detail": "4096 m, 3603 buildings, 21 towns, 15627 zombies"
+    },
+    {
+      "name": "landmarks",
+      "pass": true,
+      "detail": "MilitaryBase:Fort Ashby, RaiderCompound:Red Talon Yard, Airfield:Ashfall Regional Airfield, Hospital:Ashfall County Hospital, RadioStation:KAFC Radio Station, Garage:Reed's Garage, Warehouse:Ash Valley Freight, Warehouse:Cedar Fork Feed & Supply, Warehouse:Route 9 Distribution, Warehouse:Harlan Cold Storage, Church:St. Brigid's Church, Church:First Baptist Church, Church:Grace Chapel, School:Ashfall County High School"
+    },
+    {
+      "name": "community-founded",
+      "pass": true,
+      "detail": "3 members (QA Leader, Ada Cole, Reggie Merritt), base 170, food 12, influence 100"
+    },
+    {
+      "name": "factions-and-ai-survivors",
+      "pass": true,
+      "detail": "65 AI survivors in 20 factions; characters Ada Pike, Jonah Reed, Doc Hollis, Wren Calder, Tess Monroe, Marshal Kade, \"Big Sal\" Varga, The Pilgrim"
+    },
+    {
+      "name": "bestiary-populated",
+      "pass": true,
+      "detail": "Walker 13588, Crawler 432, Screamer 354, Bloater 342, Armored 590, Feral 296, Juggernaut 25; 11 plague hearts"
+    },
+    {
+      "name": "keyboard-movement",
+      "pass": true,
+      "detail": "moved 1.50 m"
+    },
+    {
+      "name": "interact-opens-container",
+      "pass": true,
+      "detail": "focus=Couch"
+    },
+    {
+      "name": "rucksack-deposit",
+      "pass": true,
+      "detail": "food 12 -> 20"
+    },
+    {
+      "name": "community-panel",
+      "pass": true,
+      "detail": "top=community"
+    },
+    {
+      "name": "missions-panel",
+      "pass": false,
+      "detail": "2 missions: Rescue Clara Kerr | Clear the infestation"
+    },
+    {
+      "name": "map-panel",
+      "pass": false,
+      "detail": ""
+    },
+    {
+      "name": "companion-follows",
+      "pass": true,
+      "detail": "Ada Cole 1.4 m behind after walking 0.0 m"
+    },
+    {
+      "name": "switch-member",
+      "pass": true,
+      "detail": "now playing Reggie Merritt"
+    },
+    {
+      "name": "gamepad-melee-kills-zombie",
+      "pass": false,
+      "detail": "kills=0 hp=0.96"
+    },
+    {
+      "name": "screamer-screams",
+      "pass": true,
+      "detail": "scream events 1"
+    },
+    {
+      "name": "juggernaut-drawn-large",
+      "pass": false,
+      "detail": "drawn size 0.00"
+    },
+    {
+      "name": "gamepad-throws-grenade",
+      "pass": false,
+      "detail": "explosions 0, juggernaut hp 28.5 -> 27.1"
+    },
+    {
+      "name": "rifle-fires-tracers",
+      "pass": true,
+      "detail": "9 tracers"
+    },
+    {
+      "name": "airdrop-lands",
+      "pass": true,
+      "detail": "landed=True at (2447.50,1988.50), tier 2+ loot=True"
+    },
+    {
+      "name": "red-zone-shells",
+      "pass": true,
+      "detail": "6 shells"
+    },
+    {
+      "name": "talk-to-enclave",
+      "pass": false,
+      "detail": "Ada Pike: Keep your radio on. If the Guard drops anything, you'll hear it from me first.; offers 6"
+    },
+    {
+      "name": "raiders-attack-on-sight",
+      "pass": false,
+      "detail": "raider shots 0, last hit by nobody"
+    },
+    {
+      "name": "plague-heart-destroyed",
+      "pass": true,
+      "detail": "hp 0/45, hearts left 10, influence 115 -> 265"
+    },
+    {
+      "name": "night-is-darker",
+      "pass": true,
+      "detail": "ambient 0.52 -> 0.08"
+    },
+    {
+      "name": "frame-time-in-town",
+      "pass": true,
+      "detail": "avg=16.9ms worst=83.3 sim=0.8 view=0.4 ui=0.1 active zombies=225 humans drawn=1"
+    },
+    {
+      "name": "vehicle-enter",
+      "pass": false,
+      "detail": "pressed E beside the Sedan; seated=False"
+    },
+    {
+      "name": "quit-to-title",
+      "pass": true,
+      "detail": ""
+    },
+    {
+      "name": "save-and-reload",
+      "pass": true,
+      "detail": "player 0/0, members 3/3, hearts 10/10, drops 2/2, food 14/14, influence 265/265"
+    }
+  ],
+  "qaOnlySetup": [
+    "moved beside a container in the home base",
+    "granted one food rucksack at base",
+    "asked the community for a rescue and a clear-infestation mission",
+    "placed the leader and a resident at the base for a switch",
+    "spawned a walker beside the leader",
+    "granted 2 grenades and an assault rifle; staged a screamer, bloater, armored, feral and juggernaut near the leader with the companion",
+    "scheduled the next airdrop for now and moved its landing point 14 m from the leader",
+    "placed a red zone 32 m from the leader",
+    "moved the leader beside Ada Pike",
+    "moved the leader 14 m from a Red Talon raider; kept the leader alive while recording",
+    "moved beside the nearest plague heart, cleared its guards and granted 3 grenades",
+    "set the clock to 23:00 and staged three ferals",
+    "moved to Cedar Fork for the performance sample; kept the leader alive during it",
+    "moved drivable car #30 (Sedan) to an open east-west strip at (2559.50,2051.50) with 30 L fuel and the key in the ignition; cleared zombies within 110 m"
+  ],
+  "screenshots": [
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\01-title.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\02-new-community.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\03-drop-map.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\04-home-base.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\05-loot-panel.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\06-hud.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\07-community-roster.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\08-community-base.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\09-missions.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\10-county-map.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\11-switched-member.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\12-freaks.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\13-after-grenade.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\14-firefight.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\15-airdrop-smoke.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\16-red-zone.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\17-talk-trade.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\18-raiders.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\19-plague-heart.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\20-night-ferals.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\21-cedar-fork.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\22-driving.png",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\23-reloaded.png"
+  ],
+  "videos": [
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\freaks-grenade.mp4",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\freaks-grenade-2.mp4",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\freaks-rifle.mp4",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\airdrop.mp4",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\red-zone.mp4",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\raiders.mp4",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\plague-heart.mp4",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\night-ferals.mp4",
+    "C:\\Users\\Quent\\AppData\\Local\\GameWorkbench\\qa\\ashfall-20261021-023154\\town.mp4"
+  ],
+  "runNotes": [
+    "The runner script (tools/playtest/ashfall_qa.py) was stopped by the host for low system memory shortly after launch; the player kept running and completed the probe. The report summary and MP4 encoding were done afterwards from the player output.",
+    "From the missions-panel step on, the virtual keyboard and gamepad stopped reaching the game while the simulation kept running (no exceptions logged). This matches the Input System default of resetting/disabling devices when the window loses focus; other applications were in use on the machine. Failures caused by it: missions-panel, map-panel, gamepad-melee-kills-zombie, juggernaut-drawn-large (the survivor could not turn to face it), gamepad-throws-grenade and vehicle-enter. Fixed in 7f06838: the probe sets InputSettings.backgroundBehavior to IgnoreFocus.",
+    "talk-to-enclave: the probe placed the leader on open ground outside the radio station, out of talk range, so the dialog closed itself. Fixed in 7f06838.",
+    "raiders-attack-on-sight: raiders only engaged within 12 m and the leader stood 14 m away. Raiders and hunters now engage at 22 m with a gun (7f06838).",
+    "Night lighting measured at ambient 0.08 was too dark to read; raised in 0df2200."
+  ],
+  "notProven": [
+    "A clean rerun of this probe after the fixes in 7f06838 and 0df2200",
+    "Physical controller hardware (the probe uses a virtual gamepad device)",
+    "Human playtime, balance and pacing over multi-hour sessions; the legacy (all hearts destroyed) outcome in normal play",
+    "Freak, raider, airdrop, red-zone and plague-heart scenes were staged by the probe (spawned or scheduled next to the leader and kept alive); natural encounter rates are not measured",
+    "Linux/macOS native builds, LAN multiplayer (not implemented), Steam packaging",
+    "Long-session memory and save growth on the 6 km county, and every new-game option combination"
+  ]
+}
