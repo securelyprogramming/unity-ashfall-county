@@ -314,7 +314,8 @@ namespace Ashfall.View
 
             // Raiders: the Red Talons attack on sight.
             var talons = w.FactionByKey("red_talons");
-            var raider = talons == null ? null : w.Members(talons.id).FirstOrDefault();
+            // An ordinary raider standing outdoors (the boss keeps to his building).
+            var raider = talons == null ? null : w.Members(talons.id).OrderBy(x => w.map.RoomAt((int)x.pos.x, (int)x.pos.y) != null ? 1 : 0).ThenBy(x => x.character.Length > 0 ? 1 : 0).FirstOrDefault();
             if (raider != null)
             {
                 KeepAlive(s); s.pos = InSight(w, raider.pos, 9); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader " + Vec2.Distance(s.pos, raider.pos).ToString("0") + " m from a Red Talon raider, in line of sight; kept the leader alive while recording");
