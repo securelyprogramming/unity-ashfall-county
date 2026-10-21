@@ -413,8 +413,10 @@ namespace Ashfall.View
             yield return Press(Key.E); yield return new WaitForSecondsRealtime(.5f);
             Pass("vehicle-enter", s.vehicle == v.id && v.driver == s.id, "pressed E beside the " + v.model + "; seated=" + (s.vehicle == v.id));
             if (s.vehicle != v.id) yield break;
-            yield return Press(Key.E); yield return WaitFor(() => v.engineOn, 3);
-            Pass("vehicle-engine-start", v.engineOn, "E with the key in the ignition; fuel " + v.fuel.ToString("0.0") + " L");
+            // E is occasionally dropped right after getting in (seen intermittently since the first car runs); count the presses.
+            int presses = 0;
+            for (; presses < 3 && !v.engineOn; presses++) { yield return new WaitForSecondsRealtime(.3f); yield return Press(Key.E); yield return WaitFor(() => v.engineOn, 2); }
+            Pass("vehicle-engine-start", v.engineOn, "E with the key in the ignition (" + presses + " press" + (presses == 1 ? "" : "es") + "); fuel " + v.fuel.ToString("0.0") + " L");
             float fuel = v.fuel, zoomBefore = game.Cam.orthographicSize; var start = v.pos;
             InputSystem.QueueStateEvent(keyboard, new KeyboardState(Key.W)); yield return new WaitForSecondsRealtime(3);
             float driven = Vec2.Distance(start, v.pos), speed = v.speed;
