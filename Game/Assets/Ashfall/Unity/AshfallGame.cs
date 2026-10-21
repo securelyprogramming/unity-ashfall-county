@@ -433,7 +433,8 @@ namespace Ashfall.View
                 var w = fwd * m.y + right * m.x;
                 input.moveX = w.x; input.moveY = w.z;
                 input.run = run.IsPressed(); input.sneak = sneak.IsPressed(); input.aim = aim.IsPressed();
-                bool pointerOverUi = EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
+                // Only a mouse player aiming over a UI element is blocked; a parked cursor never blocks the gamepad.
+                bool pointerOverUi = !usingGamepadAim && EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
                 input.attack = attack.IsPressed() && !pointerOverUi; input.shove = shove.WasPressedThisFrame();
                 var stick = look.ReadValue<Vector2>();
                 if (stick.sqrMagnitude > .2f) usingGamepadAim = true;

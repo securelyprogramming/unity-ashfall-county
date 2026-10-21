@@ -327,7 +327,7 @@ namespace Ashfall.Core
                 case AiRole.Companion: r = 8; break;
                 case AiRole.Resident: r = s.id == world.community.garrison || TowerFor(s) != null && gun ? 25 : 15; break;
                 case AiRole.Enclave: r = 12; break;
-                case AiRole.Raider: case AiRole.Hunter: r = 12; break;
+                case AiRole.Raider: case AiRole.Hunter: r = gun ? 22 : 14; break;   // they attack on sight
                 case AiRole.Trader: r = 3; break;
                 default: r = 7; break;
             }

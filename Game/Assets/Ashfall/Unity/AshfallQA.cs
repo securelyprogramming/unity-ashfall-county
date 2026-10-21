@@ -36,6 +36,8 @@ namespace Ashfall.View
             this.game = game; this.reportPath = reportPath; dir = Path.GetDirectoryName(Path.GetFullPath(reportPath));
             Directory.CreateDirectory(dir);
             Application.runInBackground = true;
+            // The probe's virtual keyboard and gamepad must keep working if the window loses focus (the default resets and disables them).
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
             report.started = DateTime.UtcNow.ToString("o"); report.platform = Application.platform.ToString(); report.unity = Application.unityVersion; report.build = Application.version;
             StartCoroutine(Run());
         }
@@ -295,7 +297,7 @@ namespace Ashfall.View
             var ada = w.survivors.FirstOrDefault(x => x.character == "ada_pike" && x.alive) ?? w.survivors.FirstOrDefault(x => x.alive && x.ai == AiRole.Enclave);
             if (ada != null)
             {
-                s.pos = OpenGround(w, ada.pos + new Vec2(1.4f, 0)); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader beside " + ada.name);
+                s.pos = Beside(w, ada.pos); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader beside " + ada.name + " (" + Vec2.Distance(s.pos, ada.pos).ToString("0.0") + " m)");
                 yield return new WaitForSecondsRealtime(1.5f);
                 yield return Aim(ada.pos, .5f);
                 var talk = game.Nearby.SelectMany(n => n.actions).FirstOrDefault(a => a.label == "Talk");
@@ -312,7 +314,7 @@ namespace Ashfall.View
             var raider = talons == null ? null : w.Members(talons.id).FirstOrDefault();
             if (raider != null)
             {
-                KeepAlive(s); s.pos = OpenGround(w, raider.pos + new Vec2(14, 0)); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader 14 m from a Red Talon raider; kept the leader alive while recording");
+                KeepAlive(s); s.pos = OpenGround(w, raider.pos + new Vec2(10, 0)); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader about 10 m from a Red Talon raider; kept the leader alive while recording");
                 int hostileTracers = seen.Count(e => e.kind == EventKind.Tracer && e.survivor >= 0 && w.survivors[e.survivor].faction == talons.id);
                 yield return Record("raiders", 10f, () => KeepAlive(s));
                 int after = seen.Count(e => e.kind == EventKind.Tracer && e.survivor >= 0 && w.survivors[e.survivor].faction == talons.id);
@@ -478,6 +480,17 @@ namespace Ashfall.View
                 if (e == Edge.None && !map.Collides(c, Survivor.Radius)) return c;
             }
             return null;
+        }
+        /// <summary>A free standing spot within reach of a person (indoors allowed), nearest first.</summary>
+        static Vec2 Beside(World w, Vec2 p)
+        {
+            for (float r = .9f; r < 2.4f; r += .3f)
+                for (int a = 0; a < 12; a++)
+                {
+                    var c = p + Vec2.FromAngle(a * .5236f) * r;
+                    if (!w.map.Collides(c, Survivor.Radius) && w.map.LineOfSight(c, p)) return c;
+                }
+            return OpenGround(w, p);
         }
         static Vec2 OpenGround(World w, Vec2 near)
         {
