@@ -385,20 +385,20 @@ namespace Ashfall.View
             var dayColor = new Color(1, .95f, .86f); var duskColor = new Color(1, .58f, .38f); var night = new Color(.26f, .32f, .55f);
             bool dusk = h > 17.5f && h < 21.5f || h > 5 && h < 7.5f;
             sun.color = daylight > .05f ? Color.Lerp(night, dusk ? duskColor : dayColor, daylight) : night;
-            // Nights are dark: ferals hunt by night, and a flashlight or a lit base matters.
-            sun.intensity = Mathf.Lerp(.045f, 1.12f, daylight) * (World != null && World.raining ? .7f : 1);
-            var ambient = Color.Lerp(new Color(.07f, .08f, .13f), new Color(.5f, .52f, .56f), daylight);
+            // Nights are dark but readable by moonlight: ferals hunt by night, and a flashlight or a lit base matters.
+            sun.intensity = Mathf.Lerp(.16f, 1.12f, daylight) * (World != null && World.raining ? .7f : 1);
+            var ambient = Color.Lerp(new Color(.15f, .17f, .26f), new Color(.5f, .52f, .56f), daylight);
             if (dusk && daylight > .05f) ambient = Color.Lerp(ambient, new Color(.42f, .32f, .3f), .25f * daylight);
             if (indoors) ambient *= .75f;
             RenderSettings.ambientLight = ambient;
             float fog = World == null ? 0 : World.fog + (World.raining ? .25f * World.rainIntensity : 0); float dark = 1 - daylight;
             var fogDay = dusk ? new Color(.58f, .5f, .48f) : new Color(.6f, .64f, .68f);
-            RenderSettings.fogColor = Color.Lerp(new Color(.022f, .028f, .048f), fogDay, daylight);
+            RenderSettings.fogColor = Color.Lerp(new Color(.04f, .05f, .085f), fogDay, daylight);
             // The camera sits 120 m from the focus, so the fog band starts just past it and thickens toward the top of the screen.
             RenderSettings.fogStartDistance = Mathf.Lerp(Mathf.Lerp(104, 110, dark), 84, fog);
             RenderSettings.fogEndDistance = Mathf.Lerp(Mathf.Lerp(230, 185, dark), 145, fog);
             Cam.backgroundColor = RenderSettings.fogColor;
-            playerGlow.intensity = Mathf.Lerp(.8f, 0, daylight * 1.6f);
+            playerGlow.intensity = Mathf.Lerp(1.3f, 0, daylight * 1.6f);
         }
 
         // ---------------------------------------------------------------- actor pool
