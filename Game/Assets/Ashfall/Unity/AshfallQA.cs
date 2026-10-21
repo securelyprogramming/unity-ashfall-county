@@ -328,8 +328,8 @@ namespace Ashfall.View
             var heart = w.hearts.Where(h => !h.destroyed).OrderBy(h => Vec2.Distance(h.pos, c.basePos)).FirstOrDefault();
             if (heart != null)
             {
-                KeepAlive(s); s.pos = OpenGround(w, heart.pos + new Vec2(2.4f, 0)); ClearAround(w, s.pos, 25);
-                s.inventory.Add(ItemCatalog.Make("grenade", 3)); report.qaSetup.Add("moved beside the nearest plague heart, cleared its guards and granted 3 grenades");
+                KeepAlive(s); s.pos = InsideBeside(w, heart.pos); ClearAround(w, s.pos, 25);
+                s.inventory.Add(ItemCatalog.Make("grenade", 3)); report.qaSetup.Add("moved inside the building beside the nearest plague heart (" + Vec2.Distance(s.pos, heart.pos).ToString("0.0") + " m), cleared its guards and granted 3 grenades");
                 float influence = c.influence; int remaining = w.HeartsRemaining;
                 yield return new WaitForSecondsRealtime(1.5f);
                 yield return Shot("19-plague-heart");
@@ -491,6 +491,17 @@ namespace Ashfall.View
                     if (!w.map.Collides(c, Survivor.Radius) && w.map.LineOfSight(c, p)) return c;
                 }
             return OpenGround(w, p);
+        }
+        /// <summary>A free indoor spot 1.5-3 m from a point with line of sight to it (plague hearts sit inside buildings).</summary>
+        static Vec2 InsideBeside(World w, Vec2 p)
+        {
+            for (float r = 1.5f; r < 3.2f; r += .3f)
+                for (int a = 0; a < 16; a++)
+                {
+                    var c = p + Vec2.FromAngle(a * .3927f) * r;
+                    if (w.map.RoomAt((int)c.x, (int)c.y) != null && !w.map.Collides(c, Survivor.Radius) && w.map.LineOfSight(c, p)) return c;
+                }
+            return Beside(w, p);
         }
         static Vec2 OpenGround(World w, Vec2 near)
         {

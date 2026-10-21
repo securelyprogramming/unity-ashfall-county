@@ -383,6 +383,8 @@ namespace Ashfall.View
         {
             if (dead && !wasDead) fallSign = (seed & 1) == 0 ? -1 : 1;
             wasDead = dead;
+            // Smooth small corrections, but snap after a jump (load, window climb, switch, teleport) instead of sliding across the map.
+            if ((target - ground).sqrMagnitude > 36) { ground = target; velocity = Vector3.zero; }
             ground = Vector3.SmoothDamp(ground, target, ref velocity, Kind == ZombieKind.Juggernaut ? .09f : .06f, 50, dt);
             hitClock = Mathf.Max(0, hitClock - dt); screamClock = Mathf.Max(0, screamClock - dt); chargeClock = Mathf.Max(0, chargeClock - dt);
             grabClock = Mathf.Max(0, grabClock - dt); pounceClock = Mathf.Max(0, pounceClock - dt);
