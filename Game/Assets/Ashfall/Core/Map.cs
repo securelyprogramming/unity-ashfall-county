@@ -13,7 +13,9 @@ namespace Ashfall.Core
         // Open-county additions (appended; byte values of earlier kinds are stable).
         SupplyCrate, MilitaryCrate, Sandbags, Barrier, Tent, Watchtower, GardenBed, MedicalBed, RadioSet, Generator, OutpostFlag, AmmoBox, Bunk
     }
-    public enum RoomType : byte { Living, Kitchen, Bedroom, Bathroom, Garage, Grocery, Pharmacy, Hardware, Diner, GasStation, Police, Barn, Storage, Office, Clothing }
+    public enum RoomType : byte { Living, Kitchen, Bedroom, Bathroom, Garage, Grocery, Pharmacy, Hardware, Diner, GasStation, Police, Barn, Storage, Office, Clothing,
+        // Landmark rooms (appended).
+        Lobby, Corridor, Ward, Classroom, Chapel, Bunks, Armory, Hangar, Studio, MotelRoom, Workshop }
     public enum BuildingKind : byte { House, Farmhouse, Barn, Grocery, Pharmacy, Hardware, Diner, GasStation, Police, Clothing, Shed, Office,
         Warehouse, Church, School, Hospital, Barracks, Armory, Hangar, RadioStation, Garage, Motel, Compound }
 
@@ -43,7 +45,7 @@ namespace Ashfall.Core
         public bool Blocks { get { return !removed && kind != PropKind.Crops && kind != PropKind.FarmPlot && kind != PropKind.Campfire && kind != PropKind.Bush && kind != PropKind.Mailbox; } }
         public bool IsHeat { get { return kind == PropKind.Stove || kind == PropKind.Campfire; } }
         public bool IsWaterSource { get { return kind == PropKind.Sink || kind == PropKind.Toilet || kind == PropKind.RainCollector; } }
-        public bool CanSleep { get { return kind == PropKind.Bed || kind == PropKind.Couch; } }
+        public bool CanSleep { get { return kind == PropKind.Bed || kind == PropKind.Couch || kind == PropKind.Bunk || kind == PropKind.MedicalBed; } }
         public Vec2 Center { get { return new Vec2(x + w * .5f, y + h * .5f); } }
     }
 
@@ -145,7 +147,7 @@ namespace Ashfall.Core
         public Container AddContainer(Prop prop, string table, bool cold = false)
         {
             var c = new Container { id = containers.Count, prop = prop == null ? -1 : prop.id, room = prop == null ? -1 : prop.room, table = table, cold = cold };
-            c.inventory.capacity = prop != null && (prop.kind == PropKind.Shelf || prop.kind == PropKind.Car || prop.kind == PropKind.WoodCrate) ? 60 : 40;
+            c.inventory.capacity = prop != null && (prop.kind == PropKind.Shelf || prop.kind == PropKind.Car || prop.kind == PropKind.WoodCrate || prop.kind == PropKind.SupplyCrate || prop.kind == PropKind.MilitaryCrate) ? 60 : 40;
             containers.Add(c); if (prop != null) prop.container = c.id; return c;
         }
 

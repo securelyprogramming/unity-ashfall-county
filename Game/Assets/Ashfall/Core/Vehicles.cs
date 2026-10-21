@@ -73,12 +73,18 @@ namespace Ashfall.Core
                 list.Add(c.id);
             }
             var models = new[] { "Sedan", "Hatchback", "Pickup" };
+            var military = new[] { "Humvee", "Army Truck", "Jeep" }; var garage = new[] { "Tow Truck", "Pickup", "Muscle Car", "Van" };
+            // Fort Ashby's motor pool and Reed's Garage keep working vehicles.
+            var depots = gen == null ? new List<Landmark>() : gen.landmarks.Where(l => l.kind == LandmarkKind.MilitaryBase || l.kind == LandmarkKind.Garage).ToList();
             foreach (var p in map.props)
             {
                 if (p.kind != PropKind.Car || p.removed) continue;
                 float roll = r.Float(), fuel = r.Range(.08f, .6f), cond = r.Range(.45f, 1f), keyRoll = r.Float();
+                var depot = depots.FirstOrDefault(l => l.rect.Contains(p.x, p.y));
+                if (depot != null) { roll = 0; fuel = Math.Max(fuel, r.Range(.4f, .9f)); cond = Math.Max(cond, .7f); keyRoll *= .5f; }
                 if (p.hp < .2f || roll > .4f) continue;   // wrecks and most cars stay dead
-                var v = new Vehicle { id = vehicles.Count, prop = p.id, pos = p.Center, heading = Vehicle.HeadingFor(p.rotation), fuel = Vehicle.TankLiters * fuel, condition = cond, model = models[(int)(p.hp * 997) % models.Length] };
+                var names = depot == null ? models : depot.kind == LandmarkKind.MilitaryBase ? military : garage;
+                var v = new Vehicle { id = vehicles.Count, prop = p.id, pos = p.Center, heading = Vehicle.HeadingFor(p.rotation), fuel = Vehicle.TankLiters * fuel, condition = cond, model = names[(int)(p.hp * 997) % names.Length] };
                 if (keyRoll < .25f) v.keyInIgnition = true;
                 else if (keyRoll < .5f && p.container >= 0) v.keyContainer = p.container;
                 else if (keyRoll < .85f)
@@ -91,6 +97,23 @@ namespace Ashfall.Core
                 if (v.keyContainer >= 0 && map.containers[v.keyContainer].generated) PlaceKey(v);
                 ReleasePropTiles(p); BlockVehicle(v);
             }
+        }
+
+        /// <summary>A car's trunk (its prop's container), rolled so items put in it are saved. Null for a car without one.
+        /// Community.cs deposits rucksacks from the trunk of a car parked at base: see ParkedNear.</summary>
+        public Container Trunk(Vehicle v)
+        {
+            if (v == null || v.prop < 0 || v.prop >= map.props.Count) return null;
+            int id = map.props[v.prop].container; if (id < 0 || id >= map.containers.Count) return null;
+            var c = map.containers[id]; RollContainer(c); return c;
+        }
+        /// <summary>Parked (driverless, stopped) cars within range of a point, nearest first.</summary>
+        public List<Vehicle> ParkedNear(Vec2 p, float range)
+        {
+            var list = new List<Vehicle>();
+            foreach (var v in vehicles) if (v.driver < 0 && Math.Abs(v.speed) < .1f && Vec2.Distance(v.pos, p) <= range) list.Add(v);
+            list.Sort((a, b) => Vec2.Distance(a.pos, p).CompareTo(Vec2.Distance(b.pos, p)));
+            return list;
         }
 
         /// <summary>Rolls a container's loot the first time it is searched and drops in any car key waiting there.</summary>

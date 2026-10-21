@@ -11,15 +11,25 @@ namespace Ashfall.Core
 
     /// <summary>Named points of interest beyond ordinary towns. Consumers (Humans, Bestiary, Community, WorldEvents, views)
     /// must tolerate kinds that a generator version does not place.</summary>
-    public enum LandmarkKind : byte { Town, MilitaryBase, Airfield, Hospital, RadioStation, Garage, RaiderCompound, Warehouse, Church, School, Farmstead, Campground, Quarry }
-    public sealed class Landmark { public string name = ""; public LandmarkKind kind; public int x, y, radius; public List<int> buildings = new List<int>(); public Vec2 Center { get { return new Vec2(x + .5f, y + .5f); } } }
+    public enum LandmarkKind : byte { Town, MilitaryBase, Airfield, Hospital, RadioStation, Garage, RaiderCompound, Warehouse, Church, School, Farmstead, Campground, Quarry,
+        Motel }   // appended
+    public sealed class Landmark
+    {
+        public string name = ""; public LandmarkKind kind; public int x, y, radius; public List<int> buildings = new List<int>();
+        public Rect rect;                    // bounds (the fenced compound or lot; a square around a town)
+        public string description = "";
+        public Vec2 Center { get { return new Vec2(x + .5f, y + .5f); } }
+        public bool Contains(Vec2 p, float margin = 0) { return rect.DistanceTo(p) <= margin; }
+    }
     /// <summary>A named drop point on the New Game map (PUBG-style landing choice).</summary>
     public sealed class LandingZone { public string name = ""; public int x, y; public string description = ""; public Vec2 Center { get { return new Vec2(x + .5f, y + .5f); } } }
 
-    /// <summary>Seeded generator for the whole county: river, highway, towns, farms, forests, buildings and furniture.</summary>
-    public sealed class WorldGen
+    /// <summary>Seeded generator for the whole county: river, road network, towns, landmarks, farms, forests, buildings and furniture.
+    /// Landmarks, their layouts and the landing zones are in GenLandmarks.cs.</summary>
+    public sealed partial class WorldGen
     {
-        public const int Version = 1;
+        /// <summary>2: open-county scale (4-6 km), road grid, specialised landmarks and landing zones.</summary>
+        public const int Version = 2;
         readonly Map map; readonly Rng rng; readonly int seed;
         public readonly List<Settlement> settlements = new List<Settlement>();
         public readonly List<Landmark> landmarks = new List<Landmark>();
@@ -27,14 +37,28 @@ namespace Ashfall.Core
         public Rect bridge;
         public Vec2 evacuationPoint;
         readonly List<Rect> reserved = new List<Rect>();
+        // Spatial index over reserved rectangles so placement checks stay local on large counties.
+        const int ReserveCell = 64;
+        List<int>[] reserveGrid; int reserveW, reserveH;
+        // Primary roads: centre lines and half widths (the county highway, Route 9 and the larger-county roads).
+        readonly List<Int2> roadsY = new List<Int2>(), roadsX = new List<Int2>();   // (centre, half width)
+        float scale;   // county width / 1024
 
         public static Map Generate(int seed, int size, out WorldGen gen)
         {
             var map = new Map(size, size); gen = new WorldGen(map, seed); gen.Run(); return map;
         }
-        WorldGen(Map map, int seed) { this.map = map; this.seed = seed; rng = new Rng((ulong)seed, 7); }
+        WorldGen(Map map, int seed)
+        {
+            this.map = map; this.seed = seed; rng = new Rng((ulong)seed, 7);
+            reserveW = (map.width + ReserveCell - 1) / ReserveCell; reserveH = (map.height + ReserveCell - 1) / ReserveCell;
+            reserveGrid = new List<int>[reserveW * reserveH];
+            noTrees = new bool[map.CellsX * map.CellsY]; landmarkCell = new bool[map.CellsX * map.CellsY];
+        }
         int W { get { return map.width; } }
         int H { get { return map.height; } }
+        /// <summary>Scale for footprints and radii: grows to 3 (3 km) and then stays, so bigger counties get more places, not bigger ones.</summary>
+        float S { get { return Math.Min(scale, 3); } }
 
         // ---------------------------------------------------------------- terrain
         float Hash(int x, int y, int salt)
@@ -60,14 +84,35 @@ namespace Ashfall.Core
         {
             if (!map.InBounds(x, y)) return; int i = x / Map.Cell + y / Map.Cell * map.CellsX;
             var current = (ZoneKind)map.zone[i];
-            if (!overrideTown && (current == ZoneKind.Town || current == ZoneKind.Commercial) && z != ZoneKind.Commercial) return;
+            if (!overrideTown && (current == ZoneKind.Town || current == ZoneKind.Commercial || current == ZoneKind.Military) && z != ZoneKind.Commercial) return;
             map.zone[i] = (byte)z;
         }
 
         int RiverX(int y) { return (int)(W * .3f + Math.Sin(y / 260.0 + seed % 7) * 70 + Math.Sin(y / 83.0) * 18); }
 
+        void Reserve(Rect r)
+        {
+            int id = reserved.Count; reserved.Add(r);
+            int x0 = MathUtil.Clamp(r.x / ReserveCell, 0, reserveW - 1), x1 = MathUtil.Clamp((r.MaxX - 1) / ReserveCell, 0, reserveW - 1);
+            int y0 = MathUtil.Clamp(r.y / ReserveCell, 0, reserveH - 1), y1 = MathUtil.Clamp((r.MaxY - 1) / ReserveCell, 0, reserveH - 1);
+            for (int x = x0; x <= x1; x++) for (int y = y0; y <= y1; y++) { var list = reserveGrid[x + y * reserveW]; if (list == null) reserveGrid[x + y * reserveW] = list = new List<int>(); list.Add(id); }
+        }
+        bool ReservedOverlap(Rect r, int margin)
+        {
+            var q = r.Expand(margin + 1);
+            int x0 = MathUtil.Clamp(q.x / ReserveCell, 0, reserveW - 1), x1 = MathUtil.Clamp((q.MaxX - 1) / ReserveCell, 0, reserveW - 1);
+            int y0 = MathUtil.Clamp(q.y / ReserveCell, 0, reserveH - 1), y1 = MathUtil.Clamp((q.MaxY - 1) / ReserveCell, 0, reserveH - 1);
+            for (int x = x0; x <= x1; x++) for (int y = y0; y <= y1; y++)
+                {
+                    var list = reserveGrid[x + y * reserveW]; if (list == null) continue;
+                    foreach (int id in list) if (reserved[id].Overlaps(r, margin)) return true;
+                }
+            return false;
+        }
+
         void Run()
         {
+            scale = W / 1024f;
             // Forest and wild ground from fractal noise.
             for (int cy = 0; cy < map.CellsY; cy++)
                 for (int cx = 0; cx < map.CellsX; cx++)
@@ -91,51 +136,75 @@ namespace Ashfall.Core
                     if (water) SetCellZone(x, y, ZoneKind.Water, true);
                 }
             }
-            // A pond in the north-east hills.
+            // Ponds in the hills; larger counties get a few more lakes away from the river.
             Pond(new Vec2(W * .78f, H * .82f), 38);
             Pond(new Vec2(W * .12f, H * .78f), 24);
+            for (int i = 0, made = 0; i < 60 && made < (int)(scale * scale / 4); i++)
+            {
+                int r = rng.Range(18, 46), x = rng.Range(r + 80, W - r - 80), y = rng.Range(r + 80, H - r - 80);
+                if (Math.Abs(x - RiverX(y)) < r + 90) continue;
+                Pond(new Vec2(x, y), r); made++;
+            }
 
-            // Primary roads: the county highway (east-west) and Route 9 (north-south, east of the river).
+            // Primary roads: the county highway (east-west) and Route 9 (north-south, east of the river). Larger counties add
+            // a north and a south county road and a west and an east road so every place is a short drive from a main road.
             int highwayY = H / 2, routeX = (int)(W * .62f);
-            Road(0, highwayY - 4, W, 8, true, Ground.Road);
-            Road(routeX - 3, 0, 6, H, false, Ground.Road);
+            Road(0, highwayY - 4, W, 8, true, Ground.Road); roadsY.Add(new Int2(highwayY, 4));
+            Road(routeX - 3, 0, 6, H, false, Ground.Road); roadsX.Add(new Int2(routeX, 3));
+            if (scale >= 2)
+            {
+                foreach (float f in new[] { .2f, .8f }) { int y = (int)(H * f); Road(0, y - 3, W, 6, true, Ground.Road); roadsY.Add(new Int2(y, 3)); }
+                foreach (float f in new[] { .1f, .88f }) { int x = (int)(W * f); Road(x - 3, 0, 6, H, false, Ground.Road); roadsX.Add(new Int2(x, 3)); }
+            }
             int bx = RiverX(highwayY);
             bridge = new Rect(bx - 16, highwayY - 5, 32, 10);
             for (int x = bridge.x; x < bridge.MaxX; x++) for (int y = highwayY - 4; y < highwayY + 4; y++) if (map.InBounds(x, y)) map.ground[map.Index(x, y)] = Ground.Bridge;
             for (int x = bridge.x; x < bridge.MaxX; x++) { map.SetH(x, highwayY - 4, Edge.Fence); map.SetH(x, highwayY + 4, Edge.Fence); }
             evacuationPoint = new Vec2(bx - 30, highwayY);
             Fill(new Rect(bx - 46, highwayY + 5, 26, 14), Ground.Parking);
-            reserved.Add(new Rect(bx - 50, highwayY - 20, 70, 40));
+            Reserve(new Rect(bx - 50, highwayY - 20, 70, 40));
 
-            // Settlements scale with the county: a county seat on the crossroads plus towns and hamlets.
-            float scale = W / 1024f;
-            Town("Cedar Fork", routeX, highwayY, (int)(170 + 70 * scale), true);
-            var names = new[] { "Harlan Springs", "Millbrook", "Pine Hollow", "Riverside", "Dunmore", "Elk Ridge", "Fairhaven", "Grant's Mill", "Hollis", "Ironwood", "Juniper Flats", "Kettle Creek", "Lowell", "Marrow Bend", "Northgate", "Oak Valley" };
-            int wanted = Math.Min(names.Length, (int)(4 * scale * scale * .6f) + 3);
-            for (int i = 0, n = 0; i < 400 && n < wanted; i++)
+            // The county seat sits on the crossroads. Footprints stop growing past 3 km; bigger counties get more towns instead.
+            Town("Cedar Fork", routeX, highwayY, (int)(170 + 70 * S), true);
+            // Big landmarks claim open country before the other towns fill it.
+            MajorLandmarks();
+            int wanted = Math.Min(TownNames.Length, (int)(scale * scale * 1.1f) + 3), spacing = scale < 2 ? 36 : 90;   // small test counties pack towns tighter
+            for (int i = 0, n = 0; i < 300 + (int)(80 * scale * scale) && n < wanted; i++)
             {
-                int radius = rng.Range(80, (int)(120 + 40 * scale));
+                int radius = rng.Range(80, (int)(120 + 40 * S));
                 int x = rng.Range(radius + 30, W - radius - 30), y = rng.Range(radius + 30, H - radius - 30);
                 if (Math.Abs(x - RiverX(y)) < radius + 30) continue;
-                if (settlements.Any(t => Vec2.Distance(new Vec2(t.x, t.y), new Vec2(x, y)) < t.radius + radius + 90)) continue;
-                Town(names[n++], x, y, radius, false);
+                if (settlements.Any(t => Vec2.Distance(new Vec2(t.x, t.y), new Vec2(x, y)) < t.radius + radius + spacing)) continue;
+                if (NearLandmark(new Rect(x - radius, y - radius, radius * 2, radius * 2), spacing / 3)) continue;
+                Town(TownNames[n++], x, y, radius, false);
             }
             // County roads joining every settlement to the primary roads.
-            foreach (var s in settlements.Skip(1)) ConnectToRoads(s.x, s.y, highwayY, routeX);
-            // Farms throughout the countryside west of the river and along the south.
-            int farms = (int)(W / 30 * scale);
+            foreach (var s in settlements.Skip(1)) { Rect c; bool hz; if (PlanConnector(s.x, s.y, 6, new Rect(0, 0, 0, 0), true, out c, out hz)) Road(c.x, c.y, c.w, c.h, hz, Ground.Road); }
+            // Smaller landmarks sit beside towns and along the roads.
+            MinorLandmarks();
+            // Farms throughout the countryside.
+            int farms = (int)(10 * scale * scale);
             for (int i = 0; i < farms * 6 && settlements.Count > 0 && farmCount < farms; i++)
                 Farm(rng.Range(60, W - 60), rng.Range(60, H - 60));
-            // Rural homes along the highway and Route 9.
-            for (int i = 0; i < (int)(W / 9 * scale); i++)
-            {
-                if (rng.Chance(.5f)) { int x = rng.Range(40, W - 40); RoadsideLot(x, highwayY + (rng.Chance(.5f) ? 6 : -6), rng.Chance(.5f) ? Facing.South : Facing.North); }
-                else { int y = rng.Range(40, H - 40); RoadsideLot(routeX + (rng.Chance(.5f) ? 5 : -5), y, rng.Chance(.5f) ? Facing.West : Facing.East); }
-            }
+            Farmsteads();
+            // Rural homes and the odd gas station along every primary road.
+            foreach (var road in roadsY)
+                for (int i = 0; i < W / 20; i++) { int x = rng.Range(40, W - 40); bool south = rng.Chance(.5f); RoadsideLot(x, road.x + (south ? road.y + 2 : -road.y - 2), south ? Facing.South : Facing.North); }
+            foreach (var road in roadsX)
+                for (int i = 0; i < H / 20; i++) { int y = rng.Range(40, H - 40); bool west = rng.Chance(.5f); RoadsideLot(road.x + (west ? road.y + 2 : -road.y - 2), y, west ? Facing.West : Facing.East); }
             Forests();
             DefaultLandmarks();
-            Cars(highwayY, routeX);
+            LandingZones();
+            Cars();
         }
+
+        static readonly string[] TownNames =
+        {
+            "Harlan Springs", "Millbrook", "Pine Hollow", "Riverside", "Dunmore", "Elk Ridge", "Fairhaven", "Grant's Mill", "Hollis", "Ironwood", "Juniper Flats", "Kettle Creek", "Lowell", "Marrow Bend", "Northgate", "Oak Valley",
+            "Quarry Hill", "Redbank", "Saltlick", "Tamarack", "Union Grove", "Vesper", "Willow Bend", "Yarrow", "Ashby Crossing", "Bellwether", "Coldwater", "Dry Creek", "Eastbrook", "Garnet",
+            "Hadley", "Jasper", "Kinross", "Laurel", "Maple Ridge", "New Bethel", "Orchard Park", "Possum Trot", "Quincy Mill", "Rook's Ferry", "Silver Lake", "Thistle", "Upton", "West Ashfall",
+            "Wicker", "Yellow Branch", "Zion Hill", "Barlow", "Copper Run", "Deer Lick",
+        };
 
         void Pond(Vec2 c, int r)
         {
@@ -157,20 +226,49 @@ namespace Ashfall.Core
                 {
                     int idx = map.Index(i, j);
                     if (map.ground[idx] == Ground.Water) { map.ground[idx] = Ground.Bridge; continue; }
-                    if (map.ground[idx] == Ground.Bridge || map.roomAt[idx] >= 0) continue;
+                    if (map.ground[idx] == Ground.Bridge || map.roomAt[idx] >= 0 || landmarkCell[i / Map.Cell + j / Map.Cell * map.CellsX] && InLandmark(i, j)) continue;
                     if (g == Ground.Gravel && map.ground[idx] == Ground.Road) continue;
                     map.ground[idx] = g;
                 }
-            reserved.Add(new Rect(r.x - 1, r.y - 1, r.w + 2, r.h + 2));
+            Reserve(new Rect(r.x - 1, r.y - 1, r.w + 2, r.h + 2));
         }
-        void ConnectToRoads(int x, int y, int highwayY, int routeX)
+
+        /// <summary>Plans the shortest straight connector from (x, y) to a primary road that avoids landmarks, buildings and the
+        /// excluded rectangle, and open water unless the fallback pass (which may bridge) is allowed. Returns false when none exists.</summary>
+        bool PlanConnector(int x, int y, int width, Rect exclude, bool fallback, out Rect corridor, out bool horizontal)
         {
-            // L-shaped county road: first horizontally toward Route 9 if east of the river, then vertically to the highway.
-            int riverHere = RiverX(y);
-            bool east = x > riverHere;
-            int targetX = east ? routeX : x;
-            if (east && Math.Abs(targetX - x) > 4) Road(Math.Min(x, targetX), y - 3, Math.Abs(targetX - x) + 3, 6, true, Ground.Road);
-            else Road(x - 3, Math.Min(y, highwayY), 6, Math.Abs(highwayY - y), false, Ground.Road);
+            corridor = default(Rect); horizontal = false; int best = int.MaxValue;
+            for (int pass = 0; pass < (fallback ? 2 : 1) && best == int.MaxValue; pass++)
+            {
+                foreach (var road in roadsY)
+                {
+                    int len = Math.Abs(road.x - y); if (len >= best) continue;
+                    var c = new Rect(x - width / 2, Math.Min(y, road.x), width, len + 1);
+                    if (!ConnectorClear(c, exclude, false, pass == 1)) continue;
+                    best = len; corridor = c; horizontal = false;
+                }
+                foreach (var road in roadsX)
+                {
+                    int len = Math.Abs(road.x - x); if (len >= best) continue;
+                    var c = new Rect(Math.Min(x, road.x), y - width / 2, len + 1, width);
+                    if (!ConnectorClear(c, exclude, true, pass == 1)) continue;
+                    best = len; corridor = c; horizontal = true;
+                }
+            }
+            return best != int.MaxValue;
+        }
+        bool ConnectorClear(Rect c, Rect exclude, bool horizontal, bool bridges)
+        {
+            if (NearLandmark(c, 1) || exclude.w > 0 && exclude.Overlaps(c)) return false;
+            // Sample the centre line: no water (rivers and ponds keep their few bridges) and no buildings in the way.
+            int n = horizontal ? c.w : c.h;
+            for (int i = 0; i < n; i += 2)
+            {
+                int x = horizontal ? c.x + i : c.x + c.w / 2, y = horizontal ? c.y + c.h / 2 : c.y + i;
+                if (!map.InBounds(x, y)) return false;
+                if (!bridges && map.ground[map.Index(x, y)] == Ground.Water || map.roomAt[map.Index(x, y)] >= 0) return false;
+            }
+            return true;
         }
 
         // ---------------------------------------------------------------- settlements
@@ -296,11 +394,11 @@ namespace Ashfall.Core
         }
         void RoadsideLot(int x, int y, Facing front)
         {
-            if (!map.InBounds(x, y) || map.ZoneAt(x, y) == ZoneKind.Town || map.ZoneAt(x, y) == ZoneKind.Commercial) return;
+            if (!map.InBounds(x, y) || map.ZoneAt(x, y) == ZoneKind.Town || map.ZoneAt(x, y) == ZoneKind.Commercial || map.ZoneAt(x, y) == ZoneKind.Military) return;
             int w = rng.Range(9, 13), d = rng.Range(8, 11);
             int gap = 3;
             var r = front == Facing.South ? new Rect(x, y + gap, w, d) : front == Facing.North ? new Rect(x, y - gap - d, w, d) : front == Facing.West ? new Rect(x + gap, y, d, w) : new Rect(x - gap - d, y, d, w);
-            if (!Free(r, 3)) return;
+            if (!Free(r, 3) || NearLandmark(r, 6)) return;
             Construct(r, rng.Chance(.2f) ? BuildingKind.GasStation : BuildingKind.House, front);
             for (int cx = r.x; cx < r.MaxX; cx += Map.Cell) for (int cy = r.y; cy < r.MaxY; cy += Map.Cell) SetCellZone(cx, cy, ZoneKind.Suburb);
         }
@@ -309,31 +407,32 @@ namespace Ashfall.Core
         void Farm(int x, int y)
         {
             var area = new Rect(x - 40, y - 34, 80, 68);
-            if (!Free(area, 6) || AnyWater(area) || map.ZoneAt(x, y) == ZoneKind.Town || map.ZoneAt(x, y) == ZoneKind.Commercial) return;
+            if (!Free(area, 6) || AnyWater(area) || map.ZoneAt(x, y) == ZoneKind.Town || map.ZoneAt(x, y) == ZoneKind.Commercial || NearLandmark(area, 12)) return;
             if (settlements.Any(s => Vec2.Distance(new Vec2(s.x, s.y), new Vec2(x, y)) < s.radius + 60)) return;
+            // Gravel drive from just west of the farm to the nearest primary road, never through a landmark or the fields.
+            Rect drive; bool hz;
+            if (!PlanConnector(area.x - 3, y, 4, area, false, out drive, out hz)) return;
             farmCount++;
             for (int cx = area.x; cx < area.MaxX; cx += Map.Cell) for (int cy = area.y; cy < area.MaxY; cy += Map.Cell) SetCellZone(cx, cy, ZoneKind.Farm);
-            var house = new Rect(x - 30, y - 26, rng.Range(11, 15), rng.Range(10, 13));
-            Construct(house, BuildingKind.Farmhouse, Facing.East);
-            var barn = new Rect(x + 6, y - 28, rng.Range(13, 17), rng.Range(16, 20));
-            Construct(barn, BuildingKind.Barn, Facing.West);
+            var site = new Landmark { name = "", kind = LandmarkKind.Farmstead, x = x, y = y, radius = 52, rect = area };
+            var house = Construct(new Rect(x - 30, y - 26, rng.Range(11, 15), rng.Range(10, 13)), BuildingKind.Farmhouse, Facing.East);
+            var barn = Construct(new Rect(x + 6, y - 28, rng.Range(13, 17), rng.Range(16, 20)), BuildingKind.Barn, Facing.West);
+            if (house != null) site.buildings.Add(house.id); if (barn != null) site.buildings.Add(barn.id);
+            farmSites.Add(site);
             // Fields with rows of crops, fenced.
             var field = new Rect(x - 34, y + 2, 66, 28);
             for (int i = field.x; i < field.MaxX; i++) for (int j = field.y; j < field.MaxY; j++) if (map.InBounds(i, j)) map.ground[map.Index(i, j)] = Ground.Field;
             for (int i = field.x + 1; i < field.MaxX - 1; i += 2) for (int j = field.y + 1; j < field.MaxY - 1; j += 3) if (rng.Chance(.55f)) map.AddProp(PropKind.Crops, i, j);
             for (int i = field.x; i < field.MaxX; i++) { if (i % 9 != 4) { map.SetH(i, field.y, Edge.Fence); map.SetH(i, field.MaxY, Edge.Fence); } }
             for (int j = field.y; j < field.MaxY; j++) { if (j % 9 != 4) { map.SetV(field.x, j, Edge.Fence); map.SetV(field.MaxX, j, Edge.Fence); } }
-            reserved.Add(area);
-            // Gravel drive to the nearest primary road, axis aligned.
-            int highwayY = H / 2;
-            int driveX = area.x + 2;
-            Road(driveX - 2, Math.Min(y, highwayY), 4, Math.Abs(highwayY - y), false, Ground.Gravel);
+            Reserve(area);
+            Road(drive.x, drive.y, drive.w, drive.h, hz, Ground.Gravel);
         }
 
         bool Free(Rect r, int margin)
         {
             if (r.x < 4 || r.y < 4 || r.MaxX > W - 4 || r.MaxY > H - 4) return false;
-            foreach (var b in reserved) if (b.Overlaps(r, margin)) return false;
+            if (ReservedOverlap(r, margin)) return false;
             for (int x = r.x; x < r.MaxX; x++) for (int y = r.y; y < r.MaxY; y++)
                 {
                     var g = map.GroundAt(x, y);
@@ -402,14 +501,25 @@ namespace Ashfall.Core
                 case BuildingKind.Barn: return "Barn";
                 case BuildingKind.Shed: return "Shed";
                 case BuildingKind.Farmhouse: return "Farmhouse";
+                case BuildingKind.Warehouse: return "Warehouse";
+                case BuildingKind.Church: return "Church";
+                case BuildingKind.School: return "School";
+                case BuildingKind.Hospital: return "Hospital";
+                case BuildingKind.Barracks: return "Barracks";
+                case BuildingKind.Armory: return "Armory";
+                case BuildingKind.Hangar: return "Hangar";
+                case BuildingKind.RadioStation: return "Radio Station";
+                case BuildingKind.Garage: return "Garage";
+                case BuildingKind.Motel: return "Motel";
+                case BuildingKind.Compound: return "Compound";
                 default: return "House";
             }
         }
 
-        void Construct(Rect r, BuildingKind kind, Facing front)
+        Building Construct(Rect r, BuildingKind kind, Facing front)
         {
-            if (!Free(r, kind == BuildingKind.Shed ? 0 : 1)) return;
-            reserved.Add(r);
+            if (!Free(r, kind == BuildingKind.Shed ? 0 : 1)) return null;
+            Reserve(r);
             var b = new Building { id = map.buildings.Count, kind = kind, rect = r, name = BuildingName(kind) };
             map.buildings.Add(b);
             var L = new Local { r = r, f = front };
@@ -436,9 +546,22 @@ namespace Ashfall.Core
                         Furnish(room, PropKind.HayBale, "", rng.Range(3, 7)); Furnish(room, PropKind.Crate, "barn", rng.Range(2, 4)); Furnish(room, PropKind.Workbench, "tools", 1);
                         break;
                     }
-                default: StoreLayout(b, kind, L, W, D, doors); break;
+                default: if (!LandmarkLayout(b, kind, L, W, D, doors)) StoreLayout(b, kind, L, W, D, doors); break;
             }
-            Windows(b, L, W, D, doors, kind == BuildingKind.Barn || kind == BuildingKind.Shed ? .2f : kind == BuildingKind.House || kind == BuildingKind.Farmhouse ? .65f : .9f);
+            Windows(b, L, W, D, doors, WindowChance(kind));
+            return b;
+        }
+        static float WindowChance(BuildingKind k)
+        {
+            switch (k)
+            {
+                case BuildingKind.Barn: case BuildingKind.Shed: return .2f;
+                case BuildingKind.House: case BuildingKind.Farmhouse: return .65f;
+                case BuildingKind.Armory: return .05f;
+                case BuildingKind.Warehouse: case BuildingKind.Hangar: case BuildingKind.Garage: case BuildingKind.Compound: return .3f;
+                case BuildingKind.Barracks: return .6f;
+                default: return .9f;
+            }
         }
 
         void FrontDoor(Building b, Local L, int u, List<Int2> doors, bool locked)
@@ -607,6 +730,7 @@ namespace Ashfall.Core
                     int i = map.Index(x, y);
                     if (map.ground[i] != Ground.Grass && map.ground[i] != Ground.Dirt) continue;
                     if (map.roomAt[i] >= 0 || map.blockers.ContainsKey(i)) continue;
+                    if (noTrees[x / Map.Cell + y / Map.Cell * map.CellsX]) continue;
                     var z = map.ZoneAt(x, y);
                     float density = z == ZoneKind.Forest ? .085f : z == ZoneKind.Wild ? .006f : z == ZoneKind.Farm ? .002f : z == ZoneKind.Suburb ? .004f : 0;
                     if (density <= 0 || Hash(x, y, 77) > density) continue;
@@ -624,54 +748,85 @@ namespace Ashfall.Core
                 }
             return map.H(x, y) != Edge.None || map.V(x, y) != Edge.None || map.H(x, y + 1) != Edge.None || map.V(x + 1, y) != Edge.None;
         }
-        void Cars(int highwayY, int routeX)
+        void Cars()
         {
-            // Abandoned cars on the highway (evacuation traffic) and parked along town streets.
-            for (int i = 0; i < W / 12; i++)
-            {
-                int x = rng.Range(20, W - 20), y = highwayY + (rng.Chance(.5f) ? -3 : 1);
-                if (bridge.Contains(x, y) || Math.Abs(x - evacuationPoint.x) < 60) continue;
-                TryCar(x, y, true);
-            }
-            for (int i = 0; i < H / 14; i++) TryCar(routeX + (rng.Chance(.5f) ? -2 : 1), rng.Range(20, H - 20), false);
+            // Abandoned cars on the primary roads (evacuation traffic) and parked along town streets.
+            foreach (var road in roadsY)
+                for (int i = 0; i < W / 12; i++)
+                {
+                    int x = rng.Range(20, W - 20), y = road.x + (rng.Chance(.5f) ? -road.y + 1 : 1);
+                    if (bridge.Contains(x, y) || road.x == H / 2 && Math.Abs(x - evacuationPoint.x) < 60) continue;
+                    TryCar(x, y, true);
+                }
+            foreach (var road in roadsX)
+                for (int i = 0; i < H / 14; i++) TryCar(road.x + (rng.Chance(.5f) ? -2 : 1), rng.Range(20, H - 20), false);
             int parked = 0;
             for (int guard = 0; guard < W * 2 && parked < W / 5; guard++)
             {
                 int x = rng.Range(10, W - 10), y = rng.Range(10, H - 10);
                 var z = map.ZoneAt(x, y); if (z != ZoneKind.Town && z != ZoneKind.Commercial && z != ZoneKind.Suburb) continue;
-                if (map.GroundAt(x, y) == Ground.Parking || map.GroundAt(x, y) == Ground.Road && map.GroundAt(x, y + 3) == Ground.Sidewalk) { if (TryCar(x, y, true)) parked++; }
+                if (map.GroundAt(x, y) == Ground.Parking || map.GroundAt(x, y) == Ground.Road && map.GroundAt(x, y + 3) == Ground.Sidewalk) { if (TryCar(x, y, true) != null) parked++; }
             }
         }
-        bool TryCar(int x, int y, bool horizontal)
+        Prop TryCar(int x, int y, bool horizontal)
         {
             int w = horizontal ? 4 : 2, h = horizontal ? 2 : 4;
-            for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) { var g = map.GroundAt(x + i, y + j); if (map.TileBlocked(x + i, y + j) || g == Ground.Bridge || map.RoomAt(x + i, y + j) != null) return false; }
+            for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) { var g = map.GroundAt(x + i, y + j); if (map.TileBlocked(x + i, y + j) || g == Ground.Bridge || map.RoomAt(x + i, y + j) != null) return null; }
             var car = map.AddProp(PropKind.Car, x, y, w, h, horizontal ? (rng.Chance(.5f) ? 1 : 3) : (rng.Chance(.5f) ? 0 : 2));
             car.hp = rng.Float();   // view tint / wreck state
             map.AddContainer(car, "car");
-            return true;
+            return car;
         }
 
-        /// <summary>A safe-ish starting house away from the busiest streets.</summary>
-        /// <summary>Every settlement is a town landmark and a landing zone; specialised landmarks are added by later generator passes.</summary>
+        /// <summary>Every settlement is a town landmark; specialised landmarks are added by GenLandmarks.cs. Town landmarks come first.</summary>
         void DefaultLandmarks()
         {
+            var towns = new List<Landmark>();
             foreach (var t in settlements)
             {
-                var lm = new Landmark { name = t.name, kind = LandmarkKind.Town, x = t.x, y = t.y, radius = t.radius };
+                var lm = new Landmark { name = t.name, kind = LandmarkKind.Town, x = t.x, y = t.y, radius = t.radius, rect = new Rect(t.x - t.radius, t.y - t.radius, t.radius * 2, t.radius * 2) };
+                lm.description = t == settlements[0] ? "County seat" : t.radius >= 170 ? "Town" : "Small town";
                 foreach (var b in map.buildings) if (Vec2.Distance(new Vec2(b.rect.x, b.rect.y), new Vec2(t.x, t.y)) < t.radius) lm.buildings.Add(b.id);
-                landmarks.Add(lm);
-                landingZones.Add(new LandingZone { name = t.name, x = t.x, y = t.y, description = "Town" });
+                towns.Add(lm);
             }
+            landmarks.InsertRange(0, towns);
         }
 
-        /// <summary>Home site for a new community: a building near the chosen landing zone (random zone when -1).</summary>
+        /// <summary>The landmark nearest to p (distance to its bounds), optionally skipping towns. Null when there are none.</summary>
+        public Landmark NearestLandmark(Vec2 p, bool includeTowns = true)
+        {
+            Landmark best = null; float bestD = float.MaxValue;
+            foreach (var l in landmarks)
+            {
+                if (!includeTowns && l.kind == LandmarkKind.Town) continue;
+                float d = l.rect.DistanceTo(p); if (d < bestD) { bestD = d; best = l; }
+            }
+            return best;
+        }
+        /// <summary>The first landmark of a kind, or null (consumers must tolerate a generator that did not place one).</summary>
+        public Landmark Find(LandmarkKind kind) { foreach (var l in landmarks) if (l.kind == kind) return l; return null; }
+        /// <summary>True inside Fort Ashby or the Red Talon Yard (never a home site).</summary>
+        public bool InHostileLandmark(Vec2 p, float margin = 0)
+        {
+            foreach (var l in landmarks) if ((l.kind == LandmarkKind.MilitaryBase || l.kind == LandmarkKind.RaiderCompound) && l.Contains(p, margin)) return true;
+            return false;
+        }
+
+        /// <summary>Home site for a new community: a Farmhouse, House, Church or Warehouse with at least three rooms near the chosen
+        /// landing zone (random zone when -1), never inside Fort Ashby or the Red Talon Yard.</summary>
         public static Building StartSite(Map map, WorldGen gen, Rng rng, int landingZone)
         {
             if (gen == null || gen.landingZones.Count == 0) return StartHouse(map, rng);
             var zone = gen.landingZones[landingZone >= 0 && landingZone < gen.landingZones.Count ? landingZone : rng.Range(0, gen.landingZones.Count)];
-            var homes = map.buildings.Where(b => b.kind == BuildingKind.House || b.kind == BuildingKind.Farmhouse).OrderBy(b => Vec2.Distance(new Vec2(b.rect.x, b.rect.y), zone.Center)).Take(4).ToList();
+            var c = zone.Center;
+            var homes = map.buildings.Where(b => HomeCandidate(map, gen, b)).OrderBy(b => Vec2.Distance(b.rect.Center, c)).Take(4).ToList();
             return homes.Count == 0 ? StartHouse(map, rng) : homes[rng.Range(0, homes.Count)];
+        }
+        public static bool HomeCandidate(Map map, WorldGen gen, Building b)
+        {
+            if (b.kind != BuildingKind.House && b.kind != BuildingKind.Farmhouse && b.kind != BuildingKind.Church && b.kind != BuildingKind.Warehouse) return false;
+            if (b.rooms.Count < 3) return false;
+            return gen == null || !gen.InHostileLandmark(b.rect.Center, 12);
         }
         public static Building StartHouse(Map map, Rng rng)
         {

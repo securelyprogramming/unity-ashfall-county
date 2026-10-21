@@ -254,7 +254,53 @@ namespace Ashfall.Core
                 Add(BookId(sk, 1), title + " Handbook, Vol. 1", ItemCategory.Misc, .4f, d => { d.bookSkill = (int)sk; d.bookMinLevel = 0; d.bookMaxLevel = 5; d.bookMultiplier = 3; d.tags = new[] { "book" }; });
                 Add(BookId(sk, 2), title + " Handbook, Vol. 2", ItemCategory.Misc, .5f, d => { d.bookSkill = (int)sk; d.bookMinLevel = 5; d.bookMaxLevel = 10; d.bookMultiplier = 4; d.tags = new[] { "book" }; });
             }
+
+            OpenCounty();
         }
+
+        /// <summary>Open-county gear: rucksacks, plague items, throwables, armour, packs and military firearms, then a loot tier
+        /// for every item (0 common, 1 uncommon, 2 rare, 3 military/airdrop).</summary>
+        static void OpenCounty()
+        {
+            // Rucksacks: one heavy bag of community stock (Community.cs deposits them at the home base).
+            foreach (var r in new[] { new object[] { "food", "Food", Resource.Food, 8f }, new object[] { "meds", "Medical", Resource.Meds, 5f }, new object[] { "ammo", "Ammo", Resource.Ammo, 6f },
+                new object[] { "materials", "Materials", Resource.Materials, 6f }, new object[] { "fuel", "Fuel", Resource.Fuel, 5f } })
+            {
+                var res = (Resource)r[2]; float amount = (float)r[3];
+                Add("rucksack_" + r[0], r[1] + " Rucksack", ItemCategory.Misc, 8, d => { d.resource = (int)res; d.resourceAmount = amount; d.tags = new[] { "rucksack" }; d.tier = 1; });
+            }
+            // Blood plague: samples come from plague hearts; cures are made at the infirmary or found in airdrops.
+            Add("plague_sample", "Plague Sample", ItemCategory.Misc, .2f, d => { d.stack = 10; d.tags = new[] { "plague" }; d.tier = 2; });
+            Add("plague_cure", "Plague Cure", ItemCategory.Medical, .2f, d => { d.plagueCure = 100; d.stack = 5; d.tier = 3; });
+            Add("energy_drink", "Energy Drink", ItemCategory.Drink, .3f, d => { d.thirst = -10; d.fatigue = -10; d.stamina = 40; d.tier = 1; });
+            Food("mre", "Military Ration", .5f, 45, 0, 0, d => { d.stamina = 20; d.tier = 1; });
+            // Throwables: Command.Throw (SimCombat.cs). Damage is in zombie hit points, like Simulation.Blast; fuse in seconds (0 = on impact).
+            Add("grenade", "Frag Grenade", ItemCategory.Misc, .4f, d => { d.tags = new[] { "throwable", "explosive" }; d.blastRadius = 5; d.blastDamage = 3.2f; d.fuse = 3; d.stack = 4; d.tier = 2; });
+            Add("molotov", "Molotov Cocktail", ItemCategory.Misc, .6f, d => { d.tags = new[] { "throwable", "fire" }; d.blastRadius = 3; d.blastDamage = .8f; d.fuse = 0; d.stack = 3; d.tier = 1; });
+            Add("pipe_bomb", "Pipe Bomb", ItemCategory.Misc, .7f, d => { d.tags = new[] { "throwable", "explosive", "lure" }; d.blastRadius = 6; d.blastDamage = 3.6f; d.fuse = 6; d.stack = 3; d.tier = 1; });
+            // Armour: armor = fraction of damage absorbed.
+            Armour("vest_1", "Padded Vest", WearSlot.Torso, 2.2f, .2f, 1); Armour("vest_2", "Kevlar Vest", WearSlot.Torso, 3f, .35f, 2); Armour("vest_3", "Military Plate Carrier", WearSlot.Torso, 4.5f, .5f, 3);
+            Armour("helmet_1", "Motorcycle Helmet", WearSlot.Head, .9f, .12f, 1); Armour("helmet_2", "Police Helmet", WearSlot.Head, 1.1f, .22f, 2); Armour("helmet_3", "Military Helmet", WearSlot.Head, 1.4f, .32f, 3);
+            Add("backpack_1", "Daypack", ItemCategory.Bag, .5f, d => { d.slot = WearSlot.Back; d.capacity = 10; });
+            Add("backpack_2", "Hiking Pack", ItemCategory.Bag, .8f, d => { d.slot = WearSlot.Back; d.capacity = 16; d.tier = 1; });
+            Add("backpack_3", "Assault Pack", ItemCategory.Bag, 1f, d => { d.slot = WearSlot.Back; d.capacity = 24; d.tier = 2; });
+            // Military and sporting guns: distinct range, noise and accuracy; swingTime is the time between shots.
+            Gun("smg", "MP5 Submachine Gun", 2.6f, .9f, "ammo_9mm", 30, 13, 46, .5f, d => { d.spread = 7; d.swingTime = .11f; d.tags = new[] { "automatic" }; d.tier = 2; });
+            Gun("assault_rifle", "M4 Carbine", 3.4f, 1.6f, "ammo_556", 30, 30, 70, .74f, d => { d.twoHanded = true; d.spread = 3; d.swingTime = .14f; d.tags = new[] { "automatic" }; d.tier = 3; });
+            Gun("hunting_rifle", "Scoped Hunting Rifle", 3.8f, 3.6f, "ammo_308", 5, 42, 78, .92f, d => { d.twoHanded = true; d.swingTime = 1.25f; d.spread = 1; d.tier = 2; });
+            Add("ammo_556", "5.56 Rounds", ItemCategory.Ammo, .015f, d => { d.stack = 150; d.tier = 2; });
+            // Older armour gains protection values; the old deer rifle stays as a common long gun.
+            Get("police_vest").armor = .25f; Get("helmet").armor = .15f; Get("leather_jacket").armor = .05f;
+            Get("rifle").name = "Deer Rifle";
+
+            Tier(1, "pistol", "revolver", "shotgun", "rifle", "ammo_308", "nailed_bat", "crowbar", "axe", "machete", "antibiotics", "suture_kit", "first_aid_kit",
+                "leather_jacket", "police_vest", "helmet", "duffel_bag", "hiking_bag", "radio", "gas_can");
+        }
+        static void Armour(string id, string name, WearSlot slot, float weight, float armor, int tier)
+        {
+            Add(id, name, ItemCategory.Clothing, weight, d => { d.slot = slot; d.armor = armor; d.scratchProtection = .4f + armor; d.biteProtection = .2f + armor; d.warmth = .2f; d.tier = tier; d.tags = new[] { "armor" }; });
+        }
+        static void Tier(int tier, params string[] ids) { foreach (var id in ids) Get(id).tier = tier; }
         public static string BookId(Skill skill, int volume) { return "book_" + skill.ToString().ToLowerInvariant() + "_" + volume; }
 
         public static int Uid;
