@@ -256,13 +256,14 @@ namespace Ashfall.View
             yield return Shot("12-freaks");
             float jugScale = game.DrawnScale(ZombieKind.Juggernaut);
             Pass("juggernaut-drawn-large", jugScale > 1.3f, "drawn size " + jugScale.ToString("0.00"));
-            float jugHp = jug.hp;
+            float jugHp = jug.hp; var staged = w.zombies.Where(z => z.Alive && Vec2.Distance(z.pos, arena) < 20).ToList(); var hpBefore = staged.Select(z => z.hp).ToList();
             yield return Aim(jug.pos, .4f);
             InputSystem.QueueStateEvent(pad, new GamepadState { rightStick = Stick(jug.pos) }.WithButton(GamepadButton.RightShoulder));
             yield return Record("freaks-grenade", 1.2f, () => KeepAlive(s));
             InputSystem.QueueStateEvent(pad, new GamepadState { rightStick = Stick(jug.pos) });
             yield return Record("freaks-grenade-2", 6f, () => KeepAlive(s));
-            Pass("gamepad-throws-grenade", Saw(EventKind.Explosion, "grenade") && (jug.hp < jugHp || !jug.Alive), "explosions " + Count(EventKind.Explosion) + ", juggernaut hp " + jugHp.ToString("0.0") + " -> " + jug.hp.ToString("0.0"));
+            int hurt = 0; for (int i = 0; i < staged.Count; i++) if (!staged[i].Alive || staged[i].hp < hpBefore[i]) hurt++;
+            Pass("gamepad-throws-grenade", Saw(EventKind.Explosion, "grenade") && hurt > 0, "explosions " + Count(EventKind.Explosion) + ", staged zombies hurt or killed " + hurt + "/" + staged.Count + ", juggernaut hp " + jugHp.ToString("0.0") + " -> " + jug.hp.ToString("0.0"));
             yield return Shot("13-after-grenade");
             // Finish the fight with the rifle (equip, aim, shoot) and record it.
             var rifle = s.inventory.items.FirstOrDefault(i => i.def == "assault_rifle");
@@ -316,7 +317,7 @@ namespace Ashfall.View
             var raider = talons == null ? null : w.Members(talons.id).FirstOrDefault();
             if (raider != null)
             {
-                KeepAlive(s); s.pos = OpenGround(w, raider.pos + new Vec2(10, 0)); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader about 10 m from a Red Talon raider; kept the leader alive while recording");
+                KeepAlive(s); s.pos = InSight(w, raider.pos, 9); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader " + Vec2.Distance(s.pos, raider.pos).ToString("0") + " m from a Red Talon raider, in line of sight; kept the leader alive while recording");
                 int hostileTracers = seen.Count(e => e.kind == EventKind.Tracer && e.survivor >= 0 && w.survivors[e.survivor].faction == talons.id);
                 yield return Record("raiders", 10f, () => KeepAlive(s));
                 int after = seen.Count(e => e.kind == EventKind.Tracer && e.survivor >= 0 && w.survivors[e.survivor].faction == talons.id);
@@ -520,6 +521,17 @@ namespace Ashfall.View
                     if (ok && !w.map.Collides(p, Survivor.Radius)) return p;
                 }
             return OpenGround(w, near);
+        }
+        /// <summary>A free outdoor spot about r metres from a point with a clear line of sight to it.</summary>
+        static Vec2 InSight(World w, Vec2 p, float r)
+        {
+            for (float d = r; d < r + 12; d += 2)
+                for (int a = 0; a < 24; a++)
+                {
+                    var c = p + Vec2.FromAngle(a * .2618f) * d;
+                    if (w.map.RoomAt((int)c.x, (int)c.y) == null && !w.map.Collides(c, Survivor.Radius) && w.map.LineOfSight(c, p)) return c;
+                }
+            return OpenGround(w, p + new Vec2(r, 0));
         }
         static Vec2 OpenGround(World w, Vec2 near)
         {
