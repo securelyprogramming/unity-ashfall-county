@@ -464,7 +464,7 @@ namespace Ashfall.Core
             if (f == null) { f = new Facility { kind = kind, level = 1 }; c.facilities.Add(f); }
             f.upgrading = upgrade; f.buildHours = FacilityHours(kind, level);
             var p = world.Controlled;
-            world.Emit(EventKind.Facility, c.basePos, p == null ? -1 : p.id, "start");
+            world.Emit(EventKind.Facility, c.basePos, p == null ? -1 : p.id, "start", (int)kind);
             if (p != null) world.Message(p, (upgrade ? "Upgrading the " : "Building a ") + Community.FacilityName(kind) + (upgrade ? " to level " + level : "") + ": " + f.buildHours.ToString("0") + " hours.");
         }
 
@@ -482,7 +482,7 @@ namespace Ashfall.Core
             if (f.level >= 2 && c.generatorProp < 0) { var g = world.PlaceBaseProp(PropKind.Generator, false); if (g != null) c.generatorProp = g.id; }
             var at = f.prop >= 0 ? world.map.props[f.prop].Center : c.basePos;
             var lead = world.Controlled;
-            world.Emit(EventKind.Facility, at, lead == null ? -1 : lead.id, what);
+            world.Emit(EventKind.Facility, at, lead == null ? -1 : lead.id, what, (int)f.kind);
             if (lead != null) world.Message(lead, Community.FacilityName(f.kind) + (what == "built" ? " is built." : " upgraded to level " + f.level + "."));
             ChangeMorale(3);
             if (f.kind == FacilityKind.Watchtower) AssignGarrison();

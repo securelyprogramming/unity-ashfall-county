@@ -53,7 +53,7 @@ namespace Ashfall.Core
             m.status = MissionStatus.Active;
             if (m.kind == MissionKind.Defend) { m.expiresAt = world.minutes + 180; StartSiege(m); }
             else m.expiresAt = Math.Max(m.expiresAt, world.minutes + 360);
-            world.Emit(EventKind.Mission, m.target, s.id, "accepted");
+            world.Emit(EventKind.Mission, m.target, s.id, "accepted", m.id);
             world.Message(s, "Mission accepted: " + m.title + ".");
         }
 
@@ -126,7 +126,7 @@ namespace Ashfall.Core
             var f = m.faction >= 0 && m.faction < world.factions.Count ? world.factions[m.faction] : null;
             if (f != null && f.id != 0) f.standing = Math.Min(100, f.standing + 15);
             if (m.rewardItem.Length > 0 && ItemCatalog.Exists(m.rewardItem) && world.Controlled != null) world.Controlled.inventory.Add(ItemCatalog.Make(m.rewardItem));
-            world.Emit(EventKind.Mission, m.target, world.playerId, "completed");
+            world.Emit(EventKind.Mission, m.target, world.playerId, "completed", m.id);
             Radio((m.giverName.Length > 0 ? m.giverName : "Ada") + ": " + m.title + " - done. " + (m.rewardInfluence > 0 ? "+" + m.rewardInfluence + " influence." : ""));
         }
 
@@ -136,7 +136,7 @@ namespace Ashfall.Core
             var f = m.faction >= 0 && m.faction < world.factions.Count ? world.factions[m.faction] : null;
             if (f != null && f.id != 0) f.standing = Math.Max(-100, f.standing - 5);
             if (m.kind == MissionKind.Defend) world.Emit(EventKind.Siege, world.community.basePos, world.playerId, "end");
-            world.Emit(EventKind.Mission, m.target, world.playerId, "failed");
+            world.Emit(EventKind.Mission, m.target, world.playerId, "failed", m.id);
             Radio("Mission failed: " + m.title + " (" + why + ").");
         }
 
@@ -156,7 +156,7 @@ namespace Ashfall.Core
             var c = world.community;
             m.id = c.nextMission++; m.offeredAt = world.minutes;
             c.missions.Add(m);
-            world.Emit(EventKind.Mission, m.target, world.playerId, "offered");
+            world.Emit(EventKind.Mission, m.target, world.playerId, "offered", m.id);
             Radio((m.giverName.Length > 0 ? m.giverName : "Ada Pike") + " on the radio: " + m.description);
         }
 

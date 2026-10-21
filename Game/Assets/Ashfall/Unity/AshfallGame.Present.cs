@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using Ashfall.Core;
 using UnityEngine;
 
@@ -44,7 +43,6 @@ namespace Ashfall.View
                 var l = new GameObject("Survivor flashlight").AddComponent<Light>(); l.transform.SetParent(transform, false);
                 l.type = LightType.Spot; l.range = 16; l.spotAngle = 50; l.intensity = 2; l.color = new Color(1, .94f, .8f); l.shadows = LightShadows.None; l.enabled = false; humanLights[i] = l;
             }
-            Probe(w);
             viewedPlayer = -1; switchPan = 0;
             var s = Player;
             if (s != null) { playerView = HumanView(s); playerView.Snap(Pos(s.pos), Yaw(s.facing)); viewedPlayer = s.id; }
@@ -622,85 +620,22 @@ namespace Ashfall.View
             foreach (var id in scratchIds) { Release(corpseViews[id]); corpseViews.Remove(id); }
         }
 
-        // ---------------------------------------------------------------- optional fields, read defensively
-        // Newer Core builds add Corpse.kind/plague, Zombie.burning and a public list of thrown objects; until they
-        // exist the views fall back to plain corpses, no flames and no arcs. Fields are looked up once per session.
-        static FieldInfo corpseKind, corpsePlague, zombieBurning;
-        static bool probed;
-        object thrownOwner; MemberInfo thrownMember; FieldInfo thrownPos, thrownTarget, thrownFrom, thrownHeight;
-        readonly Dictionary<object, Vector2> thrownOrigins = new Dictionary<object, Vector2>(), thrownSeen = new Dictionary<object, Vector2>();
+        static void CorpseLook(Corpse c, out ZombieKind kind, out bool plague) { kind = c.kind; plague = c.plague; }
+        static bool Burning(Zombie z) { return z.burning > 0; }
 
-        void Probe(World w)
-        {
-            if (!probed)
-            {
-                probed = true; const BindingFlags F = BindingFlags.Public | BindingFlags.Instance;
-                corpseKind = typeof(Corpse).GetField("kind", F); if (corpseKind != null && corpseKind.FieldType != typeof(ZombieKind)) corpseKind = null;
-                corpsePlague = typeof(Corpse).GetField("plague", F); if (corpsePlague != null && corpsePlague.FieldType != typeof(bool)) corpsePlague = null;
-                zombieBurning = typeof(Zombie).GetField("burning", F); if (zombieBurning != null && zombieBurning.FieldType != typeof(float)) zombieBurning = null;
-            }
-            thrownOwner = null; thrownMember = null; thrownPos = thrownTarget = thrownFrom = thrownHeight = null;
-            foreach (var owner in new object[] { w, Sim })
-            {
-                if (owner == null) continue;
-                foreach (var name in new[] { "throwables", "projectiles", "thrown", "inFlight" })
-                {
-                    MemberInfo m = owner.GetType().GetField(name, BindingFlags.Public | BindingFlags.Instance);
-                    if (m == null) m = owner.GetType().GetProperty(name, BindingFlags.Public | BindingFlags.Instance);
-                    var type = m is FieldInfo ? ((FieldInfo)m).FieldType : m is PropertyInfo ? ((PropertyInfo)m).PropertyType : null;
-                    if (type == null || !typeof(IList).IsAssignableFrom(type)) continue;
-                    var element = type.IsArray ? type.GetElementType() : type.IsGenericType ? type.GetGenericArguments()[0] : null;
-                    if (element == null) continue;
-                    thrownPos = VecField(element, "pos", "position", "at"); thrownTarget = VecField(element, "target", "to", "dest", "destination");
-                    thrownFrom = VecField(element, "from", "origin", "start");
-                    foreach (var h in new[] { "height", "z", "alt", "altitude" }) { var f = element.GetField(h, BindingFlags.Public | BindingFlags.Instance); if (f != null && f.FieldType == typeof(float)) { thrownHeight = f; break; } }
-                    if (thrownPos == null) continue;
-                    thrownOwner = owner; thrownMember = m; return;
-                }
-            }
-        }
-        static FieldInfo VecField(System.Type t, params string[] names)
-        {
-            foreach (var n in names) { var f = t.GetField(n, BindingFlags.Public | BindingFlags.Instance); if (f != null && f.FieldType == typeof(Vec2)) return f; }
-            return null;
-        }
-        static void CorpseLook(Corpse c, out ZombieKind kind, out bool plague)
-        {
-            kind = corpseKind != null ? (ZombieKind)corpseKind.GetValue(c) : ZombieKind.Walker;
-            plague = corpsePlague != null && (bool)corpsePlague.GetValue(c);
-        }
-        static bool Burning(Zombie z) { return zombieBurning != null && (float)zombieBurning.GetValue(z) > 0; }
-
-        /// <summary>Thrown grenades/molotovs in flight: a small object on a parabolic arc with a fuse spark.</summary>
+        /// <summary>Thrown grenades/molotovs/pipe bombs: in flight they follow a parabola from the thrower to the landing
+        /// point (Throwable.Arc); once landed they sit on the ground with a fuse spark.</summary>
         void Throwables()
         {
             fx.BeginThrown();
-            if (thrownMember != null)
+            var list = World.throwables;
+            for (int i = 0; i < list.Count && i < Fx.MaxThrown; i++)
             {
-                IList list = null;
-                try { list = (thrownMember is FieldInfo ? ((FieldInfo)thrownMember).GetValue(thrownOwner) : ((PropertyInfo)thrownMember).GetValue(thrownOwner, null)) as IList; }
-                catch (System.Exception) { thrownMember = null; }
-                thrownSeen.Clear();
-                if (list != null)
-                    for (int i = 0; i < list.Count && i < Fx.MaxThrown; i++)
-                    {
-                        var o = list[i]; if (o == null) continue;
-                        var p = (Vec2)thrownPos.GetValue(o); var pos = new Vector2(p.x, p.y); float y = 1.2f;
-                        if (thrownHeight != null) y = Mathf.Max(.1f, (float)thrownHeight.GetValue(o));
-                        else if (thrownTarget != null)
-                        {
-                            var tv = (Vec2)thrownTarget.GetValue(o); var target = new Vector2(tv.x, tv.y);
-                            Vector2 from;
-                            if (thrownFrom != null) { var fv = (Vec2)thrownFrom.GetValue(o); from = new Vector2(fv.x, fv.y); }
-                            else if (!o.GetType().IsValueType) { if (!thrownOrigins.TryGetValue(o, out from)) from = pos; thrownSeen[o] = from; }
-                            else from = pos;
-                            float total = Vector2.Distance(from, target), left = Vector2.Distance(pos, target);
-                            float t = total > .1f ? Mathf.Clamp01(1 - left / total) : 1, arc = Mathf.Clamp(total * .25f, .6f, 4);
-                            y = .9f + 4 * arc * t * (1 - t) - .8f * t;
-                        }
-                        fx.Thrown(new Vector3(pos.x, y, pos.y), Time.time + i);
-                    }
-                thrownOrigins.Clear(); foreach (var kv in thrownSeen) thrownOrigins[kv.Key] = kv.Value;
+                var t = list[i]; float k = t.Arc;
+                var pos = Vector2.Lerp(new Vector2(t.from.x, t.from.y), new Vector2(t.pos.x, t.pos.y), k);
+                float span = Vec2.Distance(t.from, t.pos), arc = Mathf.Clamp(span * .25f, .6f, 4);
+                float y = t.landed ? .12f : 1.3f + 4 * arc * k * (1 - k) - 1.15f * k;
+                fx.Thrown(new Vector3(pos.x, y, pos.y), Time.time + i);
             }
             fx.EndThrown();
         }
