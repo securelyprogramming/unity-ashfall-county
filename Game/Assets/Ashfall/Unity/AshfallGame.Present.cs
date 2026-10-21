@@ -29,6 +29,10 @@ namespace Ashfall.View
         /// <summary>Views drawn this frame, for diagnostics.</summary>
         public int DrawnHumans { get; private set; }
         public int DrawnZombies { get { return zombieViews.Count; } }
+        /// <summary>Observes every sim event before the frame's list is cleared (native QA probe).</summary>
+        public System.Action<SimEvent> EventTap;
+        /// <summary>Largest drawn zombie of a kind (QA): world scale of its view, 0 when none is drawn.</summary>
+        public float DrawnScale(ZombieKind kind) { float best = 0; foreach (var v in zombieViews.Values) if (v != null && v.Kind == kind && v.gameObject.activeSelf) best = Mathf.Max(best, v.Size); return best; }
 
         /// <summary>Creates the views for a freshly entered session.</summary>
         void BeginPresentation(World w)
@@ -74,6 +78,7 @@ namespace Ashfall.View
             {
                 var e = list[i];
                 if (UI != null) UI.OnEvent(e);
+                if (EventTap != null) EventTap(e);
                 if (s != null && fx != null) EventFx(e, s);
             }
             list.Clear();

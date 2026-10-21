@@ -93,6 +93,8 @@ namespace Ashfall.View
         public void OpenInventory() { if (open.Count > 0 && open.Peek() == "inventory") { RefreshInventory(); return; } while (open.Count > 0) CloseTopPanel(); Open("inventory"); }
         public void OpenContext() { if (game.Nearby.Count == 0) return; while (open.Count > 0) CloseTopPanel(); Open("context"); }
         /// <summary>Opens a panel directly (interactions: talk to an NPC, the workbench, the radio set).</summary>
+        /// <summary>Id of the panel on top ("" when none), for the native QA probe.</summary>
+        public string TopPanel { get { return open.Count > 0 ? open.Peek() : ""; } }
         public void OpenPanel(string id) { if (!panels.ContainsKey(id)) return; while (open.Count > 0) CloseTopPanel(); Open(id); }
 
         float panelRefresh;

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """Run the native Ashfall County acceptance probe against a built player and record a validation report.
 
-Usage: python tools/playtest/ashfall_qa.py --player /abs/build/Game.exe [--size 3072]
+Usage: python tools/playtest/ashfall_qa.py --player /abs/build/Game.exe [--size 4096] [--video]
 
 The probe always uses an isolated GameWorkbenchQA user directory outside the checkout, so real saves and
 preferences are never touched. The report separates what the native run proved from what remains unverified.
 """
-import argparse, json, os, subprocess, sys, time
+import argparse, json, os, shutil, subprocess, sys, time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -16,7 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--player', required=True, type=Path)
-    parser.add_argument('--size', type=int, default=3072)
+    parser.add_argument('--size', type=int, default=4096)
+    parser.add_argument('--video', action='store_true', help='record staged scenes and encode them to MP4 with ffmpeg')
     parser.add_argument('--timeout', type=int, default=900)
     args = parser.parse_args()
     player = args.player.expanduser().resolve()
@@ -29,9 +30,22 @@ def main():
     report = base / 'ashfall-qa.json'
     cmd = [str(player), '-screen-width', '1600', '-screen-height', '900', '-screen-fullscreen', '0',
            '-ashfall-qa=' + str(report), '-ashfall-user-dir=' + str(user), '-ashfall-qa-size=' + str(args.size), '-logFile', str(base / 'player.log')]
+    frames = base / 'GameWorkbenchVideo'
+    if args.video:
+        cmd.append('-ashfall-qa-video=' + str(frames))
     started = time.time()
     result = subprocess.run(cmd, cwd=player.parent, timeout=args.timeout)
     data = json.loads(report.read_text(encoding='utf8'))
+    videos = []
+    if args.video and frames.is_dir():
+        ffmpeg = shutil.which('ffmpeg')
+        for scene in data.get('videos', []):
+            src = frames / scene
+            if not ffmpeg or not src.is_dir():
+                continue
+            out = base / (scene + '.mp4')
+            subprocess.run([ffmpeg, '-y', '-loglevel', 'error', '-framerate', '30', '-i', str(src / 'f%05d.jpg'), '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '21', '-movflags', '+faststart', str(out)], check=True)
+            videos.append(str(out))
     build_dir = player.parent
     native = build_dir / 'native-build.json'
     summary = {
@@ -46,19 +60,19 @@ def main():
         'exitCode': result.returncode,
         'durationSeconds': round(time.time() - started, 1),
         'status': data.get('status'),
-        'county': {k: data.get(k) for k in ('seed', 'mapSize', 'buildings', 'settlements', 'zombies', 'generationMs')},
+        'county': {k: data.get(k) for k in ('seed', 'mapSize', 'buildings', 'settlements', 'zombies', 'generationMs', 'landingZones', 'hearts', 'humans', 'factions', 'landmarks')},
         'performance': {k: data.get(k) for k in ('averageFrameMs', 'worstFrameMs', 'simMs', 'viewMs', 'uiMs', 'activeZombies', 'loadedChunks', 'loadedBuildings')},
         'ownedAssets': {'preparedArtRoles': data.get('purchasedArtRoles'), 'ownedAudioCues': data.get('purchasedAudioCues')},
         'checks': data.get('checks', []),
         'qaOnlySetup': data.get('qaSetup', []),
         'screenshots': data.get('screenshots', []),
+        'videos': videos,
         'notProven': [
-            'Physical controller hardware (the probe uses a virtual gamepad device); gamepad driving is not probed',
-            'Owned vehicle audio (engine, door and crash cues are synthesized stand-ins) and long drives across the county',
-            'Human playtime and the evacuation outcome over a full multi-hour session',
-            'Linux/macOS native builds, LAN multiplayer (not implemented in the rebuilt game), Steam packaging',
-            'Long-session memory and save growth, and every sandbox option combination',
-            'Crop growth in real-time play (the probe fast-forwards in-game days with the host simulation), fishing catch rates and trait balance over long sessions, and the trait picker driven by a physical controller',
+            'Physical controller hardware (the probe uses a virtual gamepad device)',
+            'Human playtime, balance and pacing over multi-hour sessions; the legacy (all hearts destroyed) outcome in normal play',
+            'Freak, raider, airdrop, red-zone and plague-heart scenes are staged by the probe (spawned or scheduled next to the leader and kept alive); natural encounter rates are not measured',
+            'Linux/macOS native builds, LAN multiplayer (not implemented), Steam packaging',
+            'Long-session memory and save growth on the 6 km county, and every new-game option combination',
         ],
     }
     out = ROOT / 'Docs' / 'ValidationReports' / ('AshfallSurvival-' + (data.get('platform') or 'native') + '-' + stamp + '.json')

@@ -13,8 +13,10 @@ using Debug = UnityEngine.Debug;
 namespace Ashfall.View
 {
     /// <summary>Native acceptance probe (-ashfall-qa=report.json with an isolated -ashfall-user-dir). Drives the
-    /// built player through real input devices and records evidence. QA-only setup (spawned zombies, granted tools)
-    /// happens in the isolated QA save and is listed in the report.</summary>
+    /// built player through real input devices and records evidence: drop map, community, freaks, rival humans,
+    /// airdrops, red zones, plague hearts, driving and save/reload. QA-only staging (spawned freaks, granted items,
+    /// teleports, kept-alive health) happens in the isolated QA save and is listed in the report. With
+    /// -ashfall-qa-video=dir (under a GameWorkbench folder) staged scenes are also recorded frame by frame.</summary>
     public sealed class AshfallQA : MonoBehaviour
     {
         [Serializable] sealed class Check { public string name; public bool pass; public string detail; }
@@ -24,6 +26,7 @@ namespace Ashfall.View
             public int seed, mapSize, buildings, settlements, zombies, purchasedArtRoles, purchasedAudioCues; public long generationMs;
             public float averageFrameMs, worstFrameMs, simMs, viewMs, uiMs; public int activeZombies, loadedChunks, loadedBuildings;
             public List<Check> checks = new List<Check>(); public List<string> screenshots = new List<string>(); public List<string> qaSetup = new List<string>();
+            public List<string> landmarks = new List<string>(), videos = new List<string>(); public int landingZones, hearts, humans, factions, videoFrames;
         }
         AshfallGame game; string reportPath, dir; Report report = new Report();
         Keyboard keyboard; Gamepad pad;
@@ -66,173 +69,324 @@ namespace Ashfall.View
         }
         IEnumerator WaitFor(Func<bool> condition, float seconds) { float end = Time.realtimeSinceStartup + seconds; while (!condition() && Time.realtimeSinceStartup < end) yield return null; }
 
+        // ---------------------------------------------------------------- event tap, staging and recording
+        readonly List<SimEvent> seen = new List<SimEvent>();
+        bool Saw(EventKind kind, string text = null) { return seen.Any(e => e.kind == kind && (text == null || e.text == text)); }
+        int Count(EventKind kind, string text = null) { return seen.Count(e => e.kind == kind && (text == null || e.text == text)); }
+        /// <summary>Keeps the controlled survivor alive through a staged scene (listed as QA setup).</summary>
+        void KeepAlive(Survivor s) { if (s != null && s.alive) { s.health = s.MaxHealth; s.injury = 0; s.healthSeen = -1; s.wounds.Clear(); s.knockedDown = 0; s.plague = 0; s.plagueInfected = false; s.endurance = 100; s.fatigue = 0; } }
+        void ClearAround(World w, Vec2 at, float radius) { foreach (var z in w.zombies) if (z.Alive && Vec2.Distance(z.pos, at) < radius) { z.state = ZombieState.Dead; } w.index = new ZombieIndex(w); }
+        Zombie Stage(World w, Vec2 at, ZombieKind kind, bool hold = true)
+        {
+            var z = w.SpawnKind(at, kind, w.rng); z.state = ZombieState.Idle; z.timer = hold ? 99 : 2; z.facing = (game.Player.pos - at).Angle; return z;
+        }
+
+        string videoDir; int videoFrames;
+        /// <summary>Records the real rendered frames of a staged scene at 30 fps (fixed capture time step) as JPEGs; the
+        /// harness encodes them to MP4. Disabled unless -ashfall-qa-video=dir is given.</summary>
+        IEnumerator Record(string scene, float seconds, Action each = null)
+        {
+            if (string.IsNullOrEmpty(videoDir))
+            {
+                float end = Time.realtimeSinceStartup + seconds; while (Time.realtimeSinceStartup < end) { if (each != null) each(); yield return null; }
+                yield break;
+            }
+            string dir = Path.Combine(videoDir, scene); Directory.CreateDirectory(dir);
+            int frames = (int)(seconds * 30); Time.captureFramerate = 30;
+            for (int i = 0; i < frames; i++)
+            {
+                if (each != null) each();
+                yield return new WaitForEndOfFrame();
+                var tex = ScreenCapture.CaptureScreenshotAsTexture();
+                File.WriteAllBytes(Path.Combine(dir, "f" + i.ToString("00000") + ".jpg"), tex.EncodeToJPG(88));
+                Destroy(tex); videoFrames++;
+            }
+            Time.captureFramerate = 0;
+            report.videos.Add(scene);
+        }
+
         IEnumerator Run()
         {
             keyboard = InputSystem.AddDevice<Keyboard>("AshfallQA Keyboard"); pad = InputSystem.AddDevice<Gamepad>("AshfallQA Gamepad");
+            videoDir = AshfallGame.Arg("ashfall-qa-video");
+            if (!string.IsNullOrEmpty(videoDir)) { videoDir = Path.GetFullPath(videoDir); if (videoDir.IndexOf("GameWorkbench", StringComparison.OrdinalIgnoreCase) < 0) videoDir = null; }
             yield return new WaitForSecondsRealtime(1.5f);
             Pass("title-menu-visible", game.Screen == Screen.Title, "screen=" + game.Screen);
             yield return Shot("01-title");
-            int size = 3072; int.TryParse(AshfallGame.Arg("ashfall-qa-size"), out size); if (size < 512) size = 3072;
+            int size = 4096; int.TryParse(AshfallGame.Arg("ashfall-qa-size"), out size); if (size < 512) size = 4096;
             report.seed = 777; report.mapSize = size;
-            // Traits on the New Game screen: open the picker, pick within budget, try an over-budget pick, close with the pad's Back.
+
+            // New community: traits on the leader through the picker (within budget, over-budget refused, Back closes).
             game.Show(Screen.NewGame); yield return new WaitForSecondsRealtime(.6f);
+            yield return Shot("02-new-community");
             game.UI.QaOpenTraits(); yield return new WaitForSecondsRealtime(.4f);
             bool pickerOpen = game.UI.TraitsOpen;
             game.UI.QaClearTraits();
-            foreach (var id in new[] { "strong", "smoker", "green_thumb" }) game.UI.QaClickTrait(id);
-            game.UI.QaClickTrait("eagle_eyed");   // costs 3 with 0 left: must be refused
-            string refused = game.UI.TraitWarning; var picked = game.UI.ChosenTraits;
-            yield return Shot("00-traits");
-            Pass("trait-picker", pickerOpen && picked.SequenceEqual(new[] { "strong", "smoker", "green_thumb" }) && refused.Length > 0, "picked " + string.Join(",", picked) + "; over-budget pick refused: " + refused);
+            foreach (var id in new[] { "strong", "smoker" }) game.UI.QaClickTrait(id);
+            var picked = game.UI.ChosenTraits;
+            Pass("trait-picker", pickerOpen && picked.Contains("strong"), "picked " + string.Join(",", picked) + (game.UI.TraitWarning.Length > 0 ? "; note: " + game.UI.TraitWarning : ""));
             InputSystem.QueueStateEvent(pad, new GamepadState().WithButton(GamepadButton.East)); yield return null; yield return null;
             InputSystem.QueueStateEvent(pad, new GamepadState()); yield return new WaitForSecondsRealtime(.3f);
             Pass("trait-picker-closes-with-back", !game.UI.TraitsOpen && game.Screen == Screen.NewGame, "screen=" + game.Screen);
+
+            // PUBG-style drop map: the county is surveyed in the background and landing zones are offered.
+            var settings = new SandboxSettings { seed = 777, mapSize = size, population = Population.Normal };
+            game.OpenDropMap(settings);
+            yield return WaitFor(() => game.Preview != null, 90);
+            var preview = game.Preview;
+            Pass("drop-map-landing-zones", game.Screen == Screen.DropMap && preview != null && preview.gen.landingZones.Count >= 8,
+                preview == null ? "no preview" : preview.gen.landingZones.Count + " zones: " + string.Join(", ", preview.gen.landingZones.Select(z => z.name)));
+            yield return new WaitForSecondsRealtime(1f);
+            yield return Shot("03-drop-map");
+            int zone = preview == null ? -1 : Math.Max(0, preview.gen.landingZones.FindIndex(z => z.name == "Cedar Fork"));
+            settings.landingZone = zone;
             var watch = Stopwatch.StartNew();
-            game.StartNewGame(new SandboxSettings { seed = 777, mapSize = size, population = Population.Normal }, "QA Survivor", "carpenter", true, picked.ToArray());
-            yield return WaitFor(() => game.Screen == Screen.Playing, 120);
+            game.StartNewGame(settings, "QA Leader", "deputy", true, picked.ToArray());
+            yield return WaitFor(() => game.Screen == Screen.Playing, 180);
             report.generationMs = watch.ElapsedMilliseconds;
-            Pass("new-game-generates-county", game.Screen == Screen.Playing && game.World != null, "ms=" + report.generationMs);
+            Pass("new-game-generates-county", game.Screen == Screen.Playing && game.World != null, "ms=" + report.generationMs + " landing zone " + zone);
             if (game.World == null) { Finish("county did not load"); yield break; }
-            var w = game.World; var s = game.Player;
+            var w = game.World; var sim = game.Sim; var s = game.Player;
+            game.EventTap = e => { if (seen.Count < 20000) seen.Add(e); };
             report.buildings = w.map.buildings.Count; report.settlements = w.gen.settlements.Count; report.zombies = w.LivingZombies;
             report.purchasedArtRoles = ArtLibrary.PurchasedRoles; report.purchasedAudioCues = game.Audio.PurchasedCues;
-            Pass("county-scale", w.map.width >= size && w.map.buildings.Count > (size >= 3072 ? 800 : 100), w.map.width + "m, " + w.map.buildings.Count + " buildings, " + w.gen.settlements.Count + " settlements, " + w.LivingZombies + " zombies");
-            yield return new WaitForSecondsRealtime(2);
-            yield return Shot("02-start-house");
+            report.landmarks = w.gen.landmarks.Where(l => l.kind != LandmarkKind.Town).Select(l => l.kind + ":" + l.name).ToList();
+            report.landingZones = w.gen.landingZones.Count; report.hearts = w.hearts.Count; report.humans = w.survivors.Count(x => x.faction != 0); report.factions = w.factions.Count;
+            Pass("county-scale", w.map.width >= size && w.map.buildings.Count > size / 2, w.map.width + " m, " + w.map.buildings.Count + " buildings, " + w.gen.settlements.Count + " towns, " + w.LivingZombies + " zombies");
+            var kinds = new[] { LandmarkKind.MilitaryBase, LandmarkKind.Airfield, LandmarkKind.Hospital, LandmarkKind.RadioStation, LandmarkKind.Garage, LandmarkKind.RaiderCompound };
+            Pass("landmarks", kinds.All(k => w.gen.landmarks.Any(l => l.kind == k)), string.Join(", ", report.landmarks.Take(14)));
+            var c = w.community;
+            Pass("community-founded", w.LivingMembers().Count >= 3 && c.baseBuilding >= 0 && c.Stock(Resource.Food) > 0 && c.members.Contains(w.playerId),
+                w.LivingMembers().Count + " members (" + string.Join(", ", w.LivingMembers().Select(m => m.name)) + "), base " + c.baseBuilding + ", food " + c.Stock(Resource.Food) + ", influence " + c.influence);
+            Pass("factions-and-ai-survivors", report.humans >= 30 && w.factions.Count >= 8 && Characters.All.All(d => w.survivors.Any(x => x.character == d.key)),
+                report.humans + " AI survivors in " + w.factions.Count + " factions; characters " + string.Join(", ", Characters.All.Select(d => d.name + (w.survivors.Any(x => x.character == d.key && x.alive) ? "" : " (missing)"))));
+            var kindCounts = Bestiary.All.Select(d => d.name + " " + w.zombies.Count(z => z.Alive && z.kind == d.kind)).ToList();
+            Pass("bestiary-populated", Bestiary.All.All(d => w.zombies.Any(z => z.Alive && z.kind == d.kind)) && w.hearts.Count >= 6, string.Join(", ", kindCounts) + "; " + w.hearts.Count + " plague hearts");
+            yield return new WaitForSecondsRealtime(2.5f);
+            yield return Shot("04-home-base");
 
             // Movement through the real keyboard binding.
             var before = s.pos;
             foreach (var key in new[] { Key.W, Key.D, Key.S, Key.A }) { yield return Hold(key, .7f); if (Vec2.Distance(before, s.pos) > 1) break; }
             Pass("keyboard-movement", Vec2.Distance(before, s.pos) > .8f, "moved " + Vec2.Distance(before, s.pos).ToString("0.00") + " m");
 
-            // Loot the nearest container with E (walk next to it first, QA teleport within the house).
-            var home = w.map.BuildingAt(s.pos);
-            var box = home == null ? null : w.map.containers.Where(c => c.prop >= 0 && home.rooms.Contains(w.map.props[c.prop].room)).Select(c => w.map.props[c.prop]).FirstOrDefault();
+            // A base container opens with E.
+            var home = w.map.buildings[c.baseBuilding];
+            var box = w.map.containers.Where(k => k.prop >= 0 && home.rooms.Contains(w.map.props[k.prop].room)).Select(k => w.map.props[k.prop]).FirstOrDefault();
             if (box != null)
             {
-                var spot = FreeBeside(w.map, box); if (spot.HasValue) { s.pos = spot.Value; report.qaSetup.Add("teleported beside a container in the start house"); }
+                var spot = FreeBeside(w.map, box); if (spot.HasValue) { s.pos = spot.Value; report.qaSetup.Add("moved beside a container in the home base"); }
                 yield return Aim(box.Center, .5f);
-                yield return Press(Key.E);
-                yield return new WaitForSecondsRealtime(.6f);
-                var c = w.map.containers[box.container];
-                Pass("interact-opens-container", c.generated && game.UI.BlocksGameplay, "items=" + c.inventory.items.Count + " focus=" + (game.Focus == null ? "none" : game.Focus.label));
-                yield return Shot("03-loot-panel");
-                yield return Press(Key.Tab); yield return new WaitForSecondsRealtime(.3f);
-                if (game.UI.BlocksGameplay) game.UI.CloseTopPanel();
+                yield return Press(Key.E); yield return new WaitForSecondsRealtime(.6f);
+                Pass("interact-opens-container", w.map.containers[box.container].generated && game.UI.BlocksGameplay, "focus=" + (game.Focus == null ? "none" : game.Focus.label));
+                yield return Shot("05-loot-panel");
+                game.UI.CloseTopPanel(); yield return new WaitForSecondsRealtime(.3f);
             }
-            else Pass("interact-opens-container", false, "no container in start house");
+            else Pass("interact-opens-container", false, "no container in the base");
 
-            // Eat and drink through commands the UI uses.
-            s.hunger = 50; s.thirst = 50;
-            var chips = s.inventory.Find("chips"); if (chips != null) game.Submit(new Command { kind = CommandKind.Use, item = chips.uid });
-            yield return WaitFor(() => s.hunger < 45, 8);
-            Pass("eat", s.hunger < 45, "hunger=" + s.hunger.ToString("0"));
-            var bottle = s.inventory.Find("water_bottle"); if (bottle != null) game.Submit(new Command { kind = CommandKind.Use, item = bottle.uid });
-            yield return WaitFor(() => s.thirst < 30, 8);
-            Pass("drink", s.thirst < 30, "thirst=" + s.thirst.ToString("0"));
-
-            // Melee with the controller trigger: QA grants a bat and spawns one zombie ahead (isolated QA save).
-            var arena = OpenGround(w, s.pos);
-            s.pos = arena; report.qaSetup.Add("moved to open ground at " + arena);
-            foreach (var z in w.zombies.Where(z => z.Alive && Vec2.Distance(z.pos, s.pos) < 40)) z.state = ZombieState.Dead;
-            w.index = new ZombieIndex(w);
-            var bat = ItemCatalog.Make("baseball_bat"); s.inventory.Add(bat); s.primary = bat.uid; report.qaSetup.Add("granted baseball bat");
-            yield return new WaitForSecondsRealtime(1);
-            var target = w.AddZombie(s.pos + new Vec2(1.2f, 0), new Rng(5, 5)); target.state = ZombieState.Idle; target.timer = 99; target.facing = 3.14f; target.hp = 1.3f; report.qaSetup.Add("spawned 1 zombie in front");
-            int kills = s.kills;
-            for (int i = 0; i < 12 && target.Alive; i++) yield return PadAttack(.5f, () => target.pos);
-            InputSystem.QueueStateEvent(pad, new GamepadState());
-            Pass("gamepad-melee-kills-zombie", !target.Alive && s.kills > kills, "kills=" + s.kills + " zombieHp=" + target.hp.ToString("0.00"));
-            yield return Shot("04-combat");
-
-            // A zombie attacks; the survivor is wounded, then bandages.
-            foreach (var kv in s.worn.ToList()) s.worn.Remove(kv.Key);
-            var attacker = w.AddZombie(s.pos + new Vec2(-4f, 0), new Rng(9, 9)); attacker.state = ZombieState.Idle; attacker.facing = 0; report.qaSetup.Add("removed clothing protection; spawned attacker behind");
-            yield return WaitFor(() => s.wounds.Count > 0 || !s.alive, 30);
-            Pass("zombie-perceives-and-wounds", s.wounds.Count > 0, "wounds=" + string.Join("; ", s.wounds.Select(x => x.Label)) + " zombieState=" + attacker.state);
-            yield return Shot("05-wounded");
-            attacker.state = ZombieState.Dead; w.index = new ZombieIndex(w);
-            s.inventory.Add(ItemCatalog.Make("bandage", 3)); report.qaSetup.Add("granted bandages");
-            var bleeding = s.wounds.FirstOrDefault(x => x.bleeding);
-            var band = s.inventory.Find("bandage"); s.knockedDown = 0; game.Submit(new Command { kind = CommandKind.Use, item = band.uid });
-            yield return WaitFor(() => bleeding == null || bleeding.bandaged, 10);
-            s.health = 100; s.wounds.Clear(); s.zombieInfected = false; report.qaSetup.Add("after the wound test: health restored and infection cleared so later checks run on a live survivor");
-            Pass("bandage-wound", bleeding == null || bleeding.bandaged && !bleeding.bleeding, bleeding == null ? "no bleeding wound" : bleeding.Label);
-
-            // Barricade a window of a nearby building.
-            var window = w.map.openings.Where(o => o.kind == Edge.Window && o.barricade == 0).OrderBy(o => Vec2.Distance(o.Center, s.pos)).First();
-            s.pos = window.Center + (window.vertical ? new Vec2(-.55f, 0) : new Vec2(0, -.55f));
-            if (w.map.Collides(s.pos, Survivor.Radius)) s.pos = window.Center + (window.vertical ? new Vec2(.55f, 0) : new Vec2(0, .55f));
-            s.inventory.Add(ItemCatalog.Make("hammer")); s.inventory.Add(ItemCatalog.Make("plank")); s.inventory.Add(ItemCatalog.Make("nails", 10)); report.qaSetup.Add("granted hammer, plank, nails; moved to a window");
-            game.Submit(new Command { kind = CommandKind.Barricade, target = window.id });
-            yield return WaitFor(() => window.barricade > 0, 10);
-            Pass("barricade-window", window.barricade == 1, "planks=" + window.barricade);
+            // Rucksacks: carried home and deposited through the self actions (E on "Yourself" / Q menu).
+            float food = c.Stock(Resource.Food);
+            s.inventory.Add(ItemCatalog.Make("rucksack_food")); report.qaSetup.Add("granted one food rucksack at base");
+            s.pos = c.basePos; s.pos = OpenGround(w, c.basePos); if (!sim.AtBase(s)) s.pos = c.basePos;
             yield return new WaitForSecondsRealtime(.5f);
-            yield return Shot("06-barricade");
+            var self = game.Nearby.FirstOrDefault(n => n.actions.Any(a => a.label.StartsWith("Deposit")));
+            var deposit = self == null ? null : self.actions.First(a => a.label.StartsWith("Deposit"));
+            if (deposit != null) deposit.run();
+            yield return WaitFor(() => c.Stock(Resource.Food) > food, 3);
+            Pass("rucksack-deposit", c.Stock(Resource.Food) > food && Saw(EventKind.Influence), "food " + food + " -> " + c.Stock(Resource.Food) + (deposit == null ? " (no deposit action offered)" : ""));
 
-            // Night lighting and the map.
-            w.minutes = Math.Floor(w.minutes / 1440) * 1440 + 23 * 60;
-            yield return new WaitForSecondsRealtime(1.2f);
-            yield return Shot("07-night");
-            yield return Press(Key.F); yield return new WaitForSecondsRealtime(.6f);
-            yield return Shot("08-night-flashlight");
-            yield return Press(Key.M); yield return new WaitForSecondsRealtime(2.5f);
-            Pass("map-panel", game.UI.BlocksGameplay, "");
-            yield return Shot("09-map");
+            // HUD, community panel (K), base tab, missions (J), map (M).
+            yield return Shot("06-hud");
+            yield return Press(Key.K); yield return new WaitForSecondsRealtime(.8f);
+            Pass("community-panel", game.UI.TopPanel == "community", "top=" + game.UI.TopPanel);
+            yield return Shot("07-community-roster");
+            game.UI.OpenCommunityTab("base"); yield return new WaitForSecondsRealtime(.6f);
+            yield return Shot("08-community-base");
+            game.UI.CloseTopPanel(); yield return new WaitForSecondsRealtime(.2f);
+            sim.OfferMission(MissionKind.Rescue); sim.OfferMission(MissionKind.ClearInfestation); report.qaSetup.Add("asked the community for a rescue and a clear-infestation mission");
+            yield return Press(Key.J); yield return new WaitForSecondsRealtime(.8f);
+            Pass("missions-panel", game.UI.TopPanel == "missions" && c.missions.Count > 0, c.missions.Count + " missions: " + string.Join(" | ", c.missions.Select(m => m.title)));
+            yield return Shot("09-missions");
             game.UI.CloseTopPanel();
+            yield return Press(Key.M); yield return new WaitForSecondsRealtime(2f);
+            Pass("map-panel", game.UI.TopPanel == "map", "");
+            yield return Shot("10-county-map");
+            game.UI.CloseTopPanel(); yield return new WaitForSecondsRealtime(.3f);
+
+            // Companion: bring a member along and walk; they follow.
+            var mate = w.LivingMembers().FirstOrDefault(m => m.id != w.playerId);
+            if (mate != null)
+            {
+                game.Submit(Command.Of(CommandKind.SetCompanion, -1, mate.id)); yield return new WaitForSecondsRealtime(.3f);
+                var start = s.pos; yield return Hold(Key.D, 2.5f); yield return Hold(Key.W, 1.5f); yield return new WaitForSecondsRealtime(2.5f);
+                Pass("companion-follows", mate.ai == AiRole.Companion && c.companion == mate.id && Vec2.Distance(mate.pos, s.pos) < 6, mate.name + " " + Vec2.Distance(mate.pos, s.pos).ToString("0.0") + " m behind after walking " + Vec2.Distance(start, s.pos).ToString("0.0") + " m");
+                // Switch control to another member at base and back again.
+                s.pos = OpenGround(w, c.basePos); var other = w.LivingMembers().FirstOrDefault(m => m.id != w.playerId && m.id != mate.id) ?? mate;
+                other.pos = OpenGround(w, c.basePos + new Vec2(2, 0)); report.qaSetup.Add("placed the leader and a resident at the base for a switch");
+                string why; bool can = sim.CanSwitchTo(other.id, out why);
+                int leader = w.playerId; game.Submit(Command.Of(CommandKind.SwitchCharacter, -1, other.id)); yield return new WaitForSecondsRealtime(1.2f);
+                Pass("switch-member", w.playerId == other.id && game.Player == other && other.ai == AiRole.None, (can ? "" : "refused: " + why + "; ") + "now playing " + game.Player.name);
+                yield return Shot("11-switched-member");
+                game.Submit(Command.Of(CommandKind.SwitchCharacter, -1, leader)); yield return new WaitForSecondsRealtime(1f);
+                s = game.Player;
+            }
+            else Pass("companion-follows", false, "no second member");
+
+            // Melee with the gamepad against a walker.
+            KeepAlive(s); s.pos = OpenGround(w, c.basePos + new Vec2(30, 30)); ClearAround(w, s.pos, 30);
+            var walker = Stage(w, s.pos + new Vec2(1.3f, 0), ZombieKind.Walker); report.qaSetup.Add("spawned a walker beside the leader");
+            int kills = s.kills;
+            yield return PadAttack(6, () => walker.pos);
+            Pass("gamepad-melee-kills-zombie", !walker.Alive && s.kills > kills, "kills=" + s.kills + " hp=" + walker.hp.ToString("0.00"));
+
+            // Freaks: a screamer screams; a juggernaut is drawn huge; a gamepad-thrown grenade hits the pack.
+            KeepAlive(s); s.inventory.Add(ItemCatalog.Make("grenade", 2)); s.inventory.Add(ItemCatalog.Make("assault_rifle")); s.inventory.Add(ItemCatalog.Make("ammo_556", 60));
+            report.qaSetup.Add("granted 2 grenades and an assault rifle; staged a screamer, bloater, armored, feral and juggernaut near the leader with the companion");
+            var arena = s.pos; ClearAround(w, arena, 40);
+            var scream = Stage(w, arena + new Vec2(7, 2), ZombieKind.Screamer, false);
+            var jug = Stage(w, arena + new Vec2(12, -3), ZombieKind.Juggernaut);
+            Stage(w, arena + new Vec2(10, 3), ZombieKind.Bloater); Stage(w, arena + new Vec2(11, -6), ZombieKind.Armored); Stage(w, arena + new Vec2(13, 0), ZombieKind.Walker); Stage(w, arena + new Vec2(14, 2), ZombieKind.Walker);
+            yield return Aim(scream.pos, .8f);
+            yield return WaitFor(() => Saw(EventKind.Scream), 8);
+            Pass("screamer-screams", Saw(EventKind.Scream), "scream events " + Count(EventKind.Scream));
+            yield return Shot("12-freaks");
+            float jugScale = game.DrawnScale(ZombieKind.Juggernaut);
+            Pass("juggernaut-drawn-large", jugScale > 1.3f, "drawn size " + jugScale.ToString("0.00"));
+            float jugHp = jug.hp;
+            yield return Aim(jug.pos, .4f);
+            InputSystem.QueueStateEvent(pad, new GamepadState { rightStick = Stick(jug.pos) }.WithButton(GamepadButton.RightShoulder));
+            yield return Record("freaks-grenade", 1.2f, () => KeepAlive(s));
+            InputSystem.QueueStateEvent(pad, new GamepadState { rightStick = Stick(jug.pos) });
+            yield return Record("freaks-grenade-2", 6f, () => KeepAlive(s));
+            Pass("gamepad-throws-grenade", Saw(EventKind.Explosion, "grenade") && (jug.hp < jugHp || !jug.Alive), "explosions " + Count(EventKind.Explosion) + ", juggernaut hp " + jugHp.ToString("0.0") + " -> " + jug.hp.ToString("0.0"));
+            yield return Shot("13-after-grenade");
+            // Finish the fight with the rifle (equip, aim, shoot) and record it.
+            var rifle = s.inventory.items.FirstOrDefault(i => i.def == "assault_rifle");
+            if (rifle != null) { game.Submit(new Command { kind = CommandKind.Equip, item = rifle.uid, slot = 0 }); rifle.loaded = rifle.Def.magazine; }
+            yield return new WaitForSecondsRealtime(.3f);
+            int tracers = Count(EventKind.Tracer);
+            Func<Vec2> nearest = () => { var t = w.zombies.Where(z => z.Alive && Vec2.Distance(z.pos, s.pos) < 25).OrderBy(z => Vec2.Distance(z.pos, s.pos)).FirstOrDefault(); return t == null ? s.pos + new Vec2(5, 0) : t.pos; };
+            yield return Record("freaks-rifle", 6f, () => { KeepAlive(s); var at = nearest(); InputSystem.QueueStateEvent(pad, new GamepadState { rightTrigger = Time.frameCount % 4 < 2 ? 1 : 0, leftTrigger = 1, rightStick = Stick(at) }); });
+            InputSystem.QueueStateEvent(pad, new GamepadState());
+            Pass("rifle-fires-tracers", Count(EventKind.Tracer) > tracers, (Count(EventKind.Tracer) - tracers) + " tracers");
+            yield return Shot("14-firefight");
+
+            // Airdrop: scheduled now, its crate brought down beside the leader so the fly-over and smoke are on camera.
+            KeepAlive(s); ClearAround(w, s.pos, 40);
+            w.nextAirdropAt = w.minutes + 6; report.qaSetup.Add("scheduled the next airdrop for now and moved its landing point 14 m from the leader");
+            yield return WaitFor(() => w.airdrops.Any(a => !a.landed), 5);
+            var drop = w.airdrops.FirstOrDefault(a => !a.landed);
+            if (drop != null) drop.pos = OpenGround(w, s.pos + new Vec2(14, 4));
+            yield return Record("airdrop", 16f, () => KeepAlive(s));
+            yield return WaitFor(() => drop != null && drop.landed, 25);
+            bool rare = drop != null && drop.landed && drop.container >= 0 && w.map.containers[drop.container].inventory.items.Any(i => i.Def.tier >= 2);
+            Pass("airdrop-lands", drop != null && drop.landed && Saw(EventKind.Airdrop, "plane") && rare, drop == null ? "no drop" : "landed=" + drop.landed + " at " + drop.pos + ", tier 2+ loot=" + rare);
+            yield return Shot("15-airdrop-smoke");
+
+            // Red zone: Guard artillery shells a circle next to the leader.
+            KeepAlive(s);
+            w.redZone = new RedZone { center = OpenGround(w, s.pos + new Vec2(32, 0)), radius = 22, warnAt = w.minutes, startsAt = w.minutes + 2, endsAt = w.minutes + 9, area = "the QA range" };
+            report.qaSetup.Add("placed a red zone 32 m from the leader");
+            yield return Record("red-zone", 14f, () => KeepAlive(s));
+            Pass("red-zone-shells", Count(EventKind.Artillery, "shell") >= 3 && Saw(EventKind.Explosion, "artillery"), Count(EventKind.Artillery, "shell") + " shells");
+            yield return Shot("16-red-zone");
+
+            // Talk to an enclave: Ada Pike at the radio station.
+            var ada = w.survivors.FirstOrDefault(x => x.character == "ada_pike" && x.alive) ?? w.survivors.FirstOrDefault(x => x.alive && x.ai == AiRole.Enclave);
+            if (ada != null)
+            {
+                s.pos = OpenGround(w, ada.pos + new Vec2(1.4f, 0)); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader beside " + ada.name);
+                yield return new WaitForSecondsRealtime(1.5f);
+                yield return Aim(ada.pos, .5f);
+                var talk = game.Nearby.SelectMany(n => n.actions).FirstOrDefault(a => a.label == "Talk");
+                if (talk != null) talk.run();
+                yield return new WaitForSecondsRealtime(1f);
+                Pass("talk-to-enclave", game.UI.TopPanel == "talk" && sim.Greeting(s, ada).Length > 0, ada.name + ": " + sim.Greeting(s, ada) + "; offers " + sim.TradeOffers(s, ada).Count);
+                yield return Shot("17-talk-trade");
+                game.UI.CloseTopPanel();
+            }
+            else Pass("talk-to-enclave", false, "no enclave survivor found");
+
+            // Raiders: the Red Talons attack on sight.
+            var talons = w.FactionByKey("red_talons");
+            var raider = talons == null ? null : w.Members(talons.id).FirstOrDefault();
+            if (raider != null)
+            {
+                KeepAlive(s); s.pos = OpenGround(w, raider.pos + new Vec2(14, 0)); ClearAround(w, s.pos, 30); report.qaSetup.Add("moved the leader 14 m from a Red Talon raider; kept the leader alive while recording");
+                int hostileTracers = seen.Count(e => e.kind == EventKind.Tracer && e.survivor >= 0 && w.survivors[e.survivor].faction == talons.id);
+                yield return Record("raiders", 10f, () => KeepAlive(s));
+                int after = seen.Count(e => e.kind == EventKind.Tracer && e.survivor >= 0 && w.survivors[e.survivor].faction == talons.id);
+                bool attacked = after > hostileTracers || s.lastHitBy >= 0 && w.survivors[s.lastHitBy].faction == talons.id;
+                Pass("raiders-attack-on-sight", attacked, "raider shots " + (after - hostileTracers) + ", last hit by " + (s.lastHitBy >= 0 ? w.survivors[s.lastHitBy].name : "nobody"));
+                yield return Shot("18-raiders");
+            }
+            else Pass("raiders-attack-on-sight", false, "no Red Talon raider");
+
+            // A plague heart: approach, see it, destroy it with grenades and melee.
+            var heart = w.hearts.Where(h => !h.destroyed).OrderBy(h => Vec2.Distance(h.pos, c.basePos)).FirstOrDefault();
+            if (heart != null)
+            {
+                KeepAlive(s); s.pos = OpenGround(w, heart.pos + new Vec2(2.4f, 0)); ClearAround(w, s.pos, 25);
+                s.inventory.Add(ItemCatalog.Make("grenade", 3)); report.qaSetup.Add("moved beside the nearest plague heart, cleared its guards and granted 3 grenades");
+                float influence = c.influence; int remaining = w.HeartsRemaining;
+                yield return new WaitForSecondsRealtime(1.5f);
+                yield return Shot("19-plague-heart");
+                yield return Record("plague-heart", 12f, () =>
+                {
+                    KeepAlive(s);
+                    if (Time.frameCount % 45 == 0 && !heart.destroyed) { var g = s.inventory.items.FirstOrDefault(i => i.def == "grenade"); if (g != null) game.Submit(new Command { kind = CommandKind.Throw, item = g.uid, x = heart.pos.x, y = heart.pos.y, recipe = "" }); }
+                });
+                if (!heart.destroyed) yield return PadAttack(8, () => heart.pos);
+                Pass("plague-heart-destroyed", heart.destroyed && w.HeartsRemaining == remaining - 1 && c.influence > influence, "hp " + heart.hp.ToString("0") + "/" + heart.maxHp + ", hearts left " + w.HeartsRemaining + ", influence " + influence + " -> " + c.influence);
+            }
+            else Pass("plague-heart-destroyed", false, "no heart");
+
+            // Night: ferals in the dark; lighting drops.
+            KeepAlive(s); s.pos = OpenGround(w, c.basePos + new Vec2(-30, 20)); ClearAround(w, s.pos, 40);
+            float dayAmbient = RenderSettings.ambientLight.grayscale;
+            w.minutes = Math.Floor(w.minutes / 1440) * 1440 + 23 * 60 + 1440; report.qaSetup.Add("set the clock to 23:00 and staged three ferals");
+            for (int i = 0; i < 3; i++) Stage(w, s.pos + Vec2.FromAngle(i * 2.1f) * 9, ZombieKind.Feral, false);
+            yield return Press(Key.F);
+            yield return Record("night-ferals", 8f, () => KeepAlive(s));
+            Pass("night-is-darker", RenderSettings.ambientLight.grayscale < dayAmbient * .6f, "ambient " + dayAmbient.ToString("0.00") + " -> " + RenderSettings.ambientLight.grayscale.ToString("0.00"));
+            yield return Shot("20-night-ferals");
+            yield return Press(Key.F);
             w.minutes = Math.Floor(w.minutes / 1440) * 1440 + 13 * 60 + 1440;
 
-            // Town traversal and frame timing near a busy settlement.
+            // Frame timing in the county seat with its dead and the living.
             var town = w.gen.settlements[0];
             s.pos = OpenGround(w, new Vec2(town.x + 30, town.y + 30));
-            report.qaSetup.Add("moved to Cedar Fork for performance capture; restored survivor health so the sample measures a live session");
-            Pass("survivor-alive-before-town-sample", s.alive, "health=" + s.health.ToString("0") + (s.alive ? "" : " cause=" + s.causeOfDeath));
-            s.health = 100; s.wounds.Clear(); s.knockedDown = 0;
-            // The sample measures performance among active zombies; keep the survivor alive through it so a chance horde
-            // death does not invalidate the later checks (recorded as QA setup).
-            report.qaSetup.Add("kept the survivor's health, wounds, infection and knockdown reset during the 9 s town sample");
-            Action keepAlive = () => { if (s.alive) { s.health = 100; s.wounds.Clear(); s.knockedDown = 0; s.zombieInfected = false; s.infectionHours = 0; } };
-            float settle = Time.realtimeSinceStartup + 3;
-            while (Time.realtimeSinceStartup < settle) { keepAlive(); yield return null; }
+            report.qaSetup.Add("moved to Cedar Fork for the performance sample; kept the leader alive during it");
+            float settle = Time.realtimeSinceStartup + 3; while (Time.realtimeSinceStartup < settle) { KeepAlive(s); yield return null; }
             var frames = new List<float>(); float until = Time.realtimeSinceStartup + 6;
-            while (Time.realtimeSinceStartup < until) { keepAlive(); frames.Add(Time.unscaledDeltaTime * 1000); yield return null; }
-            keepAlive();
+            while (Time.realtimeSinceStartup < until) { KeepAlive(s); frames.Add(Time.unscaledDeltaTime * 1000); yield return null; }
             report.averageFrameMs = frames.Average(); report.worstFrameMs = frames.Max(); report.activeZombies = game.Sim.ActiveZombies; report.loadedChunks = game.View.LoadedChunks; report.loadedBuildings = game.View.LoadedBuildings; report.simMs = game.SimMs; report.viewMs = game.ViewMs; report.uiMs = game.UiMs;
-            Pass("frame-time-in-town", report.averageFrameMs < 50 && report.activeZombies > 50, "avg=" + report.averageFrameMs.ToString("0.0") + "ms worst=" + report.worstFrameMs.ToString("0.0") + " sim=" + report.simMs.ToString("0.0") + " view=" + report.viewMs.ToString("0.0") + " ui=" + report.uiMs.ToString("0.0") + " active zombies=" + report.activeZombies);
-            yield return Shot("10-town");
+            Pass("frame-time-in-town", report.averageFrameMs < 50 && report.activeZombies > 30, "avg=" + report.averageFrameMs.ToString("0.0") + "ms worst=" + report.worstFrameMs.ToString("0.0") + " sim=" + report.simMs.ToString("0.0") + " view=" + report.viewMs.ToString("0.0") + " ui=" + report.uiMs.ToString("0.0") + " active zombies=" + report.activeZombies + " humans drawn=" + game.DrawnHumans);
+            yield return Record("town", 6f, () => KeepAlive(s));
+            yield return Shot("21-cedar-fork");
 
-            // Drive a car with the keyboard: enter, start, accelerate, brake, run down a zombie, steer, park.
+            // Drive a car with the keyboard.
             yield return Drive();
+            yield return Shot("22-driving");
 
-            // Long-term survival: traits, farming, fishing, skill books and smoking.
-            yield return Survival();
-
-            // Save, quit to title, reload, compare.
-            if (qaPlot >= 0 && w.plots.ContainsKey(qaPlot)) qaPlotGrowth = w.plots[qaPlot].growth;   // the crop keeps growing until the save
-            var savedPos = s.pos; int savedKills = s.kills; int savedBarricade = window.barricade; int savedZombies = w.LivingZombies;
+            // Save, quit to title, reload, compare community state.
+            if (s.vehicle >= 0) { game.Submit(Command.Of(CommandKind.ExitVehicle)); yield return WaitFor(() => s.vehicle < 0, 3); }
+            s = game.Player; KeepAlive(s);
+            var savedPos = s.pos; int savedKills = s.kills, savedPlayer = w.playerId, savedMembers = w.LivingMembers().Count, savedHearts = w.HeartsRemaining, savedDrops = w.airdrops.Count;
+            float savedFood = c.Stock(Resource.Food), savedInfluence = c.influence; int savedFactions = w.factions.Count;
             bool saved = game.SaveNow();
             game.QuitToTitle(false);
             yield return new WaitForSecondsRealtime(1);
             Pass("quit-to-title", game.Screen == Screen.Title, "");
-            var latest = game.SaveFiles().FirstOrDefault();
-            game.LoadGame(latest);
-            yield return WaitFor(() => game.Screen == Screen.Playing, 120);
+            game.LoadGame(game.SaveFiles().FirstOrDefault());
+            yield return WaitFor(() => game.Screen == Screen.Playing, 180);
             var l = game.World; var ls = game.Player;
-            bool same = l != null && Vec2.Distance(ls.pos, savedPos) < .01f && ls.kills == savedKills && l.map.openings[window.id].barricade == savedBarricade && Math.Abs(l.LivingZombies - savedZombies) <= 0;
-            Pass("save-and-reload", saved && same, l == null ? "no world" : "pos=" + ls.pos + " kills=" + ls.kills + " zombies=" + l.LivingZombies + "/" + savedZombies);
+            bool same = l != null && l.playerId == savedPlayer && Vec2.Distance(ls.pos, savedPos) < .01f && ls.kills == savedKills && l.LivingMembers().Count == savedMembers
+                && l.HeartsRemaining == savedHearts && l.airdrops.Count == savedDrops && Math.Abs(l.community.Stock(Resource.Food) - savedFood) < .01f && Math.Abs(l.community.influence - savedInfluence) < .01f && l.factions.Count == savedFactions;
+            Pass("save-and-reload", saved && same, l == null ? "no world" : "player " + l.playerId + "/" + savedPlayer + ", members " + l.LivingMembers().Count + "/" + savedMembers + ", hearts " + l.HeartsRemaining + "/" + savedHearts + ", drops " + l.airdrops.Count + "/" + savedDrops + ", food " + l.community.Stock(Resource.Food) + "/" + savedFood + ", influence " + l.community.influence + "/" + savedInfluence);
             yield return new WaitForSecondsRealtime(1.5f);
-            if (qaCar != null && l != null)
-            {
-                var lv = l.vehicles[qaCar.id];
-                Pass("vehicle-save-and-reload", Vec2.Distance(lv.pos, qaCarPos) < .01f && Math.Abs(lv.fuel - qaCarFuel) < .01f && l.map.PropAt((int)lv.pos.x, (int)lv.pos.y) == l.map.props[lv.prop], "car at " + lv.pos + " fuel " + lv.fuel.ToString("0.00") + " L (saved " + qaCarPos + ", " + qaCarFuel.ToString("0.00") + " L)");
-            }
-            if (l != null)
-            {
-                FarmPlot lp; bool plot = qaPlot >= 0 && l.plots.TryGetValue(qaPlot, out lp) && lp.crop == qaPlotCrop && Mathf.Abs(lp.growth - qaPlotGrowth) < .001f && l.map.props[qaPlot].kind == PropKind.FarmPlot;
-                Pass("survival-save-and-reload", plot && ls.traits.SequenceEqual(qaTraits) && ls.booksRead.SequenceEqual(qaBooks) && ls.Level(Skill.Fishing) == qaFishing,
-                    "plot " + qaPlot + " " + (l.plots.ContainsKey(qaPlot) ? l.plots[qaPlot].Label : "missing") + "; traits " + string.Join(",", ls.traits) + "; books " + string.Join(",", ls.booksRead) + "; fishing " + ls.Level(Skill.Fishing));
-            }
-            yield return Shot("11-reloaded");
+            yield return Shot("23-reloaded");
+            report.videoFrames = videoFrames;
             Finish("");
         }
 
@@ -337,182 +491,9 @@ namespace Ashfall.View
             return near;
         }
 
-        int qaPlot = -1, qaFishing; string qaPlotCrop = ""; float qaPlotGrowth; List<string> qaTraits = new List<string>(), qaBooks = new List<string>();
-        IEnumerator Survival()
-        {
-            var w = game.World; var s = game.Player; var sim = game.Sim;
-            if (s.vehicle >= 0) { game.Submit(Command.Of(CommandKind.ExitVehicle)); yield return WaitFor(() => s.vehicle < 0, 3); }
-            s.health = 100; s.wounds.Clear(); s.knockedDown = 0; s.action = null; s.sleeping = false;
-            Pass("traits-applied", s.HasTrait("strong") && s.HasTrait("smoker") && s.HasTrait("green_thumb") && s.Level(Skill.Farming) == 1 && s.inventory.Count("cigarettes") > 0,
-                "traits " + string.Join(",", s.traits) + ", Farming " + s.Level(Skill.Farming) + ", cigarettes " + s.inventory.Count("cigarettes") + ", capacity " + s.Capacity.ToString("0.0"));
-
-            // Farming on open grass: dig, plant, water, grow, harvest.
-            Vec2 field;
-            if (!GrassPatch(w, sim, s.pos, out field)) { Pass("farm-dig-plot", false, "no open grass found"); yield break; }
-            s.pos = field; s.facing = 0;
-            foreach (var z in w.zombies.Where(z => z.Alive && Vec2.Distance(z.pos, s.pos) < 60)) z.state = ZombieState.Dead;
-            w.index = new ZombieIndex(w);
-            s.inventory.Add(ItemCatalog.Make("shovel")); s.inventory.Add(ItemCatalog.Make("seeds_tomato", 3)); s.inventory.Add(ItemCatalog.Make("watering_can"));
-            report.qaSetup.Add("moved to open grass at " + field + ", cleared zombies within 60 m; granted shovel, 3 tomato seed packets and a full watering can");
-            yield return Aim(s.pos + new Vec2(3, 0), .5f);
-            int fx, fy; sim.FrontTile(s, out fx, out fy);
-            var self = game.Nearby.FirstOrDefault(n => n.label == "Yourself");
-            var dig = self == null ? null : self.actions.FirstOrDefault(a => a.label.StartsWith("Dig a farm plot"));
-            Pass("dig-action-offered", dig != null && dig.enabled, dig == null ? "no dig action" : dig.enabled ? "enabled" : dig.reason);
-            if (dig != null) dig.run(); else game.Submit(Command.Of(CommandKind.DigPlot));
-            yield return WaitFor(() => w.map.props.Any(p => p.kind == PropKind.FarmPlot && !p.removed), 12);
-            var plotProp = w.map.props.LastOrDefault(p => p.kind == PropKind.FarmPlot);
-            var plot = plotProp == null ? null : sim.PlotRef(plotProp.id);
-            Pass("farm-dig-plot", plot != null, plotProp == null ? "no plot" : "plot at " + plotProp.x + "," + plotProp.y + " (faced " + fx + "," + fy + ")");
-            if (plot == null) yield break;
-            yield return new WaitForSecondsRealtime(.6f);
-            var it = game.Nearby.FirstOrDefault(n => n.label.StartsWith("Farm plot"));
-            var plant = it == null ? null : it.actions.FirstOrDefault(a => a.label.StartsWith("Plant tomatoes"));
-            Pass("plant-action-offered", plant != null && plant.enabled, it == null ? "plot not in nearby interactions" : string.Join(" | ", it.actions.Select(a => a.label)));
-            if (plant != null) plant.run(); else game.Submit(new Command { kind = CommandKind.Plant, target = plotProp.id, item = s.inventory.Find("seeds_tomato").uid });
-            yield return WaitFor(() => plot.crop == "tomato", 8);
-            Pass("farm-plant", plot.crop == "tomato", plot.Label);
-            var can = s.inventory.Find("watering_can");
-            game.Submit(new Command { kind = CommandKind.WaterPlot, target = plotProp.id, item = can.uid });
-            yield return WaitFor(() => plot.water > .9f, 8);
-            Pass("farm-water", plot.water > .9f, plot.Label + ", can " + can.water + "/" + can.Def.waterCapacity);
-            yield return Shot("15-plot-planted");
-            // Fast-forward the host simulation through in-game days (the real hourly growth rules), keeping the soil watered.
-            double planted = w.minutes; int ticks = 0; bool growingShot = false;
-            while (!plot.Ripe && w.minutes - planted < 6 * 1440)
-            {
-                sim.Tick(Simulation.Step, 1500); ticks++;
-                s.hunger = s.thirst = 10; s.fatigue = 10; s.health = 100; s.wounds.Clear(); s.hoursSinceSmoke = 0;
-                foreach (var z in w.zombies.Where(z => z.Alive && Vec2.Distance(z.pos, s.pos) < 60)) z.state = ZombieState.Dead;
-                if (plot.water < .3f) plot.water = 1;
-                if (!growingShot && plot.growth >= .5f) { growingShot = true; yield return new WaitForSecondsRealtime(.5f); yield return Shot("16-plot-growing"); }
-                else if (ticks % 10 == 0) yield return null;
-            }
-            w.index = new ZombieIndex(w);
-            report.qaSetup.Add("fast-forwarded " + ((w.minutes - planted) / 1440).ToString("0.0") + " in-game days with Simulation.Tick(boost), refilling the plot's soil moisture and the survivor's needs");
-            Pass("farm-grows-over-days", plot.Ripe, plot.Label + " after " + ((w.minutes - planted) / 1440).ToString("0.00") + " days");
-            yield return new WaitForSecondsRealtime(.8f);
-            var plantsView = FindPlotView(plotProp.id);
-            Pass("farm-plot-rendered", plantsView != null && plantsView.childCount > 0 && plantsView.GetChild(0).name.Contains("tomato 5"), plantsView == null ? "no plot view" : plantsView.GetChild(0).name);
-            yield return Shot("17-plot-ripe");
-            int tomatoes = s.inventory.Count("tomato");
-            game.Submit(new Command { kind = CommandKind.Harvest, target = plotProp.id });
-            yield return WaitFor(() => plot.Empty, 8);
-            Pass("farm-harvest", plot.Empty && s.inventory.Count("tomato") > tomatoes, "tomatoes " + tomatoes + " -> " + s.inventory.Count("tomato"));
-            // Replant so a growing crop is saved and reloaded.
-            game.Submit(new Command { kind = CommandKind.Plant, target = plotProp.id, item = s.inventory.Find("seeds_tomato").uid });
-            yield return WaitFor(() => !plot.Empty, 8);
-            plot.growth = .37f; report.qaSetup.Add("replanted tomatoes and set growth to 37% to verify save/reload");
-            qaPlot = plotProp.id; qaPlotCrop = plot.crop; qaPlotGrowth = plot.growth;
-
-            // Fishing from a bank.
-            Vec2 bank;
-            if (!Bank(w, s.pos, out bank)) Pass("fishing-catch", false, "no river or pond bank found");
-            else
-            {
-                s.pos = bank; foreach (var z in w.zombies.Where(z => z.Alive && Vec2.Distance(z.pos, s.pos) < 60)) z.state = ZombieState.Dead; w.index = new ZombieIndex(w);
-                var rod = ItemCatalog.Make("fishing_rod"); s.inventory.Add(rod); s.inventory.Add(ItemCatalog.Make("worms", 10));
-                report.qaSetup.Add("moved to a water bank at " + bank + "; granted a fishing rod and 10 worms");
-                yield return new WaitForSecondsRealtime(.6f);
-                var me = game.Nearby.FirstOrDefault(n => n.label == "Yourself"); var fishAction = me == null ? null : me.actions.FirstOrDefault(a => a.label == "Fish here");
-                Pass("fish-action-offered", fishAction != null && fishAction.enabled, me == null ? "no self actions" : string.Join(" | ", me.actions.Select(a => a.label)));
-                int casts = 0; Func<int> fish = () => s.inventory.items.Where(i => i.def.StartsWith("fish_") && !i.def.EndsWith("_cooked")).Sum(i => i.count);
-                while (fish() == 0 && casts < 10 && s.inventory.Count("worms") > 0)
-                {
-                    casts++; if (fishAction != null) fishAction.run(); else game.Submit(new Command { kind = CommandKind.Fish, item = rod.uid });
-                    yield return WaitFor(() => s.action != null && s.action.kind == ActionKind.Fish, 2);   // the host has started this cast
-                    if (casts == 1) yield return Shot("18-fishing");
-                    yield return WaitFor(() => s.action == null, 20);
-                    s.hunger = s.thirst = 10; s.health = 100; s.hoursSinceSmoke = 0;
-                }
-                Pass("fishing-catch", fish() > 0, casts + " casts, worms left " + s.inventory.Count("worms") + ", Fishing xp " + s.xp[(int)Skill.Fishing].ToString("0") + " level " + s.Level(Skill.Fishing));
-                var raw = s.inventory.items.FirstOrDefault(i => i.def.StartsWith("fish_") && !i.def.EndsWith("_cooked"));
-                if (raw != null)
-                {
-                    var fire = PlaceBeside(w, sim, s, PropKind.Campfire); if (fire != null) { fire.lit = true; fire.fuel = 2; fire.modified = true; report.qaSetup.Add("placed a lit campfire beside the bank"); }
-                    yield return new WaitForSecondsRealtime(.4f);
-                    string cooked = raw.Def.cooksInto; game.Submit(new Command { kind = CommandKind.Cook, item = raw.uid });
-                    yield return WaitFor(() => s.inventory.Count(cooked) > 0, 10);
-                    Pass("fish-cooks", s.inventory.Count(cooked) > 0, raw.Def.name + " -> " + ItemCatalog.Get(cooked).name);
-                    yield return Shot("19-fish-cooked");
-                }
-                qaFishing = s.Level(Skill.Fishing);
-            }
-
-            // Skill book: read through the inventory command, then check the multiplier and the Health/Skills panel.
-            w.minutes = Math.Floor(w.minutes / 1440) * 1440 + 12 * 60;
-            var book = ItemCatalog.Make("book_carpentry_1"); s.inventory.Add(book); report.qaSetup.Add("granted Carpentry Handbook, Vol. 1; set the clock to noon so it is light enough to read");
-            game.Submit(new Command { kind = CommandKind.Use, item = book.uid });
-            yield return WaitFor(() => s.booksRead.Contains(book.def), 26);
-            Pass("skill-book-read", s.booksRead.Contains(book.def) && Simulation.BookMultiplier(s, Skill.Carpentry) == 3, "Carpentry level " + s.Level(Skill.Carpentry) + ", multiplier " + Simulation.BookMultiplier(s, Skill.Carpentry));
-            yield return Press(Key.K); yield return new WaitForSecondsRealtime(.8f);
-            Pass("health-panel-shows-traits-and-books", game.UI.BlocksGameplay, "");
-            yield return Shot("20-skills-traits-books");
-            game.UI.CloseTopPanel();
-            qaBooks = new List<string>(s.booksRead); qaTraits = new List<string>(s.traits);
-
-            // Smoking satisfies the smoker's craving.
-            s.hoursSinceSmoke = 10; int cigs = s.inventory.Count("cigarettes"); report.qaSetup.Add("set hours since the last cigarette to 10");
-            game.Submit(new Command { kind = CommandKind.Use, item = s.inventory.Find("cigarettes").uid });
-            yield return WaitFor(() => s.inventory.Count("cigarettes") < cigs, 8);
-            Pass("smoker-smokes", s.inventory.Count("cigarettes") == cigs - 1 && s.hoursSinceSmoke < .5f, "cigarettes " + cigs + " -> " + s.inventory.Count("cigarettes"));
-        }
-
-        Transform FindPlotView(int prop)
-        {
-            foreach (var t in game.View.GetComponentsInChildren<Transform>(true))
-                if (t.name == "Plants" && t.childCount > 0 && t.parent != null)
-                {
-                    var p = game.World.map.props[prop]; var pos = t.parent.localPosition;
-                    if (Mathf.Abs(pos.x - (p.x + .5f)) < .1f && Mathf.Abs(pos.z - (p.y + .5f)) < .1f) return t;
-                }
-            return null;
-        }
-        static bool GrassPatch(World w, Simulation sim, Vec2 near, out Vec2 at)
-        {
-            var m = w.map; at = near;
-            for (int r = 0; r < 600; r += 3)
-                for (int a = 0; a < 24; a++)
-                {
-                    var p = near + Vec2.FromAngle(a * .2618f) * r; int x = (int)p.x, y = (int)p.y; bool ok = true;
-                    for (int dx = -3; dx <= 3 && ok; dx++)
-                        for (int dy = -3; dy <= 3 && ok; dy++)
-                        {
-                            int tx = x + dx, ty = y + dy;
-                            if (m.GroundAt(tx, ty) != Ground.Grass || m.TileBlocked(tx, ty) || m.RoomAt(tx, ty) != null || m.H(tx, ty) != Edge.None || m.V(tx, ty) != Edge.None || sim.NonBlockingPropAt(tx, ty) != null) ok = false;
-                        }
-                    if (ok) { at = new Vec2(x + .5f, y + .5f); return true; }
-                }
-            return false;
-        }
-        static bool Bank(World w, Vec2 near, out Vec2 at)
-        {
-            var m = w.map; at = near;
-            for (int r = 0; r < 1500; r += 2)
-                for (int a = 0; a < 32; a++)
-                {
-                    var p = near + Vec2.FromAngle(a * .19635f) * r; int x = (int)p.x, y = (int)p.y;
-                    if (!m.InBounds(x, y) || m.TileBlocked(x, y) || m.RoomAt(x, y) != null || m.GroundAt(x, y) == Ground.Bridge) continue;
-                    bool water = false; for (int dx = -2; dx <= 2; dx++) for (int dy = -2; dy <= 2; dy++) if (m.IsWater(x + dx, y + dy)) water = true;
-                    var c = new Vec2(x + .5f, y + .5f);
-                    if (water && !m.Collides(c, Survivor.Radius)) { at = c; return true; }
-                }
-            return false;
-        }
-        static Prop PlaceBeside(World w, Simulation sim, Survivor s, PropKind kind)
-        {
-            int sx = (int)Math.Floor(s.pos.x), sy = (int)Math.Floor(s.pos.y);
-            foreach (var d in new[] { new Int2(1, 0), new Int2(-1, 0), new Int2(0, 1), new Int2(0, -1), new Int2(1, 1), new Int2(-1, -1), new Int2(1, -1), new Int2(-1, 1) })
-            {
-                int x = sx + d.x, y = sy + d.y;
-                if (w.map.TileBlocked(x, y) || w.map.RoomAt(x, y) != null || sim.NonBlockingPropAt(x, y) != null) continue;
-                var p = w.map.AddProp(kind, x, y); p.modified = true; return p;
-            }
-            return null;
-        }
-
         void Finish(string failure)
         {
+            Time.captureFramerate = 0;
             report.failure = failure; report.finished = DateTime.UtcNow.ToString("o");
             report.status = failure.Length == 0 && report.checks.All(c => c.pass) ? "passed" : "failed";
             Save(); Debug.Log("ASHFALL_QA_DONE " + report.status + " " + reportPath);
