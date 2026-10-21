@@ -6,7 +6,7 @@
  "family": "Zombie survival",
  "projectPath": "Game",
  "gameType": "open-world-zombie-survival",
- "description": "Survive the dead in a seeded 3 km x 3 km rural county: scavenge homes and stores, manage hunger, thirst, fatigue and wounds, barricade a safehouse, and reach the evacuation convoy at the Ash River bridge, or keep surviving after it leaves.",
+ "description": "Lead a small community of survivors in a quarantined 4 km x 4 km county (2-6 km options): pick where you set down on a drop map, scavenge rucksacks of food, meds, ammo, materials and fuel for your home base, build facilities, recruit named survivors, and fight or flee a tiered bestiary (walkers to juggernauts) while AI rival crews and raiders loot the same towns and Guard airdrops and artillery red zones reshape each day. Destroy every plague heart to cleanse the county.",
  "links": {
   "repository": "https://github.com/securelyprogramming/unity-ashfall-county",
   "websiteRepository": null,
@@ -71,7 +71,7 @@
     }
    ]
   },
-  "note": "Native runtime generation is Game/Assets/Ashfall/Core/WorldGen.cs (seeded, 1024-3072 tiles). These workbench settings are planning-only and do not drive the native generator."
+  "note": "Native runtime generation is Game/Assets/Ashfall/Core/WorldGen.cs + GenLandmarks.cs (seeded, generator version 2, 2048-6144 tiles, 4096 default, landmarks and 8-12 landing zones chosen on the New Game drop map). These workbench settings are planning-only and do not drive the native generator."
  },
  "stageWorlds": {
   "frontier-chapter-1": {
@@ -982,7 +982,7 @@
    },
    {
     "id": "stage-ashfall-pharmacy-interior-20261014",
-    "title": "Pharmacy interior \u00b7 shoulder camera",
+    "title": "Pharmacy interior · shoulder camera",
     "kind": "story",
     "stageId": "ashfall-pharmacy-interior-20261014",
     "tags": [
@@ -994,7 +994,7 @@
    },
    {
     "id": "stage-ashfall-pharmacy-doorway-20261014",
-    "title": "Pharmacy doorway \u00b7 walkable entrance",
+    "title": "Pharmacy doorway · walkable entrance",
     "kind": "story",
     "stageId": "ashfall-pharmacy-doorway-20261014",
     "tags": [
@@ -1018,7 +1018,7 @@
    },
    {
     "id": "stage-ashfall-safehouse-800x600-20261014",
-    "title": "Enterable safehouse \u00b7 800\u00d7600",
+    "title": "Enterable safehouse · 800×600",
     "kind": "story",
     "stageId": "ashfall-safehouse-800x600-20261014",
     "tags": [
@@ -1066,19 +1066,24 @@
    },
    {
     "id": "ashfall-native-qa",
-    "title": "Native survival acceptance probe",
+    "title": "Native open-county acceptance probe",
     "kind": "smoke",
     "stageId": "frontier-menu",
     "tags": [
      "automated",
      "isolated-save",
-     "county-survival"
+     "open-county",
+     "community",
+     "bestiary",
+     "ai-humans",
+     "world-events"
     ],
-    "description": "Builds a fresh county (seed 777) in an isolated GameWorkbenchQA user directory and drives movement, looting, eating, drinking, melee, a zombie attack, bandaging, barricading, night lighting, the map, a town frame-time sample, a keyboard car drive (enter, start, accelerate, brake, run down a zombie, steer, park) and save/reload. Writes a JSON report and screenshots.",
+    "description": "Builds a fresh 4 km county (seed 777) in an isolated GameWorkbenchQA user directory: trait picker, drop map and landing zones, community founding, movement, a base container, a rucksack deposit, community/base/missions/map panels, companion follow and member switching, gamepad melee, staged freaks with a gamepad-thrown grenade and rifle fire, a scheduled airdrop and red zone, talking to an enclave, Red Talon raiders, destroying a plague heart, night ferals, a town frame-time sample, a keyboard car drive and save/reload. Staging is listed in the report. Writes a JSON report and screenshots; with -ashfall-qa-video={output}/GameWorkbenchVideo it also records staged scenes as frames.",
     "launch": {
      "arguments": [
       "-ashfall-qa={output}/ashfall-qa.json",
-      "-ashfall-user-dir={output}/GameWorkbenchQA"
+      "-ashfall-user-dir={output}/GameWorkbenchQA",
+      "-ashfall-qa-size=4096"
      ]
     }
    }

@@ -358,10 +358,12 @@ namespace Ashfall.View
 
         // ---------------------------------------------------------------- reactions
         public void Hit() { hitClock = HitTime; if (animated) purchasedAnimator.SetTrigger("Hit"); }
-        public void Scream() { screamClock = 1.3f; }
-        public void Charge() { chargeClock = 1.6f; }
+        public void Scream() { screamClock = 1.3f; Special(); }
+        public void Charge() { chargeClock = 1.6f; Special(); }
+        /// <summary>The purchased rig's signature move (scream, burst, pounce, charge), when its controller has one.</summary>
+        void Special() { if (animated && ArtLibrary.HasParameter(purchasedAnimator, "Special")) purchasedAnimator.SetTrigger("Special"); }
         public void Grab() { grabClock = 1.1f; }
-        public void Pounce() { pounceClock = PounceTime; }
+        public void Pounce() { pounceClock = PounceTime; Special(); }
         public bool Charging { get { return chargeClock > 0; } }
         /// <summary>Approximate muzzle position in world space.</summary>
         public Vector3 Muzzle { get { return transform.position + transform.forward * .6f * Size + Vector3.up * 1.3f * Size; } }

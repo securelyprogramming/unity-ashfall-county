@@ -1,27 +1,44 @@
 # Ashfall County
 
-An open-county zombie survival game. Scavenge homes and stores, keep yourself fed, watered, rested and patched up, barricade a safehouse, and decide whether to make for the evacuation convoy at the Ash River bridge, or keep surviving after it has gone.
+An open-world zombie survival game. You lead a small community of survivors through a quarantined county several kilometres across. Pick where your group sets down, scavenge rucksacks of supplies for your home base, build it up, recruit named survivors, and decide which fights to take: walkers are easy, juggernauts and plague hearts are not. Rival crews loot the same towns, raiders hunt you, and Guard airdrops and artillery reshape the map. Destroy every plague heart to cleanse the county.
 
-**Status: development.** This is an original game in the open-world zombie-survival genre. It is not a certified or finished Steam game. See `Docs/ValidationReports` for what has actually been verified natively.
+**Status: development.** This is an original game. It is not a certified or finished Steam game. See `Docs/ValidationReports` for what has actually been verified natively, and `Docs/DESIGN.md` for the design.
 
 ## The county
 
-Each new game generates a seeded county: 3 km × 3 km by default (2 km and 1 km options). It contains the Ash River and its highway bridge, the county highway and Route 9, the county seat Cedar Fork, a dozen or more towns and hamlets, farms with barns and fenced crop fields, forests and ponds, and roadside homes and abandoned cars. Every building can be entered and has furnished rooms and searchable containers. Zombies only spawn on land, with density by zone: dense on main streets, sparse in the woods. Only the area around you is simulated and drawn.
+Each new game generates a seeded county: 4 km × 4 km by default (2, 3 and 6 km options). It contains the Ash River and its highway bridge, highways and county roads, Cedar Fork and a dozen or more towns, farms, forests and ponds. Landmarks include Fort Ashby (a fenced military base), the regional airfield, the County Hospital, the KAFC radio station, Reed's Garage and the Red Talon Yard raider compound. On the **drop map** you choose one of 8–12 named landing zones, and the community claims a home site nearby. Only the area around your survivors is simulated in detail and drawn.
 
-## Surviving
+## Your community
 
-- **Needs:** hunger, thirst, fatigue, endurance, panic, pain, boredom, sickness, wetness and carry weight, shown as status cards ("moodles").
-- **Wounds:** scratches, lacerations, bites and glass cuts on body parts. They bleed until bandaged (rags work too), and they can become infected. With infection on, a bite is a death sentence.
-- **Noise:** footsteps, fighting, breaking glass, hammering and above all gunshots carry, even through walls. Sneak (Ctrl) to stay quiet.
-- **Zombies:** they wander, investigate sounds, chase on sight, pound on doors, windows and barricades, and climb through open windows. Shove them (Space), knock them down and finish them on the ground.
-- **Utilities:** the power and water fail on seeded days. Fridges stop keeping food, stoves go cold, and the taps run dry. After that, collect rain, boil river water or drain what is left in the pipes.
-- **Crafting** (B): rip sheets into rags, saw logs into planks, and build spears, spiked bats, campfires, rain collectors and crates. You can also cook a stew. Barricade doors and windows with a hammer, a plank and nails.
-- **Cars:** some abandoned cars still run. Keys may be in the ignition, the glovebox or a nearby house; otherwise hotwire the car with a screwdriver (Mechanics). Fuel runs down as you drive; refuel from gas cans or, while the power is on, at gas station pumps. Engines are loud and draw zombies. Hitting zombies knocks them down; crashes and zombies damage the car.
-- **Farming:** find seed packets (carrot, potato, tomato, cabbage) in barns, hardware stores and groceries, or save them from field crops. Dig a plot with a shovel on grass or a field, plant, and keep the soil wet with a watering can or any water container; rain waters plots for you. Crops take 3 to 5 in-game days and only grow while watered. Dry plants wilt and die, and ripe crops left in the ground rot.
-- **Fishing:** with a fishing rod and worms (foraged, dug up or sold as bait at gas stations) or a lure, cast from the bank of the river or a pond. Dawn, dusk and rain help. Cook the fish before eating it.
-- **Traits:** on the New Game screen, spend 4 points on positive traits (Strong, Fast Learner, Athletic, Light Sleeper, Eagle Eyed, Graceful, Light Eater, Green Thumb, Angler) and earn more by taking negative ones (Weak, Slow Learner, Out of Shape, Smoker, Short Sighted, Clumsy, Hearty Appetite). Smokers start with cigarettes and get anxious without one every 8 hours.
-- **Skills:** Melee, Aiming, Carpentry, Cooking, First Aid, Foraging, Sneaking, Fitness, Mechanics, Farming and Fishing improve with use. Your profession gives you a head start. Skill books (Vol. 1 and Vol. 2) found in homes and shops multiply the experience for one skill once read.
-- **Story:** Ada Pike's emergency band and Jonah Reed's convoy come through on your hand radio. The convoy waits on the configured day (default Day 5, 8 AM – 2 PM). Death is permanent.
+- **Members:** you start with three survivors. Each has health (capped by injuries), stamina, fatigue, traits and skills (Cardio, Wits, Fighting, Shooting, plus specialties). Control one at a time; switch at base. If your survivor dies, control passes to another member. The game ends only when nobody is left.
+- **Companion:** bring one member along (Follow, Hold or Attack with C). Some fights you only win together.
+- **Base:** stock of Food, Meds, Ammo, Materials and Fuel; members eat every morning. Build facilities in your base's slots: Infirmary, Workshop, Watchtower, Garden, Kitchen and Radio Room, upgraded with Materials over in-game hours.
+- **Rucksacks:** heavy packs of supplies found by building type. Carry them home, or fill a car trunk and deposit at base.
+- **Influence and morale:** earned by deliveries, kills and missions; spent on recruits, trades and outposts. Shortages and deaths hurt morale.
+- **Missions:** rescues, supply runs, infestations, freak hunts and base defence come over the radio and from enclaves.
+
+## Threats
+
+| Kind | Tier | What to do |
+|---|---|---|
+| Walker, crawler | 1 | Melee, shove, avoid crowds |
+| Screamer | 2 | Kill it first; its scream pulls everything nearby |
+| Bloater | 2 | Kill it from range; it bursts into toxic gas |
+| Armored | 2 | Knock it down or hit it from behind |
+| Feral | 3 | Fast and pouncing, more at night; bring a gun or a friend |
+| Juggernaut | 4 | Explosives, several shooters or a car; otherwise run |
+| Plague heart | 5 | A group fight; destroying every heart wins |
+
+Plague zombies (red eyes) spread **blood plague**. It is fatal within about a day unless cured with a plague cure, which you can find in airdrops or make at the infirmary from plague samples.
+
+## Other people
+
+Every human runs the same rules as you: rival crews loot, fight zombies, race to airdrops and sometimes rob the weak. Enclaves trade and give missions. The Red Talons and Kade's deserters hunt you on sight. You'll meet Ada Pike (radio station), Jonah Reed (garage), Doc Hollis (hospital), Wren Calder, Tess Monroe, Marshal Kade, "Big Sal" Varga and the Pilgrim. Talk, trade, recruit or fight. A PUBG-style kill feed and a "survivors alive" counter keep score.
+
+## World events
+
+- **Airdrops:** the Guard announces a drop, a plane passes overhead, and a crate parachutes down in red smoke with rare and military loot. Everyone nearby will want it.
+- **Red zones:** artillery shells a warned circle. Get out.
 
 ## Controls
 
@@ -32,29 +49,32 @@ Each new game generates a seeded county: 3 km × 3 km by default (2 km and 1 km 
 | Shove | Space | LB |
 | Run / sneak | Shift / Ctrl | L3 / R3 |
 | Interact (focused) / all actions | E / Q | A / Y |
-| Inventory / crafting / health / map / radio log | Tab or I / B / H / M / J | Select / d-pad left / d-pad right / d-pad down |
-| Reload / flashlight / forage | R / F / G | X / d-pad up |
-| Hotbar / next weapon | 1–6 | RB |
+| Throw grenade, molotov or pipe bomb | G (at the cursor) | RB hold, release to throw (tap to cycle weapons) |
+| Companion order | C | d-pad up |
+| Inventory / community / missions / map | Tab or I / K / J / M | Select / d-pad left / d-pad right / d-pad down |
+| Reload / flashlight | R / F | X |
+| Hotbar | 1–6 | |
 | Zoom / rotate view | Mouse wheel / Z, X | |
 | Drive (in a car): throttle and reverse / steer / brake / engine / get out | W, S / A, D / Space / R or E / E | Left stick / left stick / LB / X / A |
 | Pause | Esc | Start |
 
-Menus work with keyboard, mouse and controller. You can rebind keys in Controls. Saves autosave every 5 minutes and on quit, and live in the game's own data folder (`Survival/*.sav`). Survivors saved before farming, fishing and traits were added (save version 1) cannot be loaded; the load menu says so and leaves the file untouched. Saves from the earlier chapter game are untouched.
+Menus work with keyboard, mouse and controller. You can rebind keys in Controls. Saves autosave every 5 minutes and on quit, and live in the game's own data folder (`Survival/*.sav`). Saves from the earlier survivor game (save version 2 or older) cannot be loaded; the load menu says so and leaves the file untouched.
 
 ## Code layout
 
-- `Game/Assets/Ashfall/Core`: the pure C# simulation (no Unity references). World generation, items and loot, survivors, zombies, combat, crafting, saves. It is host-authoritative: owners submit input and commands only.
-- `Game/Assets/Ashfall/Unity`: chunk-streamed county view, characters, camera, lighting, audio, uGUI/TextMeshPro menus and HUD, and the native QA probe.
-- `Game/Assets/Editor/PrepareAshfallArt.cs`: prepares the privately restored owned packs (zombies, survivors, props, weapons, vehicles, trees, HUD sprites, audio) into prefabs at build time. Without them the game uses procedural stand-ins.
-- `tools/AshfallCoreTests`: fast simulation checks that run without Unity: `dotnet run --project tools/AshfallCoreTests -c Release`.
+- `Game/Assets/Ashfall/Core`: the pure C# host simulation (no Unity references). World generation and landmarks, items and loot, the community and base, the bestiary, AI humans and factions, combat, world events, vehicles and saves. Owners submit input and commands only; AI survivors use the same requests.
+- `Game/Assets/Ashfall/Unity`: chunk-streamed county view, actors and effects, camera, lighting, audio, uGUI/TextMeshPro menus and HUD, and the native QA probe.
+- `Game/Assets/Editor/PrepareAshfallArt.cs`: prepares the privately restored owned packs into prefabs at build time. Without them the game uses procedural stand-ins.
+- `tools/AshfallCoreTests`: fast simulation checks without Unity: `dotnet run --project tools/AshfallCoreTests -c Release` (add `-- --quick` to skip the 3 km county).
+- `tools/UnityCompileCheck`: a seconds-long type check of the Unity scripts against the installed Unity 6000.6 assemblies: `dotnet build tools/UnityCompileCheck -c Release` (needs a `Game/Library` from one editor import). It does not replace a native build.
 - `Legacy/`: the retired Frontier chapter-game sources, kept outside the Unity project.
 
-Owned art and audio stay private. They are pinned by `ContentSource/Art/presentation-selection.json` and `ContentSource/Art/zomboid-selection.json`, and restored by `tools/playtest/build.py` into the isolated build snapshot only. LAN multiplayer is not implemented in the rebuilt game.
+Owned art and audio stay private. They are pinned by `ContentSource/Art/presentation-selection.json`, `zomboid-selection.json` and `decay-selection.json`, and restored by `tools/playtest/build.py` into the isolated build snapshot only. LAN multiplayer is not implemented in the rebuilt game.
 
-Native acceptance probe, which uses an isolated save directory:
+Native acceptance probe, which uses an isolated save directory (`--video` also records staged scenes to MP4):
 
 ```sh
-Game.exe -ashfall-qa=/abs/out/ashfall-qa.json -ashfall-user-dir=/abs/out/GameWorkbenchQA
+python tools/playtest/ashfall_qa.py --player /abs/build/Game.exe --size 4096 --video
 ```
 
 <!-- frontier-launcher-docs:begin -->

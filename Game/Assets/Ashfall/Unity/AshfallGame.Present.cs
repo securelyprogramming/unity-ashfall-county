@@ -463,7 +463,7 @@ namespace Ashfall.View
             ActorView a; if (humanViews.TryGetValue(s.id, out a) && a != null) return a;
             string group = Group(s), role = null;
             if (!string.IsNullOrEmpty(s.character) && ArtLibrary.Has("character/" + s.character)) role = "character/" + s.character;
-            if (role == null) role = ArtLibrary.Variant("human/" + group, s.id);
+            if (role == null) role = ArtLibrary.HumanVariant(group, s.id, s.female);
             if (role == null) role = s.female ? "survivor_female" : "survivor_male";
             Color shirt, pants; GroupColors(s, group, out shirt, out pants);
             a = ActorView.CreateHuman(transform, role, s.id, s.female, Color.Lerp(Color.white, shirt * 1.7f, .35f));

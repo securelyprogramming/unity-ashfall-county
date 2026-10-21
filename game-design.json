@@ -3,29 +3,31 @@
   "id": "ashfall-county",
   "title": "Ashfall County",
   "genre": "open-world-zombie-survival",
-  "brief": "Survive the dead in a seeded 3 km x 3 km rural county: scavenge homes and stores, manage hunger, thirst, fatigue and wounds, barricade a safehouse, and reach the evacuation convoy at the Ash River bridge, or keep surviving after it leaves.",
+  "brief": "Lead a small community of survivors in a quarantined 4 km x 4 km county (2-6 km options): pick where you set down on a drop map, scavenge rucksacks of food, meds, ammo, materials and fuel for your home base, build facilities, recruit named survivors, and fight or flee a tiered bestiary (walkers to juggernauts) while AI rival crews and raiders loot the same towns and Guard airdrops and artillery red zones reshape each day. Destroy every plague heart to cleanse the county.",
   "status": "development",
-  "runtimeFamily": "unity-ashfall-survival",
+  "runtimeFamily": "unity-ashfall-open-county",
   "world": {
-    "classification": "open-county-survival",
+    "classification": "open-county-community-survival",
     "configFile": "game-workbench.json",
     "defaultMode": "procedural",
-    "generator": "Game/Assets/Ashfall/Core/WorldGen.cs (version 1, deterministic per seed)",
+    "generator": "Game/Assets/Ashfall/Core/WorldGen.cs + GenLandmarks.cs (generator version 2, deterministic per seed)",
     "size": {
-      "defaultTiles": 3072,
+      "defaultTiles": 4096,
       "options": [
-        1024,
         2048,
-        3072
+        3072,
+        4096,
+        6144
       ],
       "tileMeters": 1
     },
-    "contents": "Ash River with sand banks and a highway bridge, county highway and Route 9, a county seat (Cedar Fork) plus towns and hamlets scaled to map size, farms with barns and fenced fields, forests, ponds, roadside homes and abandoned cars.",
+    "contents": "Ash River and highway bridge, county highway, Route 9 and county roads, Cedar Fork plus towns scaled to map size, farms, forests and ponds. Landmarks: Fort Ashby (military base), Ashfall Regional Airfield, County Hospital, KAFC radio station, Reed's Garage, Red Talon Yard (raider compound), warehouses, churches, schools, motels, campgrounds and named farmsteads. 8-12 named landing zones.",
     "rules": [
-      "Zombie spawns are land-only: never water, walls or furniture, never within 28 m of the start or inside the start house.",
-      "Population density follows zones: commercial > town > suburb > farm > wild > forest; water has none.",
-      "Containers roll loot lazily from the seed the first time anyone opens them.",
-      "Saves regenerate the county from its seed and store only changed state."
+      "Zombie spawns are land-only: never water, walls or furniture, never within 28 m of the start or inside the home site; freaks never within 60 m of the start.",
+      "Population density follows zones: commercial > town > military > suburb > farm > wild > forest; water has none.",
+      "Plague hearts sit inside town and landmark buildings at least 400 m from the start; rival crews land at least 300 m from the base.",
+      "Containers roll loot lazily from the seed; rucksacks and loot tiers follow building kind and landmark.",
+      "Saves regenerate the county from its seed and store only changed state (save version 3, tagged sections)."
     ],
     "legacyStageIds": [
       "frontier-chapter-1",
@@ -48,48 +50,119 @@
   },
   "characters": {
     "player": {
-      "name": "Player-named survivor (default Mara Vale)",
-      "role": "Profession chosen at New Game: paramedic, carpenter, sheriff's deputy, farmer, firefighter, line cook or unemployed; plus positive/negative traits within a point budget",
-      "movementDesignTarget": "Isometric walk/run/sneak with wall sliding, window climbing and fence hopping; encumbrance, endurance and leg wounds slow movement.",
+      "name": "Player-named community leader (default Mara Vale) plus generated members",
+      "role": "Any living community member can be controlled; profession and traits per member; switch at base; control passes to another member on death",
+      "movementDesignTarget": "Isometric walk/run/sneak with wall sliding, window climbing and fence hopping; stamina, fatigue, injuries and rucksack weight slow movement.",
       "nativeAcceptance": "required"
     },
     "npcs": [
       {
         "name": "Ada Pike",
-        "role": "radio operator",
-        "source": "Emergency broadcasts in Simulation.Story",
-        "runtimePresence": "Radio voice only; no runtime NPC body.",
-        "interactionsAcceptance": "Broadcasts reach survivors carrying a hand radio; verify in native play."
+        "role": "radio operator, KAFC radio station enclave",
+        "source": "Game/Assets/Ashfall/Core/Humans.cs (Characters) and HumansSetup.cs",
+        "runtimePresence": "AI survivor with enclave members; radio broadcasts",
+        "interactionsAcceptance": "Talk, trade and missions; verify in native play"
       },
       {
         "name": "Jonah Reed",
-        "role": "mechanic, convoy organiser",
-        "source": "Emergency broadcasts in Simulation.Story",
-        "runtimePresence": "Radio voice and the evacuation outcome; no runtime NPC body.",
-        "interactionsAcceptance": "Evacuation triggers within 14 m of the bridge rally point on the convoy day 08:00-14:00."
+        "role": "mechanic, Reed's Garage enclave",
+        "source": "Game/Assets/Ashfall/Core/Humans.cs (Characters) and HumansSetup.cs",
+        "runtimePresence": "AI survivor with enclave members",
+        "interactionsAcceptance": "Talk and trade (fuel, vehicles); verify natively"
+      },
+      {
+        "name": "Doc Hollis",
+        "role": "field medic, County Hospital enclave (recruitable)",
+        "source": "Game/Assets/Ashfall/Core/Humans.cs (Characters) and HumansSetup.cs",
+        "runtimePresence": "AI survivor with enclave members",
+        "interactionsAcceptance": "Recruit with standing and influence; verify natively"
+      },
+      {
+        "name": "Wren Calder",
+        "role": "loner sniper (recruitable)",
+        "source": "Game/Assets/Ashfall/Core/Humans.cs (Characters) and HumansSetup.cs",
+        "runtimePresence": "Roaming AI survivor",
+        "interactionsAcceptance": "Verify natively"
+      },
+      {
+        "name": "Tess Monroe",
+        "role": "rival scavenger, opportunist crew leader",
+        "source": "Game/Assets/Ashfall/Core/Humans.cs (Characters) and HumansSetup.cs",
+        "runtimePresence": "AI crew leader",
+        "interactionsAcceptance": "Robbery rolls and airdrop races; verify natively"
+      },
+      {
+        "name": "Marshal Kade",
+        "role": "Guard deserter, hunter crew leader",
+        "source": "Game/Assets/Ashfall/Core/Humans.cs (Characters) and HumansSetup.cs",
+        "runtimePresence": "AI crew leader with bounties on the controlled survivor",
+        "interactionsAcceptance": "Verify natively"
+      },
+      {
+        "name": "\"Big Sal\" Varga",
+        "role": "Red Talon raider boss",
+        "source": "Game/Assets/Ashfall/Core/Humans.cs (Characters) and HumansSetup.cs",
+        "runtimePresence": "AI raider at the Red Talon Yard",
+        "interactionsAcceptance": "Hostile on sight; verify natively"
+      },
+      {
+        "name": "The Pilgrim",
+        "role": "wandering trader",
+        "source": "Game/Assets/Ashfall/Core/Humans.cs (Characters) and HumansSetup.cs",
+        "runtimePresence": "Roaming AI trader",
+        "interactionsAcceptance": "Sells tier-3 goods for influence; verify natively"
       }
     ],
     "enemies": [
       {
-        "archetype": "zombie",
-        "behaviour": "Idle, wander, investigate noise, chase on sight, attack, thump doors/windows/barricades, climb open windows, knocked down by shoves and heavy weapons, eat the dead.",
-        "acceptance": "Verify spawn rules, perception, pathing to openings, combat, animation and corpses natively."
+        "archetype": "walker / crawler (threat 1)",
+        "behaviour": "Wander, investigate noise, chase, attack, thump doors, climb windows, crowd.",
+        "acceptance": "Verify natively"
+      },
+      {
+        "archetype": "screamer, bloater, armored (threat 2)",
+        "behaviour": "A scream summons nearby zombies; a gas cloud on death; frontal riot armour.",
+        "acceptance": "Verify natively"
+      },
+      {
+        "archetype": "feral (threat 3)",
+        "behaviour": "Fast pouncing hunter, more common at night.",
+        "acceptance": "Verify natively"
+      },
+      {
+        "archetype": "juggernaut (threat 4)",
+        "behaviour": "Charges, grabs and tears; shove-immune; a group or explosive fight.",
+        "acceptance": "Verify natively"
+      },
+      {
+        "archetype": "plague heart (threat 5)",
+        "behaviour": "Spawns plague zombies and screams when hit; destroying all of them wins the legacy.",
+        "acceptance": "Verify natively"
+      },
+      {
+        "archetype": "hostile humans",
+        "behaviour": "Raiders and hunters attack on sight; opportunists rob the weak; wary groups fight back.",
+        "acceptance": "Verify natively"
       }
     ]
   },
   "story": {
-    "source": "Game/Assets/Ashfall/Core/Simulation.cs (Story) and World/SandboxSettings",
-    "premise": "Ashfall County has been sealed by the Guard. Utilities fail within days. Ada Pike's emergency band and Jonah Reed's convoy offer one way out.",
-    "goal": "Reach the Ash River highway bridge (west bank) on the configured evacuation day between 08:00 and 14:00. After the convoy leaves, free play continues; endless mode has no rescue.",
+    "source": "Game/Assets/Ashfall/Core/Community.cs (Story), CommunityMissions.cs, WorldEvents.cs",
+    "premise": "Ashfall County has been sealed by the Guard. Your group sets down after a failed evacuation and must hold together through Ada Pike's emergency band, enclave missions, Guard airdrops and artillery, and the plague hearts that keep the dead coming.",
+    "goal": "Destroy every plague heart (outcome \"legacy\"). The game ends only when every community member is dead (outcome \"dead\").",
     "events": [
-      "Radio broadcasts",
-      "Power and water shut-off on seeded days",
-      "Helicopter event on day 2-3 that draws zombies toward the survivor",
-      "Weather: rain and morning fog"
+      "Radio broadcasts and daily community reports",
+      "Missions: rescue, supply, clear infestation, kill freak, hunt, defend",
+      "Guard airdrops with a fly-over and red smoke",
+      "Guard artillery red zones",
+      "Hordes and base sieges",
+      "Night ferals",
+      "Helicopter event",
+      "Rain and fog"
     ],
     "outcomes": [
-      "evacuated",
-      "dead (permadeath; save marked dead)",
+      "legacy",
+      "dead",
       "survival continues"
     ],
     "legacyChapters": [
@@ -108,29 +181,27 @@
     "nativeAcceptance": "required"
   },
   "systems": {
-    "coreLoop": "Scavenge, eat and drink, avoid or fight the dead, treat wounds, fortify, sleep, and decide when to travel.",
-    "needs": "Hunger, thirst, fatigue, endurance, panic, pain, boredom, sickness, wetness, encumbrance; moodles in the HUD.",
-    "health": "Body-part wounds (scratch, laceration, bite, glass cut) that bleed, can be bandaged, disinfected, stitched and infected; zombie infection is fatal when enabled.",
-    "combat": "Melee weapons with arc, reach, knockdown and wear; shove; stomping downed zombies; firearms with ammo, reload, spread and very loud noise.",
-    "noise": "Footsteps, combat, glass, barricading, chopping and gunshots emit noise that zombies hear through walls at reduced range.",
-    "resources": "Weighted loot tables per room/container type; perishable food spoils (fridges slow it while the grid is up); tap water until shut-off, then stored pipe water (tainted), rain collectors (clean) and river water (tainted, boil it).",
-    "crafting": "Rags, planks, spear, spiked bat, campfire, rain collector, wooden crate, stew, first aid kit; barricading with hammer, plank and nails.",
-    "skills": "Melee, Aiming, Carpentry, Cooking, First Aid, Foraging, Sneaking, Fitness, Mechanics, Farming, Fishing, levelled by use.",
-    "farming": "Seed packets (carrot, potato, tomato, cabbage) from barns, hardware/tool stores, groceries and gone-to-seed field crops. Dig a plot with a shovel on grass, dirt or field ground outdoors, plant a packet, keep the soil watered (watering can or any water container; rain waters plots). Crops grow over 3-5 in-game days only while watered, wilt and die after about 30 dry hours, and rot if left ripe for 3 days. Harvest yields produce scaled by Farming skill and plant health, sometimes seed packets back. Host rules in Game/Assets/Ashfall/Core/SimSurvival.cs and Farming.cs.",
-    "fishing": "Fishing rod plus worms (foraged, dug up, gas-station bait; one per cast) or a reusable lure, from outdoor land within 2 m of the river or a pond. Catch chance rises with Fishing level, dawn/dusk and rain; perch, bass and catfish must be cooked (raw fish causes sickness). The rod wears with use.",
-    "traits": "Picked on the New Game screen with a 4-point budget: positive traits cost points, negative traits give points, opposite pairs exclude each other. Strong/Weak (capacity, melee, shove), Fast/Slow Learner (XP), Athletic/Out of Shape (run speed, endurance), Light Sleeper (wakes at 14 m), Eagle Eyed/Short Sighted (zombie visibility, mapping), Graceful/Clumsy (footstep noise), Light Eater/Hearty Appetite (hunger), Green Thumb (Farming +1, faster growth), Angler (Fishing +1, more bites), Smoker (starts with cigarettes; cravings raise panic and boredom after 8 hours). The host validates the selection again in World.Create.",
-    "skillBooks": "Vol. 1 and Vol. 2 handbooks for Carpentry, Cooking, First Aid, Foraging, Farming and Fishing. Reading (20 s, needs light) multiplies that skill's XP by 3 for levels 0-4 (Vol. 1) or by 4 for levels 5-9 (Vol. 2); the book is kept and cannot be studied twice.",
-    "vehicles": "About 40% of intact abandoned cars run (seeded per county). Keys in the ignition, the car's trunk or a nearby house container, or hotwire with a screwdriver (Mechanics). Host-side driving with fuel use, top speed by condition, slower off-road, collisions with walls, fences, water and props that damage the car, zombies knocked down or killed when hit at speed, engine noise that draws zombies, refuelling from gas cans or powered pumps; parked cars block their tiles. Game/Assets/Ashfall/Core/Vehicles.cs.",
-    "interaction": "E performs the focused action; Q opens every nearby action. All requests are host commands validated for reach, line of sight, tools and ownership.",
-    "authority": "Host-authoritative simulation (Simulation.Submit/SetInput). Clients would send input and commands only; LAN is not implemented for the rebuilt game.",
-    "saves": "Atomic, versioned, gzip-compressed seed + delta saves in the per-game persistent data directory (Survival/*.sav); autosave every 5 minutes, on sleep start and on quit. Save version 2 (farming, fishing, traits, skill books) refuses version 1 saves with an explanation and leaves the file untouched. Legacy Campaigns data is untouched."
+    "coreLoop": "Leave base, scavenge rucksacks and gear, handle threats, return and deposit, spend materials and influence on facilities, outposts and recruits, take missions, destroy plague hearts.",
+    "community": "Members with health (capped by injury), stamina, fatigue, blood plague, traits and skills; one controlled, one companion (Follow/Hold/Attack), residents and a watchtower garrison. Daily upkeep at 06:00 (Food, Meds, Fuel), morale and influence.",
+    "base": "A home site claimed near the landing zone; facility slots by size: Storage, Beds, Infirmary, Workshop, Watchtower, Garden, Kitchen and Radio Room (levels 1-3, built over in-game hours from Materials). Outposts are claimed from cleared buildings.",
+    "resources": "Shared stock of Food, Meds, Ammo, Materials and Fuel, delivered in heavy rucksacks (carried or in a car trunk). Weighted loot tables by room and building, with tiers Common, Uncommon, Rare and Military.",
+    "humans": "Every human is a Survivor; AI brains submit the same input and commands as a player (loot, fight, flee, follow, guard, hunt, airdrop). Factions with standing and dispositions (Friendly, Wary, Opportunist, Hunter). Simulated abstractly beyond about 170 m. Talk, trade and recruit.",
+    "bestiary": "Walker, crawler, screamer, bloater, armored, feral, juggernaut, plague zombies and plague hearts; hordes; gas and fire hazards. Threat tiers 1-5 on nameplates.",
+    "worldEvents": "Airdrops (announcement, plane, parachute, red smoke, tier 2-3 loot) and artillery red zones (warning, shelling, clear), each optional.",
+    "combat": "Melee arcs and knockdowns, shove, firearms with tracers, armour vests and helmets, headshots, and throwables (grenade, molotov, pipe bomb).",
+    "noise": "Footsteps, combat, glass, gunshots, screams, explosions and engines draw zombies, muffled by walls.",
+    "vehicles": "About 40% of intact cars run; keys or hotwiring; fuel; collisions; running down zombies; trunks carry rucksacks to base.",
+    "interaction": "E performs the focused action; Q opens every nearby action. All requests are host commands validated for reach, line of sight, stock, influence, standing and ownership.",
+    "authority": "Host-authoritative simulation (Simulation.Submit/SetInput). LAN is not implemented for the rebuilt game.",
+    "saves": "Atomic, versioned (3), gzip-compressed seed + delta saves with tagged sections (vehicles, survival, bestiary, humans, community, events, player, roles); autosave every 5 minutes and on quit. Older saves are refused with an explanation and left untouched.",
+    "retired": "Personal hunger, thirst, boredom, wetness and smoking; fishing; skill books; utility shut-off; water containers; cooking; per-plot farming (replaced by the base Garden)."
   },
   "playtime": {
-    "campaignTargetMinutes": 225,
-    "designBasis": "Default evacuation day 5 with 45-minute days is about 3.4 hours of in-game time before the convoy; endless survival continues afterwards.",
+    "campaignTargetMinutes": 300,
+    "designBasis": "Design target: destroying 8-14 plague hearts on a 4 km county over several in-game weeks. Not measured.",
     "measuredCampaignMinutes": null,
-    "freePlay": "Endless survival after or instead of evacuation; sandbox options for population, speed, day length, utilities, loot, infection and migration.",
-    "acceptance": "Measure normal play sessions; automated smoke duration and repeated captures do not establish playtime."
+    "freePlay": "Endless community survival; options for map size, population, zombie speed, freaks, humans, airdrops, red zones, day length and founding members.",
+    "acceptance": "Measure normal play sessions; automated probes and staged captures do not establish playtime."
   },
   "assets": {
     "policy": "Use compatible owned art for characters, props, weapons, vehicles, animations, audio and HUD sprites. Keep gameplay logic, controls, collision and progression owned by the game; procedural stand-ins are used when a private pack is not restored.",
@@ -145,21 +216,23 @@
     "presentationSelection": "ContentSource/Art/presentation-selection.json",
     "runtimeBindings": "Generated at build time: Game/Assets/Resources/AshfallArt.json (role -> prepared prefab) by Game/Assets/Editor/PrepareAshfallArt.cs",
     "survivalSelection": "ContentSource/Art/zomboid-selection.json",
-    "licenceNotes": "Leartes glass-break WAVs: confirm the licence allows non-Unreal use before shipping."
+    "licenceNotes": "Leartes glass-break WAVs: confirm the licence allows non-Unreal use before shipping.",
+    "openCountySelection": "ContentSource/Art/decay-selection.json"
   },
   "acceptance": {
     "steamReady": false,
     "multiplayerAdvertised": false,
     "requiredChecks": [
-      "Native new game on each county size: generation, start house, spawn clearance and water exclusion",
-      "Keyboard/mouse and physical controller: movement, aiming, combat, interaction and every menu",
-      "Looting, eating, drinking, cooking, crafting, barricading, sleeping, wounds and treatment",
-      "Farming over in-game days, fishing and cooking fish, trait selection and effects, skill books and smoking; save/reload of plots, traits and read books",
-      "Zombie perception, pathing to doors and windows, thumping, climbing, combat and corpses",
-      "Drivable cars: enter/exit, keys and hotwiring, driving and steering, fuel and refuelling, collisions, running down zombies, engine audio and save/reload",
-      "Evacuation outcome on the convoy day, death outcome, save/reload and autosave",
+      "Native new game on each county size: drop map, landing zones, home site, spawn clearance and water exclusion",
+      "Keyboard/mouse and physical controller: movement, aiming, combat, throwing, interaction and every menu",
+      "Community: members, switching, companion orders, rucksack deposits, facilities, outposts, recruiting, missions, morale and daily upkeep",
+      "Bestiary: each freak's behaviour, plague infection and cure, plague hearts, hordes and hazards",
+      "AI humans: enclaves, crews and raiders loot, fight and react by disposition; talk and trade; distance LOD transitions",
+      "World events: airdrops and red zones in normal play",
+      "Drivable cars and trunk deposits",
+      "Legacy and community-lost outcomes, save/reload and autosave",
       "Purchased characters/items: import, runtime reference, animation and interaction",
-      "Measured playtime, performance in towns, platform builds, distribution signing and Steam acceptance"
+      "Measured playtime, performance in towns on 4 and 6 km counties, platform builds, distribution signing and Steam acceptance"
     ],
     "latestValidation": "Docs/ValidationReports; distinguish current native evidence from historical (Frontier-era) reports"
   }
