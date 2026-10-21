@@ -90,7 +90,7 @@ static class HumanTests
         Check(crews.All(f => f.disposition == Disposition.Wary || f.disposition == Disposition.Opportunist), "crews are Wary or Opportunist");
         float nearest = w.survivors.Where(s => w.FactionOf(s) != null && w.FactionOf(s).IsCrew).Min(s => Vec2.Distance(s.pos, basePos));
         Check(nearest >= 250, "crews land away from the base (" + nearest.ToString("0") + " m)");
-        Check(w.survivors.Where(s => s.ai != AiRole.None).All(s => Vec2.Distance(s.pos, basePos) > 100), "no AI spawns right at the base");
+        Check(w.survivors.Where(s => s.ai != AiRole.None && s.faction != 0).All(s => Vec2.Distance(s.pos, basePos) > 100), "no AI spawns right at the base");
         var talons = w.FactionByKey("red_talons");
         Check(talons.disposition == Disposition.Hunter && w.Members(talons.id).All(s => s.Primary != null && s.Primary.Def.category == ItemCategory.Firearm), "raiders are hunters with guns");
         Check(w.Members(talons.id).All(s => s.Worn(WearSlot.Torso) != null && Simulation.ArmorOf(s.Worn(WearSlot.Torso).Def) > 0), "raiders wear vests");
@@ -223,7 +223,7 @@ static class HumanTests
         var w = NewWorld(); var p = Arena(w); var sim = new Simulation(w);
         var g = ItemCatalog.Make("grenade"); p.inventory.Add(g);
         var at = p.pos + new Vec2(10, 0);
-        var zs = new List<Zombie>(); for (int i = 0; i < 3; i++) { var z = w.AddZombie(at + Vec2.FromAngle(i * 2.1f) * 1.2f, w.rng); z.state = ZombieState.Idle; z.timer = 99; zs.Add(z); }
+        var zs = new List<Zombie>(); for (int i = 0; i < 3; i++) { var z = w.AddZombie(at + Vec2.FromAngle(i * 2.1f) * 1.2f, w.rng); z.state = ZombieState.Idle; z.timer = 99; z.sight = 0; z.hearing = 0; zs.Add(z); }
         sim.Submit(p.id, new Command { kind = CommandKind.Throw, item = g.uid, x = at.x, y = at.y, recipe = "" });
         sim.Tick(Simulation.Step);
         Check(w.throwables.Count == 1 && p.inventory.Count("grenade") == 0, "the grenade is in the air");

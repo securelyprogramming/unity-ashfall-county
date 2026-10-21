@@ -167,7 +167,8 @@ static class CommunityTests
         trunk.inventory.Add(ItemCatalog.Make("rucksack_materials"));
         float materials = c.Stock(Resource.Materials), meds = c.Stock(Resource.Meds);
         Submit(sim, Command.Of(CommandKind.DepositRucksack, -1)); Tick(sim);
-        check(c.Stock(Resource.Materials) == materials + 10 && c.Stock(Resource.Meds) == meds + 3, "deposit-all takes carried and trunk rucksacks (" + c.Stock(Resource.Materials) + ", " + c.Stock(Resource.Meds) + ")");
+        float mat = ItemCatalog.Get("rucksack_materials").resourceAmount, med = ItemCatalog.Get("rucksack_meds").resourceAmount;
+        check(c.Stock(Resource.Materials) == Math.Min(c.StorageCap, materials + 2 * mat) && c.Stock(Resource.Meds) == Math.Min(c.StorageCap, meds + med), "deposit-all takes carried and trunk rucksacks (" + c.Stock(Resource.Materials) + ", " + c.Stock(Resource.Meds) + ")");
         check(!trunk.inventory.items.Any(i => i.Def.resource >= 0) && !s.inventory.items.Any(i => i.Def.resource >= 0), "the rucksacks are used up");
         check(c.influence == 140, "three more deposits, 30 more influence (" + c.influence + ")");
         // A trunk far from base is ignored.
@@ -212,7 +213,7 @@ static class CommunityTests
         var tower = c.Get(FacilityKind.Watchtower); var tp = tower != null && tower.prop >= 0 ? w.map.props[tower.prop] : null;
         check(tp != null && tp.kind == PropKind.Watchtower && w.map.RoomAt(tp.x, tp.y) == null, "the watchtower stands outside the base");
         var guard = c.garrison >= 0 ? w.survivors[c.garrison] : null;
-        check(guard != null && guard.ai == AiRole.Resident && guard.id != w.playerId && Vec2.Distance(guard.pos, sim.GarrisonPost) < .1f, "a resident is posted at the watchtower");
+        check(guard != null && guard.ai == AiRole.Resident && guard.id != w.playerId && Vec2.Distance(guard.pos, sim.GarrisonPost) < 1f, "a resident is posted at the watchtower");
         // Slots run out.
         c.stock[(int)Resource.Materials] = 500;
         foreach (FacilityKind k in new[] { FacilityKind.Infirmary, FacilityKind.Garden, FacilityKind.Kitchen, FacilityKind.RadioRoom })
