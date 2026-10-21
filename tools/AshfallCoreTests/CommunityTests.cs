@@ -10,6 +10,20 @@ static class CommunityTests
 {
     public static void All(Action<string, Action> run, Action<bool, string> check)
     {
+        run("control-passes-to-far-member", () =>
+        {
+            // The controlled leader dies while the next member is far away and offscreen: the new survivor must be simulated.
+            var w = NewWorld(); var sim = new Simulation(w); var lead = w.Controlled;
+            var far = w.LivingMembers().First(m => m.id != lead.id);
+            lead.pos = Away(w, 400);
+            for (int i = 0; i < 20; i++) sim.Tick(Simulation.Step);
+            check(far.offscreen, "a member 600 m away is simulated abstractly");
+            sim.Kill(lead, "test"); sim.Tick(Simulation.Step);
+            check(w.playerId != lead.id && w.Controlled.ai == AiRole.None && !w.Controlled.offscreen, "the new controlled member is simulated in full");
+            var c = w.Controlled; c.pos = Away(w, 30); var start = c.pos;
+            for (int i = 0; i < 40; i++) { sim.SetInput(c.id, new InputState { moveX = 1, face = 0 }); sim.Tick(Simulation.Step); }
+            check(Vec2.Distance(start, c.pos) > .5f, "and can move (" + Vec2.Distance(start, c.pos).ToString("0.00") + " m)");
+        });
         EnsureContractItems();
         run("community-setup", () => Setup(check));
         run("community-upkeep", () => Upkeep(check));

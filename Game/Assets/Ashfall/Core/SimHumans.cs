@@ -68,7 +68,11 @@ namespace Ashfall.Core
             var list = world.survivors;
             for (int i = 0; i < list.Count; i++)
             {
-                var s = list[i]; if (!s.alive || s.ai == AiRole.None) continue;
+                var s = list[i];
+                // A survivor the player controls is always simulated in full, even if it was a far-away AI a moment ago
+                // (control passes to a distant member when the controlled one dies).
+                if (s.ai == AiRole.None) { if (s.offscreen) s.offscreen = false; continue; }
+                if (!s.alive) continue;
                 var b = BrainOf(s);
                 Lod(s, b);
                 if (s.offscreen)

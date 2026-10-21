@@ -336,7 +336,8 @@ namespace Ashfall.View
             if (heart != null)
             {
                 KeepAlive(s); s.pos = InsideBeside(w, heart.pos); ClearAround(w, s.pos, 25);
-                s.inventory.Add(ItemCatalog.Make("grenade", 3)); report.qaSetup.Add("moved inside the building beside the nearest plague heart (" + Vec2.Distance(s.pos, heart.pos).ToString("0.0") + " m), cleared its guards and granted 3 grenades");
+                s.inventory.Add(ItemCatalog.Make("grenade", 6)); var gun = s.Primary; if (gun != null && gun.Def.magazine > 0) gun.loaded = gun.Def.magazine;
+                report.qaSetup.Add("moved " + s.name + " inside the building beside the nearest plague heart (" + Vec2.Distance(s.pos, heart.pos).ToString("0.0") + " m), cleared its guards, granted 6 grenades and loaded the gun");
                 float influence = c.influence; int remaining = w.HeartsRemaining;
                 yield return new WaitForSecondsRealtime(1.5f);
                 yield return Shot("19-plague-heart");
