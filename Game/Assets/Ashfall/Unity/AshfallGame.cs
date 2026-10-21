@@ -95,7 +95,7 @@ namespace Ashfall.View
         }
 
         void Awake()
-        {
+        { /* workbench-debug */ WorkbenchDebug.Event("Awake.requested","gameplay","","AshfallGame.Awake");
             Instance = this; DontDestroyOnLoad(gameObject);
             Application.targetFrameRate = 120;
             string userDir = Arg("ashfall-user-dir");
@@ -188,7 +188,7 @@ namespace Ashfall.View
         }
 
         public void Show(Screen s)
-        {
+        { /* workbench-debug */ WorkbenchDebug.Event("Show.requested","gameplay",s.ToString(),"screen transition");
             Screen = s; Paused = false;
             if (s == Screen.Title && backdropView == null && World == null) BuildBackdrop();
             UI.ShowScreen(s);
@@ -240,7 +240,7 @@ namespace Ashfall.View
 
         // ---------------------------------------------------------------- new game, load, save
         public void StartNewGame(SandboxSettings settings, string name, string profession, bool female, string[] traits = null)
-        {
+        { /* workbench-debug */ WorkbenchDebug.Event("StartNewGame.requested","gameplay","","AshfallGame.StartNewGame");
             traits = traits ?? new string[0];
             Prefs.lastName = name; Prefs.lastProfession = profession; Prefs.lastFemale = female; Prefs.lastTraits = string.Join(",", traits); SavePrefs();
             CancelDropMap();
@@ -296,7 +296,7 @@ namespace Ashfall.View
             Preview = task.Result; UI.PreviewReady();
         }
         public void LoadGame(string path)
-        {
+        { /* workbench-debug */ WorkbenchDebug.Event("LoadGame.requested","gameplay","","AshfallGame.LoadGame");
             BeginLoading("Restoring " + Path.GetFileNameWithoutExtension(path) + "...", AfterSurvey(() => SaveCodec.Load(path)), w => { CurrentSave = path; Radio.Clear(); Enter(w); });
         }
         void BeginLoading(string text, Task<World> task, Action<World> done)
@@ -435,7 +435,7 @@ namespace Ashfall.View
                 input.run = run.IsPressed(); input.sneak = sneak.IsPressed(); input.aim = aim.IsPressed();
                 // Only a mouse player aiming over a UI element is blocked; a parked cursor never blocks the gamepad.
                 bool pointerOverUi = !usingGamepadAim && EventSystem.current != null && EventSystem.current.IsPointerOverGameObject();
-                input.attack = attack.IsPressed() && !pointerOverUi; input.shove = shove.WasPressedThisFrame();
+                input.attack = attack.IsPressed() && !pointerOverUi; /* workbench-debug-attack */ if(attack.WasPressedThisFrame()) WorkbenchDebug.Event("weapon.attack.requested","combat",s.Primary==null?"unarmed":s.Primary.uid.ToString(),"player="+s.id+"; weapon="+(s.Primary==null?"unarmed":s.Primary.Def.name)+"; loaded="+(s.Primary==null?0:s.Primary.loaded)+"; blockedByUI="+pointerOverUi); input.shove = shove.WasPressedThisFrame();
                 var stick = look.ReadValue<Vector2>();
                 if (stick.sqrMagnitude > .2f) usingGamepadAim = true;
                 else if (Mouse.current != null && Mouse.current.delta.ReadValue().sqrMagnitude > 1) usingGamepadAim = false;
@@ -489,7 +489,7 @@ namespace Ashfall.View
             var s = Player; if (s == null) return new List<ItemStack>();
             return s.inventory.items.Where(i => i.Def.IsWeapon && i.Def.category != ItemCategory.Material || i.Def.category == ItemCategory.Light).OrderBy(i => i.Def.category == ItemCategory.Light ? 1 : 0).ThenByDescending(i => i.Def.damage).Take(6).ToList();
         }
-        void UseHotbar(int i) { var bar = Hotbar(); if (i < bar.Count) Sim.Submit(LocalId, new Command { kind = bar[i].Def.category == ItemCategory.Light ? CommandKind.ToggleLight : CommandKind.Equip, item = bar[i].uid, slot = 0 }); }
+        void UseHotbar(int i) { /* workbench-debug */ WorkbenchDebug.Event("UseHotbar.requested","gameplay",i.ToString(),"hotbar selection");  var bar = Hotbar(); if (i < bar.Count) Sim.Submit(LocalId, new Command { kind = bar[i].Def.category == ItemCategory.Light ? CommandKind.ToggleLight : CommandKind.Equip, item = bar[i].uid, slot = 0 }); }
         /// <summary>G throws at the mouse ground point. RB tapped cycles weapons; RB held aims about 12 m ahead and throws on release.</summary>
         void ThrowInput(Survivor s)
         {
@@ -524,7 +524,7 @@ namespace Ashfall.View
             return null;
         }
         public void ThrowAt(Survivor s, Vector3 at)
-        {
+        { /* workbench-debug */ WorkbenchDebug.Event("ThrowAt.requested","combat",s==null?"unknown":s.id.ToString(),"aimX="+at.x+"; aimY="+at.z);
             var item = Throwable();
             if (item == null) { UI.Toast("Nothing to throw. Grenades, molotovs and pipe bombs turn up in military loot and airdrops."); Audio.Ui("deny"); return; }
             Sim.Submit(s.id, new Command { kind = CommandKind.Throw, item = item.uid, x = at.x, y = at.z, recipe = "" });
@@ -541,10 +541,10 @@ namespace Ashfall.View
 
         void CycleWeapon() { var bar = Hotbar().Where(i => i.Def.category != ItemCategory.Light).ToList(); if (bar.Count == 0) return; hotbarIndex = (hotbarIndex + 1) % bar.Count; Sim.Submit(LocalId, new Command { kind = CommandKind.Equip, item = bar[hotbarIndex].uid }); }
 
-        public void Submit(Command c) { if (Sim != null) Sim.Submit(LocalId, c); }
+        public void Submit(Command c) { /* workbench-debug */ WorkbenchDebug.Event("Submit.requested","gameplay",c.target.ToString(),c.kind+"; player="+LocalId+"; item="+c.item);  if (Sim != null) Sim.Submit(LocalId, c); }
 
         void DoPrimary()
-        {
+        { /* workbench-debug */ WorkbenchDebug.Event("DoPrimary.requested","gameplay",LocalId.ToString(),Focus==null?"no focused interaction":Focus.label);
             var s = Player; if (s == null || s.sleeping) return;
             if (s.action != null && s.action.kind != ActionKind.Sleep) { Sim.Submit(s.id, Command.Of(CommandKind.Cancel)); return; }
             var f = Focus; if (f == null) return;
