@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "game": "ashfall-county",
+  "kind": "owned-art-preparation-and-native-build",
+  "recorded": "2026-10-20",
+  "platform": "Windows",
+  "unity": "6000.6.0f1",
+  "source": "assets worktree branch on contract commit e3278ca with decay-selection (open-county rebuild, phase 1)",
+  "restoration": {
+    "command": "python tools/playtest/restore_presentation.py --verify-only",
+    "manifests": {
+      "presentation-selection.json": { "files": 21, "bytes": 32437487 },
+      "zomboid-selection.json": { "files": 584, "bytes": 238109712 },
+      "decay-selection.json": { "files": 100, "bytes": 134403432 }
+    },
+    "result": "every archive and file hash verified in the private cache"
+  },
+  "nativeBuild": {
+    "command": "python tools/playtest/build.py --platform windows --output C:/Users/Quent/AppData/Local/GameWorkbench/builds/ashfall-assets-20261020-211914/out",
+    "result": { "status": "Succeeded", "errors": 0, "warnings": 5, "bytes": 395156545 },
+    "editorLog": [
+      "ASHFALL_ART_PLAN roles=115",
+      "ASHFALL_ART zombie Screamer clips=7 special=Shout",
+      "ASHFALL_ART zombie Feral clips=7 special=Jump",
+      "ASHFALL_ART zombie Juggernaut clips=7 special=Move",
+      "ASHFALL_ART zombie Fat clips=6 special=Attack_Boom",
+      "No ASHFALL_ART_FAILED or ASHFALL_ART_MISSING lines; every outfit part was found"
+    ],
+    "roles": { "zombie": 13, "human": 22, "character": 8, "survivor": 2, "prop": 32, "item": 27, "vehicle": 3, "tree": 4, "bush": 3, "fx": 1 }
+  },
+  "playerRuntime": {
+    "probe": "Built player with -ashfall-qa, an isolated user directory and a 1024 m county",
+    "log": [
+      "ASHFALL_ART purchasedRoles=115/115",
+      "ASHFALL_AUDIO purchasedCues=78/89 synthesized=engine-loop,engine-start,engine-stop,car-door,crash,sputter,gas,heart-pulse,artillery-whistle,plane,helicopter"
+    ],
+    "checks": 35,
+    "failedChecks": ["map-panel", "vehicle-enter", "health-panel-shows-traits-and-books"],
+    "note": "The failed probe checks belong to the pre-rebuild QA script running against contract-state UI and vehicle code. They do not involve art or audio; the lead rewrites QA in phase 2."
+  },
+  "notProven": [
+    "The new roles rendered in gameplay. The contract-state view does not yet request zombie/<kind>, human/<group>, character/<key> or fx/plague_heart, so visual review follows the unity-view merge.",
+    "Aircraft and parachute art. No owned Unity source exists, so they stay procedural.",
+    "A crawler rig and the GardenBed and OutpostFlag props. These stay procedural.",
+    "Shipping licence confirmation for each pack, Steam readiness, controller hardware and two-machine LAN."
+  ]
+}

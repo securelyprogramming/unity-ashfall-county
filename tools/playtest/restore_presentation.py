@@ -14,6 +14,12 @@ import zipfile
 
 MAX_SELECTED = 250 * 1024 * 1024
 MAX_ARCHIVE = 1024 * 1024 * 1024
+MAX_ROWS = 1000
+# Meshes, textures, clips and audio only; vendor scripts, prefabs and materials are never restored.
+SUFFIXES = ('.fbx', '.png', '.tga', '.anim', '.wav', '.ogg', '.mp3')
+ART = Path(__file__).resolve().parents[2] / 'ContentSource/Art'
+# Every reviewed presentation selection, restored in order into the same private game cache.
+MANIFESTS = ('presentation-selection.json', 'zomboid-selection.json', 'decay-selection.json')
 
 
 def digest(path):
@@ -42,16 +48,16 @@ def verify(path, row):
     return path.is_file() and path.stat().st_size == row['size'] and digest(path) == row['sha256']
 
 
-def restore(manifest, cache, archive_cache, library, offline=False):
+def restore(manifest, cache, archive_cache, library, offline=False, verify_only=False):
     rows = manifest['files']
-    if not rows or len(rows) > 200 or sum(r['size'] for r in rows) > MAX_SELECTED:
+    if not rows or len(rows) > MAX_ROWS or sum(r['size'] for r in rows) > MAX_SELECTED:
         raise ValueError('Selected art exceeds the reviewed bound.')
     if len({r['relative_path'] for r in rows}) != len(rows):
         raise ValueError('Duplicate selected output.')
     for row in rows:
         path = relative(row['relative_path'])
         relative(row['member'])
-        if path.suffix.lower() not in ('.fbx', '.png', '.anim') or not isinstance(row['size'], int) or not 0 < row['size'] <= MAX_SELECTED or not re.fullmatch('[0-9a-f]{64}', row['sha256']):
+        if path.suffix.lower() not in SUFFIXES or not isinstance(row['size'], int) or not 0 < row['size'] <= MAX_SELECTED or not re.fullmatch('[0-9a-f]{64}', row['sha256']):
             raise ValueError('Only bounded, hash-pinned reviewed art may be restored.')
     archive_ids = set()
     for archive in manifest['archives']:
@@ -77,6 +83,8 @@ def restore(manifest, cache, archive_cache, library, offline=False):
                 missing.append(row)
         if not missing:
             continue
+        if verify_only:
+            raise FileNotFoundError('Selected art is not restored: ' + missing[0]['relative_path'])
         original = checked(archive_cache, archive['name'])
         if original.exists() and not verify(original, archive):
             raise ValueError('Private archive differs from pin: ' + archive['name'])
@@ -106,7 +114,16 @@ def restore(manifest, cache, archive_cache, library, offline=False):
                     raise ValueError('Direct source differs from selected file.')
                 target = checked(cache, row['relative_path'])
                 target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(original, target)
+                fd, temp_name = tempfile.mkstemp(dir=target.parent, prefix='.frontier-')
+                os.close(fd)
+                temp = Path(temp_name)
+                try:
+                    shutil.copyfile(original, temp)
+                    if not verify(temp, row):
+                        raise ValueError('Selected art hash mismatch.')
+                    temp.replace(target)
+                finally:
+                    temp.unlink(missing_ok=True)
             continue
         with (zipfile.ZipFile(original) if archive['format'] == 'zip' else tarfile.open(original, 'r:gz')) as source:
             for row in missing:
@@ -138,17 +155,22 @@ def restore(manifest, cache, archive_cache, library, offline=False):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--manifest', type=Path, default=Path(__file__).resolve().parents[2] / 'ContentSource/Art/presentation-selection.json')
+    parser.add_argument('--manifest', type=Path, action='append', help='Reviewed selection (repeatable). Default: every selection in ContentSource/Art.')
     parser.add_argument('--cache', type=Path, default=Path(os.environ.get('FRONTIER_PRESENTATION_CACHE', str(Path.home() / 'code/game_asset_cache/frontier-presentation'))))
     parser.add_argument('--archives', type=Path, default=Path.home() / 'code/game_asset_cache/archives/frontier-presentation')
     parser.add_argument('--library', default='http://192.168.1.101:8090')
     parser.add_argument('--offline', action='store_true')
+    parser.add_argument('--verify-only', action='store_true', help='Check the restored cache against every pin; change nothing.')
     args = parser.parse_args()
-    manifest = json.loads(args.manifest.read_text(encoding='utf8'))
-    game = relative(manifest['game_id'])
-    if len(game.parts) != 1:
-        raise ValueError('Game ID must be one safe directory name.')
-    print(json.dumps(restore(manifest, args.cache.expanduser().absolute() / game.as_posix(), args.archives.expanduser().absolute(), args.library, args.offline)))
+    paths = args.manifest or [ART / name for name in MANIFESTS if (ART / name).is_file()]
+    results = {}
+    for path in paths:
+        manifest = json.loads(path.read_text(encoding='utf8'))
+        game = relative(manifest['game_id'])
+        if len(game.parts) != 1:
+            raise ValueError('Game ID must be one safe directory name.')
+        results[path.name] = restore(manifest, args.cache.expanduser().absolute() / game.as_posix(), args.archives.expanduser().absolute(), args.library, args.offline, args.verify_only)
+    print(json.dumps(results))
 
 
 if __name__ == '__main__':
