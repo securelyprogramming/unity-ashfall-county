@@ -172,7 +172,7 @@ static class Program
         int corpses = w.corpses.Count;
         for (int i = 0; i < 20 * 8 && z.Alive; i++) { sim.SetInput(s.id, new InputState { face = 0, attack = true }); sim.Tick(Simulation.Step); if (z.Alive) { z.stagger = 0; } }
         Check(!z.Alive, "baseball bat kills a zombie");
-        Check(w.corpses.Count == corpses + 1, "corpse left behind");
+        Check(w.corpses.Skip(corpses).Count(c => Vec2.Distance(c.pos, z.pos) < .5f) == 1, "corpse left behind");   // offscreen AI fights leave corpses elsewhere
         Check(s.kills == 1, "kill counted");
         Check(bat.condition < 1, "weapon wears");
         // Firearm: loud and lethal.
