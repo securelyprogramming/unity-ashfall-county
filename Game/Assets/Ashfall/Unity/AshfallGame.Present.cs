@@ -76,7 +76,7 @@ namespace Ashfall.View
             var list = World.events;
             for (int i = 0; i < list.Count; i++)
             {
-                var e = list[i];
+                var e = list[i]; /* workbench-debug-events */ TraceWorkbenchEvent(e);
                 if (UI != null) UI.OnEvent(e);
                 if (EventTap != null) EventTap(e);
                 if (s != null && fx != null) EventFx(e, s);
