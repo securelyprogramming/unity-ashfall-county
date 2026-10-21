@@ -445,7 +445,7 @@ namespace Ashfall.View
             game.Submit(new Command { kind = CommandKind.Use, item = book.uid });
             yield return WaitFor(() => s.booksRead.Contains(book.def), 26);
             Pass("skill-book-read", s.booksRead.Contains(book.def) && Simulation.BookMultiplier(s, Skill.Carpentry) == 3, "Carpentry level " + s.Level(Skill.Carpentry) + ", multiplier " + Simulation.BookMultiplier(s, Skill.Carpentry));
-            yield return Press(Key.H); yield return new WaitForSecondsRealtime(.8f);
+            yield return Press(Key.K); yield return new WaitForSecondsRealtime(.8f);
             Pass("health-panel-shows-traits-and-books", game.UI.BlocksGameplay, "");
             yield return Shot("20-skills-traits-books");
             game.UI.CloseTopPanel();
