@@ -325,7 +325,7 @@ namespace Ashfall.Core
             switch (s.ai)
             {
                 case AiRole.Companion: r = 8; break;
-                case AiRole.Resident: r = TowerFor(s) != null && gun ? 25 : 15; break;
+                case AiRole.Resident: r = s.id == world.community.garrison || TowerFor(s) != null && gun ? 25 : 15; break;
                 case AiRole.Enclave: r = 12; break;
                 case AiRole.Raider: case AiRole.Hunter: r = 12; break;
                 case AiRole.Trader: r = 3; break;
@@ -354,6 +354,7 @@ namespace Ashfall.Core
 
         bool HoldPosition(Survivor s)
         {
+            if (s.id == world.community.garrison) return true;
             if (s.ai == AiRole.Companion && s.order == CompanionOrder.Hold) return true;
             return s.ai == AiRole.Resident && IsGun(s.Primary) && TowerFor(s) != null && Elevated(s);
         }
@@ -457,6 +458,8 @@ namespace Ashfall.Core
         void Resident(Survivor s, Brain b)
         {
             var c = world.community;
+            // The community's watchtower garrison holds its post (Community.GarrisonPost) and shoots from there.
+            if (s.id == c.garrison) { b.state = BrainState.Guard; var post = GarrisonPost; if (Vec2.Distance(s.pos, post) > .6f) SetGoal(b, post, false); else b.hasGoal = false; return; }
             Vec2 home = c.baseBuilding >= 0 ? c.basePos : b.anchor;
             var tower = IsGun(s.Primary) ? TowerFor(s) : null;
             b.state = BrainState.Guard;

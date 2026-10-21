@@ -67,7 +67,7 @@ namespace Ashfall.Core
             if (targets.Count > maxTargets) targets.RemoveRange(maxTargets, targets.Count - maxTargets);
             var heart = HeartInArc(s, reach, arc);
             if (targets.Count == 0 && heart == null) { BashOpening(s, armed ? def.damage : .15f, Vec2.FromAngle(s.facing)); return; }
-            var c = Characters.Get(s.character); float scale = c != null ? c.damageScale : 1;
+            var c = Characters.Get(s.character); float scale = (c != null ? c.damageScale : 1) * FatigueDamage(s);
             foreach (var t in targets)
             {
                 float damage = (armed ? def.damage : .18f) * (1 + s.Level(Skill.Melee) * .07f) * world.rng.Range(.8f, 1.2f);
@@ -138,6 +138,7 @@ namespace Ashfall.Core
                 var to = z.pos - s.pos; if (to.Length > 1.3f) continue;
                 if (Math.Abs(MathUtil.WrapAngle(to.Angle - s.facing)) > 1.0f) continue;
                 if (z.state == ZombieState.Knocked) continue;
+                if (ShoveImmune(z)) continue;   // juggernauts cannot be shoved
                 z.pos = world.map.Slide(z.pos, to.Normalized * .7f, Zombie.Radius); world.index.Moved(z);
                 z.attackClock = 0; z.stagger = 1.0f;
                 if (world.rng.Chance(knock)) Knock(z);
@@ -165,7 +166,7 @@ namespace Ashfall.Core
             GainXp(s, Skill.Aiming, 2);
             bool elevated = Elevated(s);
             float skill = 1 + s.Level(Skill.Aiming) * .06f, range = def.range * (elevated ? 1.5f : 1);
-            var c = Characters.Get(s.character); float scale = c != null ? c.damageScale : 1;
+            var c = Characters.Get(s.character); float scale = (c != null ? c.damageScale : 1) * FatigueDamage(s);
             for (int i = 0; i < def.pellets; i++)
             {
                 float spread = def.spread * (s.aiming ? .6f : 1.6f) * (1 + s.panic * .006f) / skill * (elevated ? .8f : 1);
