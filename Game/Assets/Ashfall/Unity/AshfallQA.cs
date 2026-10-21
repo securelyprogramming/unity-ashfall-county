@@ -80,6 +80,8 @@ namespace Ashfall.View
         void ClearAround(World w, Vec2 at, float radius) { foreach (var z in w.zombies) if (z.Alive && Vec2.Distance(z.pos, at) < radius) { z.state = ZombieState.Dead; } w.index = new ZombieIndex(w); }
         Zombie Stage(World w, Vec2 at, ZombieKind kind, bool hold = true)
         {
+            // Staged freaks stand on open ground the leader can see (never inside a neighbouring building).
+            var me = game.Player.pos; at = OpenGround(w, at); if (!w.map.LineOfSight(me, at) || w.map.RoomAt((int)at.x, (int)at.y) != null) at = OpenGround(w, me + (at - me).Normalized * 6);
             var z = w.SpawnKind(at, kind, w.rng); z.state = ZombieState.Idle; z.timer = hold ? 99 : 2; z.facing = (game.Player.pos - at).Angle; return z;
         }
 
@@ -235,7 +237,7 @@ namespace Ashfall.View
             else Pass("companion-follows", false, "no second member");
 
             // Melee with the gamepad against a walker.
-            KeepAlive(s); s.pos = OpenGround(w, c.basePos + new Vec2(30, 30)); ClearAround(w, s.pos, 30);
+            KeepAlive(s); s.pos = OpenArea(w, c.basePos + new Vec2(30, 30), 18); ClearAround(w, s.pos, 30);
             var walker = Stage(w, s.pos + new Vec2(1.3f, 0), ZombieKind.Walker); report.qaSetup.Add("spawned a walker beside the leader");
             int kills = s.kills;
             yield return PadAttack(6, () => walker.pos);
@@ -321,10 +323,13 @@ namespace Ashfall.View
                 bool attacked = after > hostileTracers || s.lastHitBy >= 0 && w.survivors[s.lastHitBy].faction == talons.id;
                 Pass("raiders-attack-on-sight", attacked, "raider shots " + (after - hostileTracers) + ", last hit by " + (s.lastHitBy >= 0 ? w.survivors[s.lastHitBy].name : "nobody"));
                 yield return Shot("18-raiders");
+                // Leave the raiders behind at once: they keep shooting after the recording ends.
+                s.pos = OpenGround(w, c.basePos + new Vec2(-20, -20)); KeepAlive(s); report.qaSetup.Add("moved the leader back to base after the raider recording");
             }
             else Pass("raiders-attack-on-sight", false, "no Red Talon raider");
 
             // A plague heart: approach, see it, destroy it with grenades and melee.
+            s = game.Player;   // control may have passed to another member if the leader fell
             var heart = w.hearts.Where(h => !h.destroyed).OrderBy(h => Vec2.Distance(h.pos, c.basePos)).FirstOrDefault();
             if (heart != null)
             {
@@ -502,6 +507,19 @@ namespace Ashfall.View
                     if (w.map.RoomAt((int)c.x, (int)c.y) != null && !w.map.Collides(c, Survivor.Radius) && w.map.LineOfSight(c, p)) return c;
                 }
             return Beside(w, p);
+        }
+        /// <summary>Open outdoor ground with no building within a radius (an arena for staged fights), searching outward.</summary>
+        static Vec2 OpenArea(World w, Vec2 near, int radius)
+        {
+            for (int r = 0; r < 900; r += 6)
+                for (int a = 0; a < 24; a++)
+                {
+                    var p = near + Vec2.FromAngle(a * .2618f) * r; bool ok = w.map.InBounds((int)p.x - radius, (int)p.y - radius) && w.map.InBounds((int)p.x + radius, (int)p.y + radius);
+                    for (int dx = -radius; dx <= radius && ok; dx += 2) for (int dy = -radius; dy <= radius && ok; dy += 2)
+                        if (w.map.RoomAt((int)p.x + dx, (int)p.y + dy) != null || w.map.IsWater((int)p.x + dx, (int)p.y + dy)) ok = false;
+                    if (ok && !w.map.Collides(p, Survivor.Radius)) return p;
+                }
+            return OpenGround(w, near);
         }
         static Vec2 OpenGround(World w, Vec2 near)
         {
