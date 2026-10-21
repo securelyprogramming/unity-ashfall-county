@@ -65,8 +65,8 @@ def restore(project,manifest):
   if not source.is_file():raise RuntimeError('Restore the purchased selection into the private FRONTIER_ASSET_CACHE first: '+str(rel))
   if source.stat().st_size!=r['size']or sha(source)!=r['sha256']:raise RuntimeError('Private licensed source differs from selection: '+str(rel))
   destination=project/'Assets/Resources/LicensedFrontier'/rel;destination.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(source,destination);restored.append({'path':str(rel),'sha256':r['sha256'],'bytes':r['size']})
- # Reviewed owned presentation selections (menus, survival characters, zombies, props, weapons, audio), each hash-pinned.
- for presentationPath in (ROOT/'ContentSource/Art/presentation-selection.json',ROOT/'ContentSource/Art/zomboid-selection.json'):
+ # Reviewed owned presentation selections (menus, survival characters, zombies, freaks, props, weapons, audio), each hash-pinned and at most 250 MB.
+ for presentationPath in (ROOT/'ContentSource/Art/presentation-selection.json',ROOT/'ContentSource/Art/zomboid-selection.json',ROOT/'ContentSource/Art/decay-selection.json'):
   if not presentationPath.is_file():continue
   presentation=json.loads(presentationPath.read_text(encoding='utf8'));selected=presentation['files']
   presentationCache=Path(os.environ.get('FRONTIER_PRESENTATION_CACHE',str(Path.home()/'code/game_asset_cache/frontier-presentation'))).expanduser().resolve()/presentation['game_id']
