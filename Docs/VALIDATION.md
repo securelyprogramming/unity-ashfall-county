@@ -2,6 +2,34 @@
 
 The game was rebuilt again as an open-county community survival game: drop map, community and base, bestiary, AI humans, airdrops and red zones (`Docs/DESIGN.md`). The single-survivor evidence below is history for the systems that were retired.
 
+**Native open-county probe passed 43/43 (2026-10-21 03:59 UTC): [AshfallOpenCounty-WindowsPlayer-20261021-035951.json](ValidationReports/AshfallOpenCounty-WindowsPlayer-20261021-035951.json).**
+- **Build:** Unity 6000.6.0f1 Windows development player built from `main` with `tools/playtest/build.py`. 0 errors, 115/115 owned art roles. Core: 2337 quick checks passed.
+- **Checks passed natively:**
+  - Title, traits, the drop map (12 zones) and new-game generation.
+  - Landmarks, the community, 65 AI survivors in 20 factions with all 8 named characters, and the bestiary.
+  - Movement, a base container, rucksack deposit, and the community, base, missions and map panels.
+  - Companion follow, switching members, gamepad melee, a screamer's scream, and a juggernaut drawn at 1.7× scale.
+  - A gamepad-thrown grenade hurting staged freaks, and rifle tracers.
+  - A scheduled airdrop landing with tier-2+ loot, red-zone shelling, talking and trading with Ada Pike, and Red Talon raiders firing on sight.
+  - Destroying a plague heart from inside its building (+150 influence), a darker night, and a town sample (16.7 ms average, 203 active zombies).
+  - The keyboard car drive (12 checks), quit to title, and save/reload of the controlled member, members, hearts, airdrops, stock, influence and factions.
+- **During the run:**
+  - A raider killed the leader, and control passed to another member who had been simulated offscreen far away. The rest of the probe played as her.
+  - The engine-start E press needed 2 presses. A dropped first press has been intermittent since the first car runs; the probe retries and records the count.
+- **Captures:** 23 screenshots and 9 MP4 scenes. Staged scenes (spawned freaks, scheduled airdrop and red zone, teleports and kept-alive health) are listed under `qaOnlySetup`.
+- **Fixed on the way from 25/33:**
+  - The probe's virtual input now ignores window focus.
+  - Raiders and hunters engage at 22 m with a gun.
+  - Nights are readable.
+  - Actor views snap after long moves.
+  - A gamepad player's attacks are no longer blocked by a mouse cursor over the HUD.
+  - Control passing to an offscreen member no longer freezes them. This was a game bug found natively and is now covered by a core test.
+  - Probe staging: an open arena, line of sight to raiders, and fighting the heart from inside its building.
+- **History:**
+  - `...-032208`, `...-032947`, `...-033542`, `...-034200`, `...-034905`: 41/43, 41/43, 35/43, 42/43 and 41/43 while the issues above were found.
+  - `...-035720`: the player window closed after 129 s, without a crash and with exit code 0, before the probe finished.
+- **Not proven:** physical controllers, natural encounter rates and balance over hours, Linux and macOS, LAN (not implemented), Steam. The night-ferals capture is still too dark to show the ferals clearly.
+
 **First native open-county probe (2026-10-21 02:31 UTC): [AshfallOpenCounty-WindowsPlayer-20261021-023154.json](ValidationReports/AshfallOpenCounty-WindowsPlayer-20261021-023154.json). 25/33 checks passed; status failed.**
 - **Build:** Unity 6000.6.0f1 Windows development player from `tools/playtest/build.py`, 0 errors, with 115/115 prepared owned art roles. Core: 2334 quick checks and 2346 full checks passed.
 - **County:** seed 777, 4096 m, 3,603 buildings, 21 towns, 12 landing zones, 46 landmarks, 15,627 zombies (13,588 walkers, 25 juggernauts), 11 plague hearts, 65 AI survivors in 20 factions, all 8 named characters. Generation took 1.7 s.

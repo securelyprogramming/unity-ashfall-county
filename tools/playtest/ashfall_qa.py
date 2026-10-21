@@ -75,7 +75,7 @@ def main():
             'Long-session memory and save growth on the 6 km county, and every new-game option combination',
         ],
     }
-    out = ROOT / 'Docs' / 'ValidationReports' / ('AshfallSurvival-' + (data.get('platform') or 'native') + '-' + stamp + '.json')
+    out = ROOT / 'Docs' / 'ValidationReports' / ('AshfallOpenCounty-' + (data.get('platform') or 'native') + '-' + stamp + '.json')
     out.write_text(json.dumps(summary, indent=2) + '\n', encoding='utf8')
     print(json.dumps({'status': summary['status'], 'report': str(out), 'evidence': str(base)}))
     return 0 if summary['status'] == 'passed' else 1
