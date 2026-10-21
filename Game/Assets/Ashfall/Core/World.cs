@@ -14,7 +14,7 @@ namespace Ashfall.Core
     public sealed class SandboxSettings
     {
         public int seed = 20261019;
-        public int mapSize = 3072;
+        public int mapSize = 4096;            // 2048, 3072, 4096 (default) or 6144 "Massive"
         public Population population = Population.Normal;
         public ZombieSpeed speed = ZombieSpeed.Shamblers;
         public int dayLengthMinutes = 45;     // real minutes per in-game day
@@ -213,7 +213,7 @@ namespace Ashfall.Core
 
         static float ZoneDensity(ZoneKind z)
         {
-            switch (z) { case ZoneKind.Commercial: return 1.1f; case ZoneKind.Town: return .6f; case ZoneKind.Suburb: return .22f; case ZoneKind.Farm: return .05f; case ZoneKind.Forest: return .012f; case ZoneKind.Wild: return .02f; default: return 0; }
+            switch (z) { case ZoneKind.Commercial: return 1.1f; case ZoneKind.Military: return .5f; case ZoneKind.Town: return .6f; case ZoneKind.Suburb: return .22f; case ZoneKind.Farm: return .05f; case ZoneKind.Forest: return .012f; case ZoneKind.Wild: return .02f; default: return 0; }
         }
 
         void SpawnZombies(Vec2 safe, Building home)
