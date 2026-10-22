@@ -1,0 +1,1172 @@
+{
+  "schemaVersion": 1,
+  "gameId": "game:52ce9a56-648b-4c13-9b2e-1a90cffd0be0--ashfall-county",
+  "title": "Ashfall County systems",
+  "engine": "Unity",
+  "concept": "Lead a small community of survivors in a quarantined 4 km x 4 km county (2-6 km options): pick where you set down on a drop map, scavenge rucksacks of food, meds, ammo, materials and fuel for your home base, build facilities, recruit named survivors, and fight or flee a tiered bestiary (walkers to juggernauts) while AI rival crews and raiders loot the same towns and Guard airdrops and artillery red zones reshape each day. Destroy every plague heart to cleanse the county.",
+  "originality": "Preserve the existing project expression and existing licensed-source boundaries. This migration neither approves new custom systems/assets nor proves distribution rights.",
+  "constraints": [
+    "Documentation migration only; runtime, assets and player saves are unchanged.",
+    "Source-observed implementation is not marked verified. All new acceptance checks remain pending.",
+    "Use the existing owned-asset manifest evidence; declared selection does not prove import, active use, compatibility or redistribution permission."
+  ],
+  "players": {
+    "min": null,
+    "max": null,
+    "modes": [
+      "Open county survival"
+    ],
+    "notes": "Mode counts are source/design declarations with per-mode limitations. This audit did not perform new physical-controller or separate-machine network tests."
+  },
+  "systems": [
+    {
+      "id": "gameplay",
+      "kind": "mechanics",
+      "title": "Gameplay runtime",
+      "status": "unresolved",
+      "summary": "Existing runtime orchestration and game-specific behavior. Review the selected entry point and source before implementation changes.",
+      "parentId": null,
+      "tier": "primary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-gameplay",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Audit source and identity",
+          "body": "Repository securelyprogramming/unity-ashfall-county; HEAD 5251209fc79280f28151027f77ac8eab30893330. Selected source is hash-pinned in Docs/planning/source-audit.json."
+        }
+      ]
+    },
+    {
+      "id": "world",
+      "kind": "world",
+      "title": "World / section model",
+      "status": "unresolved",
+      "summary": "Named section catalog and source world generation. Empty schematic geometry is unverified; level records do not establish engine adapters.",
+      "parentId": null,
+      "tier": "primary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-world",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Audit source and identity",
+          "body": "Repository securelyprogramming/unity-ashfall-county; HEAD 5251209fc79280f28151027f77ac8eab30893330. Selected source is hash-pinned in Docs/planning/source-audit.json."
+        }
+      ]
+    },
+    {
+      "id": "presentation",
+      "kind": "ui",
+      "title": "Presentation and owned resources",
+      "status": "unresolved",
+      "summary": "Existing interface, menu, art and audio integration. Asset observations retain their original evidence limits.",
+      "parentId": null,
+      "tier": "primary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [
+        {
+          "key": "item:60",
+          "url": "http://192.168.1.101:8090/purchases/6#item-60",
+          "name": "Ambiences Sounds Vol 1",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ambiences Sounds Vol 1. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:1003",
+          "url": "http://192.168.1.101:8090/purchases/77#item-1003",
+          "name": "ANIMATION - Goblin Locomotion",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects ANIMATION - Goblin Locomotion. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:851",
+          "url": "http://192.168.1.101:8090/purchases/72#item-851",
+          "name": "Cartoon Zombies (Pack)",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Cartoon Zombies Pack (Unity). Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:91366955a9d194d126a23096",
+          "url": null,
+          "name": "Cartoon Zombies Pack (Unity)",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Cartoon Zombies Pack (Unity). Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:78",
+          "url": "http://192.168.1.101:8090/purchases/6#item-78",
+          "name": "Combat Sounds Bundle Collection",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Combat Sounds Bundle Collection. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:954",
+          "url": "http://192.168.1.101:8090/purchases/75#item-954",
+          "name": "Doors",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Doors. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:859",
+          "url": "http://192.168.1.101:8090/purchases/72#item-859",
+          "name": "Dwarfs (Pack)",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Dwarfs_Pack (Unity) - Warrior animations. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:956",
+          "url": "http://192.168.1.101:8090/purchases/75#item-956",
+          "name": "Foley",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Foley. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:90",
+          "url": "http://192.168.1.101:8090/purchases/6#item-90",
+          "name": "Footsteps Sound Pack",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Footsteps Sound Pack. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:962",
+          "url": "http://192.168.1.101:8090/purchases/75#item-962",
+          "name": "Household Foley & Devices",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Household Foley & Devices. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:1009",
+          "url": "http://192.168.1.101:8090/purchases/77#item-1009",
+          "name": "INTERFACE - Apocalypse HUD",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects INTERFACE - Apocalypse HUD. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:f26d9b84b05168954a21cfaf",
+          "url": null,
+          "name": "Kenney Komplete / Blocky Characters",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/presentation-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Kenney Komplete / Blocky Characters. Selection does not establish import, active use, or license entitlement."
+            },
+            {
+              "path": "Game/Assets/Resources/FrontierPurchasedArt.json",
+              "url": null,
+              "kind": "runtime-config",
+              "detail": "Runtime Resources configuration names selected asset Zombie/advancedCharacter.fbx; native gameplay appearance has not been verified."
+            }
+          ]
+        },
+        {
+          "key": "local:d2ff4b1683e168b956ff3b67",
+          "url": "https://kenney.nl/",
+          "name": "Kenney Komplete / Blocky Characters (30 assets)",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/presentation-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Kenney Komplete / Blocky Characters (30 assets). Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:968",
+          "url": "http://192.168.1.101:8090/purchases/75#item-968",
+          "name": "Monsters, Boss & Zombies",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Monsters, Boss & Zombies. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:988",
+          "url": "http://192.168.1.101:8090/purchases/76#item-988",
+          "name": "POLY - Survival Character & Customizer",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/presentation-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Character & Customizer. Selection does not establish import, active use, or license entitlement."
+            },
+            {
+              "path": "Game/Assets/Editor/PrepareAshfallArt.cs",
+              "url": null,
+              "kind": "runtime-reference",
+              "detail": "Source references selected asset Survival/Female_Survival_Unity_SK.fbx; runtime appearance has not been verified."
+            },
+            {
+              "path": "Game/Assets/Resources/FrontierPurchasedArt.json",
+              "url": null,
+              "kind": "runtime-config",
+              "detail": "Runtime Resources configuration names selected asset Survival/Female_Survival_Unity_SK.fbx; native gameplay appearance has not been verified."
+            },
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Character & Customizer. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:1002",
+          "url": "http://192.168.1.101:8090/purchases/76#item-1002",
+          "name": "POLY - Survival Construction",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Construction. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:1001",
+          "url": "http://192.168.1.101:8090/purchases/76#item-1001",
+          "name": "POLY - Survival Food",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Food. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:999",
+          "url": "http://192.168.1.101:8090/purchases/76#item-999",
+          "name": "POLY - Survival Medical",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Medical. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:995",
+          "url": "http://192.168.1.101:8090/purchases/76#item-995",
+          "name": "POLY - Survival Melee Weapons",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Melee Weapons. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:998",
+          "url": "http://192.168.1.101:8090/purchases/76#item-998",
+          "name": "POLY - Survival Tools",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Tools. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:f2e7e8222946182279931d9a",
+          "url": "http://192.168.1.101:8090/folder/103557",
+          "name": "POLY - Survival Vehicles (Mega Vehicle Kit)",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Vehicles (Mega Vehicle Kit). Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:994",
+          "url": "http://192.168.1.101:8090/purchases/76#item-994",
+          "name": "POLY - Survival Workshop",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Survival Workshop. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:997",
+          "url": "http://192.168.1.101:8090/purchases/76#item-997",
+          "name": "POLY - Weapons Kit",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLY - Weapons Kit. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:1008",
+          "url": "http://192.168.1.101:8090/purchases/77#item-1008",
+          "name": "POLYGON - Shops Pack",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/presentation-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLYGON - Shops Pack. Selection does not establish import, active use, or license entitlement."
+            },
+            {
+              "path": "Game/Assets/Resources/FrontierPurchasedArt.json",
+              "url": null,
+              "kind": "runtime-config",
+              "detail": "Runtime Resources configuration names selected asset Shops/Generic_01_A.png; native gameplay appearance has not been verified."
+            },
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects POLYGON - Shops Pack. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:816",
+          "url": "http://192.168.1.101:8090/purchases/42#item-816",
+          "name": "SFX Warzone",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects SFX Warzone (Leartes Cosmos). Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:77",
+          "url": "http://192.168.1.101:8090/purchases/6#item-77",
+          "name": "Soundscapes of Chernobyl",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Soundscapes of Chernobyl. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:980",
+          "url": "http://192.168.1.101:8090/purchases/76#item-980",
+          "name": "Spline Builder Plugin",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Spline Builder Plugin. Selection does not establish import, active use, or license entitlement."
+            },
+            {
+              "path": "tools/playtest/restore_selection.py",
+              "url": null,
+              "kind": "runtime-reference",
+              "detail": "Source references selected asset SplineBuilderFooting/SM_StoneFoot.fbx; runtime appearance has not been verified."
+            }
+          ]
+        },
+        {
+          "key": "item:68",
+          "url": "http://192.168.1.101:8090/purchases/6#item-68",
+          "name": "Survival Sound Effects",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Survival Sound Effects. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:974",
+          "url": "http://192.168.1.101:8090/purchases/75#item-974",
+          "name": "Swing & Dash",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Swing & Dash. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:976",
+          "url": "http://192.168.1.101:8090/purchases/75#item-976",
+          "name": "Ui Clicks",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Ui Clicks. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:13e2d2d8e102b0f57d6f4230",
+          "url": "https://www.humblebundle.com/home/library",
+          "name": "Ultimate SFX for Games - Doors",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Doors. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:c35ef24e7ec431c94e41714b",
+          "url": "https://www.humblebundle.com/home/library",
+          "name": "Ultimate SFX for Games - Foley",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Foley. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:e3b3a422b312d89412c11d7b",
+          "url": "https://www.humblebundle.com/home/library",
+          "name": "Ultimate SFX for Games - Household Foley & Devices",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Household Foley & Devices. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:fd7b74180fc663c0b8d0bb36",
+          "url": "https://www.humblebundle.com/home/library",
+          "name": "Ultimate SFX for Games - Monsters, Boss & Zombies",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Monsters, Boss & Zombies. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:6f274034ca6a950b9860edcf",
+          "url": "https://www.humblebundle.com/home/library",
+          "name": "Ultimate SFX for Games - Swing & Dash",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Swing & Dash. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "local:3744c8b1678751d6b469ce27",
+          "url": "https://www.humblebundle.com/home/library",
+          "name": "Ultimate SFX for Games - Ui Clicks",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Ultimate SFX for Games - Ui Clicks. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:92",
+          "url": "http://192.168.1.101:8090/purchases/6#item-92",
+          "name": "Weapon Sound Pack Vol 1 & 2",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Weapon Sound Pack Vol 1 & 2. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        },
+        {
+          "key": "item:438",
+          "url": "http://192.168.1.101:8090/purchases/29#item-438",
+          "name": "WOOD UI ELEMENTS",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/presentation-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects WOOD UI ELEMENTS. Selection does not establish import, active use, or license entitlement."
+            },
+            {
+              "path": "Game/Assets/Resources/FrontierPurchasedArt.json",
+              "url": null,
+              "kind": "runtime-config",
+              "detail": "Runtime Resources configuration names selected asset UI/Button.png; native gameplay appearance has not been verified."
+            }
+          ]
+        },
+        {
+          "key": "item:88",
+          "url": "http://192.168.1.101:8090/purchases/6#item-88",
+          "name": "Zombie Sound Pack",
+          "status": "observed",
+          "evidence": [
+            {
+              "path": "ContentSource/Art/zomboid-selection.json",
+              "url": null,
+              "kind": "declared-selection",
+              "detail": "Project manifest selects Zombie Sound Pack. Selection does not establish import, active use, or license entitlement."
+            }
+          ]
+        }
+      ],
+      "acceptance": [
+        {
+          "id": "native-presentation",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Audit source and identity",
+          "body": "Repository securelyprogramming/unity-ashfall-county; HEAD 5251209fc79280f28151027f77ac8eab30893330. Selected source is hash-pinned in Docs/planning/source-audit.json."
+        }
+      ]
+    },
+    {
+      "id": "persistence",
+      "kind": "save",
+      "title": "Progress and save boundary",
+      "status": "unresolved",
+      "summary": "Current save/progression interfaces require verification before changing schema, checkpoints or player profiles.",
+      "parentId": null,
+      "tier": "primary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-persistence",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Audit source and identity",
+          "body": "Repository securelyprogramming/unity-ashfall-county; HEAD 5251209fc79280f28151027f77ac8eab30893330. Selected source is hash-pinned in Docs/planning/source-audit.json."
+        }
+      ]
+    },
+    {
+      "id": "input",
+      "kind": "input",
+      "title": "Input",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "gameplay",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-input",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Unity/AshfallGame.cs:71 (SHA256 673d6d129eb3eb2848487570b42a86b078a09666a8bfff3009b418e88c3b3852)\nInputAction move, look, run, sneak, aim, attack, shove, interact, context, inventory, community, mapKey, missions, companion, throwKey, pause, reload, light, zoomAxis, cancel;"
+        }
+      ]
+    },
+    {
+      "id": "locomotion",
+      "kind": "locomotion",
+      "title": "Locomotion",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "gameplay",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-locomotion",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/SaveCodec.cs:26 (SHA256 141a05955be06a035bf63ab5d4397c0d393e14f93214119ecb40cb204e006c9f)\nif (File.Exists(path)) File.Replace(temp, path, null); else File.Move(temp, path);\n\nGame/Assets/Ashfall/Core/SimZombies.cs:47 (SHA256 20179f4a8b670e91b570f9ee6d86d4c59916741e918b533ab8f33377387788f2)\nif (MoveTo(z, z.target, z.speed * .45f, dt) || z.timer <= 0) { z.state = ZombieState.Idle; z.timer = world.rng.Range(4, 16); }\n\nGame/Assets/Ashfall/Unity/ActorView.cs:17 (SHA256 ec539ea88008d63a438ef5772e629609e174c31713d7d5dc5fd41e5833b198ee)\nfloat phase, lying, swing; Vector3 velocity, ground; string heldId = \"\"; bool animated, wasAttacking;\n\nGame/Assets/Ashfall/Unity/AshfallGame.cs:131 (SHA256 673d6d129eb3eb2848487570b42a86b078a09666a8bfff3009b418e88c3b3852)\ntry { Prefs.zoom = zoom; if (Gameplay != null) Prefs.bindings = Gameplay.SaveBindingOverridesAsJson(); File.WriteAllText(prefsPath + \".tmp\", JsonUtility.ToJson(Prefs, true)); if (File.Exists(prefsPath)) File.Delete(prefsPath); File.Move(prefsPath + \".tmp\", prefsPath); }"
+        }
+      ]
+    },
+    {
+      "id": "combat",
+      "kind": "combat",
+      "title": "Combat",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "gameplay",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-combat",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Actors.cs:129 (SHA256 bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630)\npublic enum ZombieState : byte { Idle, Wander, Investigate, Chase, Attack, Thump, Climb, Knocked, Dead, Lunge, Eating }\n\nGame/Assets/Ashfall/Core/Bestiary.cs:16 (SHA256 404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433)\npublic float hp = 1.2f, speedScale = 1, damageScale = 1, scale = 1;\n\nGame/Assets/Ashfall/Core/BestiaryHordes.cs:75 (SHA256 dd642e9b4fa311e68ad10ca768c43acb44def7d47639958b046f80c599f7450c)\nstatic bool Busy(Zombie z) { return z.act != FreakAct.None || z.state == ZombieState.Chase || z.state == ZombieState.Attack || z.state == ZombieState.Thump || z.state == ZombieState.Climb || z.state == ZombieState.Knocked || z.state == ZombieState.Lunge; }\n\nGame/Assets/Ashfall/Core/GenLandmarks.cs:171 (SHA256 a5e6d92d6e0f415f4491fa85f607771eb7e15bb8e1403ded12fd0ec8cf18f196)\nvoid Runners(List<Prop> cars) { foreach (var c in cars) c.hp = .45f + .55f * rng.Float(); }"
+        }
+      ]
+    },
+    {
+      "id": "inventory",
+      "kind": "inventory",
+      "title": "Inventory",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "gameplay",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-inventory",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Actors.cs:84 (SHA256 bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630)\npublic int kills, primary = -1, secondary = -1;   // item uids in inventory\n\nGame/Assets/Ashfall/Core/Bestiary.cs:352 (SHA256 404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433)\nif (ItemCatalog.Exists(\"plague_sample\"))\n\nGame/Assets/Ashfall/Core/Community.cs:39 (SHA256 f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706)\npublic Resource resource; public int amount;                // Supply: stock delivered; Defend/Hunt: kills needed\n\nGame/Assets/Ashfall/Core/CommunityMissions.cs:88 (SHA256 f65de3b7fd761520ce527d643327d6971a892995d9a1095e6c081bce42b14b03)\nw.community.stock[(int)m.resource] -= m.amount;"
+        }
+      ]
+    },
+    {
+      "id": "story",
+      "kind": "story",
+      "title": "Story",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "gameplay",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-story",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Community.cs:330 (SHA256 f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706)\nvoid Story()\n\nGame/Assets/Ashfall/Core/HumansSetup.cs:156 (SHA256 20343a61ef75c13116fe49b5c7dd44a79ff7dd2276c3b095d6e95b7864463e96)\ns.inventory.items.RemoveAll(i => i.def == \"county_map\" || i.def == \"radio\");   // the radio story is for the community\n\nGame/Assets/Ashfall/Core/Simulation.cs:49 (SHA256 e511c47455dac48dbe3ad5572afdfaa8baa770ba1d058d04069723607590333e)\nStory();"
+        }
+      ]
+    },
+    {
+      "id": "save-storage",
+      "kind": "save",
+      "title": "Save",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "persistence",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-save-storage",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Bestiary.cs:141 (SHA256 404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433)\nif (version > BestiaryVersion) throw new InvalidDataException(\"Save bestiary section is newer than this build.\");\n\nGame/Assets/Ashfall/Core/Community.cs:320 (SHA256 f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706)\nn = b.ReadInt32(); if (n != survivors.Count) throw new InvalidDataException(\"Save community does not match its survivors.\");\n\nGame/Assets/Ashfall/Core/Humans.cs:226 (SHA256 15510e52c15bab758d9ecac52ac48f1c9b3e7fcbb97121f9725207842a8db90c)\nif (f.id != i) throw new InvalidDataException(\"Save factions are out of order.\");\n\nGame/Assets/Ashfall/Core/SaveCodec.cs:19 (SHA256 141a05955be06a035bf63ab5d4397c0d393e14f93214119ecb40cb204e006c9f)\npublic static void Save(World w, string path)"
+        }
+      ]
+    },
+    {
+      "id": "audio",
+      "kind": "audio",
+      "title": "Audio",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "presentation",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-audio",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Unity/AshfallAudio.cs:18 (SHA256 4cb706f233c9828123a130b070afdca5b29fcac23f56965691c53514b9fc9fc8)\nreadonly Dictionary<string, AudioClip[]> clips = new Dictionary<string, AudioClip[]>();"
+        }
+      ]
+    },
+    {
+      "id": "ui",
+      "kind": "ui",
+      "title": "Ui",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "presentation",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-ui",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Unity/AshfallHud.cs:32 (SHA256 84ccc96b1b3e4bc0754a27cc95fbec3e513bbe74097df1a03f0edf7121af21d8)\nRectTransform card, plagueRow, mateCard, chipRow, zoneCard, bannerRoot, mini, miniMarkers, plateLayer, hotbar, actionBar, deathNotice, reticle;\n\nGame/Assets/Ashfall/Unity/AshfallHudPlates.cs:15 (SHA256 23fa704593342fb9ea943e7216dd34a2bf49d299d66ace37f5726a5a95e43403)\npublic RectTransform r; public CanvasGroup group; public TextMeshProUGUI name, sub; public readonly Image[] skulls = new Image[5];\n\nGame/Assets/Ashfall/Unity/AshfallPanels.cs:17 (SHA256 ca24354aa76fbdefe43395a7f369d59962e957f62c3d40897d5f927f5e5d1781)\nRectTransform invPlayer, invLoot, invTabs, invActions, contextList, mapImageRoot, mapLegend;\n\nGame/Assets/Ashfall/Unity/AshfallPanelsCommunity.cs:15 (SHA256 154d116c48f93a055e91538ffda2b329e123bb040bae148c88b1d5ae0ccddaa4)\nRectTransform commTabs, commRoster, commDetail, commBase, commWorkshop, commMembersPage, commBasePage, commWorkshopPage;"
+        }
+      ]
+    },
+    {
+      "id": "menus",
+      "kind": "menus",
+      "title": "Menus",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "presentation",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-menus",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Unity/AshfallGame.cs:51 (SHA256 673d6d129eb3eb2848487570b42a86b078a09666a8bfff3009b418e88c3b3852)\npublic bool Paused { get; set; }\n\nGame/Assets/Ashfall/Unity/AshfallSurvivalActions.cs:58 (SHA256 434a3c75e9091515e558c89a3d885069601a6d396be4025a9c8a872566c12980)\nelse if (World.Hostile(s, o)) continue;   // no menu for people trying to kill you\n\nGame/Assets/Ashfall/Unity/AshfallUI.cs:26 (SHA256 84b420708919cec225f8926390b55645b2748572f63e4f3dc2d8d965d2c255d4)\npublic bool BlocksGameplay { get { return open.Count > 0 || (pause != null && pause.gameObject.activeSelf) || game.Paused || (ending != null && ending.gameObject.activeSelf); } }"
+        }
+      ]
+    },
+    {
+      "id": "progression",
+      "kind": "progression",
+      "title": "Progression",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "persistence",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-progression",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Actors.cs:89 (SHA256 bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630)\npublic float[] xp = new float[Enum.GetValues(typeof(Skill)).Length];\n\nGame/Assets/Ashfall/Core/Crafting.cs:19 (SHA256 d0ac3de00b23bce3aeeb0bbc40188a91e48e2b5864f409056477f56cb1c58178)\npublic float xp = 4; public Skill skill = Skill.Carpentry;\n\nGame/Assets/Ashfall/Core/SaveCodec.cs:250 (SHA256 141a05955be06a035bf63ab5d4397c0d393e14f93214119ecb40cb204e006c9f)\nb.Write(s.xp.Length); for (int i = 0; i < s.xp.Length; i++) { b.Write(s.xp[i]); b.Write(s.level[i]); }\n\nGame/Assets/Ashfall/Core/SimCommands.cs:461 (SHA256 0ae86c5048e16673ee279043e5fd5cfd3c3b3488c58bfbd3d4ef5bba6d3566c9)\nGainXp(s, r.skill, r.xp); world.Emit(EventKind.Craft, s.pos, s.id, r.name);"
+        }
+      ]
+    },
+    {
+      "id": "npc",
+      "kind": "npc",
+      "title": "Npc",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "world",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-npc",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Actors.cs:69 (SHA256 bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630)\npublic sealed partial class Survivor\n\nGame/Assets/Ashfall/Core/Bestiary.cs:105 (SHA256 404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433)\npublic Vec2 actDir; public int grabbed = -1; // juggernaut: survivor held\n\nGame/Assets/Ashfall/Core/Community.cs:33 (SHA256 f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706)\npublic string title = \"\", description = \"\", giver = \"\";   // giver: character key or faction name\n\nGame/Assets/Ashfall/Core/CommunityMissions.cs:48 (SHA256 f65de3b7fd761520ce527d643327d6971a892995d9a1095e6c081bce42b14b03)\nvoid AcceptMission(Survivor s, int id)"
+        }
+      ]
+    },
+    {
+      "id": "vehicles",
+      "kind": "vehicles",
+      "title": "Vehicles",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "world",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-vehicles",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Actors.cs:95 (SHA256 bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630)\npublic int vehicle = -1;        // vehicle the survivor is driving (inVehicle mirrors it)\n\nGame/Assets/Ashfall/Core/Bestiary.cs:238 (SHA256 404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433)\nif (!s.alive || s.offscreen || s.vehicle >= 0 || Vec2.Distance(s.pos, h.pos) > h.radius) continue;\n\nGame/Assets/Ashfall/Core/Community.cs:334 (SHA256 f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706)\nBroadcast(\"radio-2\", since > 2, \"Ada again. Rucksacks of food, meds, ammo, materials and fuel keep a group alive. Carry them home or load a car trunk and park at your base. Build what you need: an infirmary, a workshop, a watchtower.\");\n\nGame/Assets/Ashfall/Core/GenLandmarks.cs:160 (SHA256 a5e6d92d6e0f415f4491fa85f607771eb7e15bb8e1403ded12fd0ec8cf18f196)\nvar cars = new List<Prop>();"
+        }
+      ]
+    },
+    {
+      "id": "weather",
+      "kind": "weather",
+      "title": "Weather",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "world",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-weather",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Crafting.cs:103 (SHA256 d0ac3de00b23bce3aeeb0bbc40188a91e48e2b5864f409056477f56cb1c58178)\nRetired(\"rain_collector\", \"Rain Collector\", \"Water no longer needs collecting.\"),\n\nGame/Assets/Ashfall/Core/Simulation.cs:48 (SHA256 e511c47455dac48dbe3ad5572afdfaa8baa770ba1d058d04069723607590333e)\nWeather(hours);\n\nGame/Assets/Ashfall/Core/World.cs:38 (SHA256 959aa119660083055ccf47016f4dc1d79435e604cba97d910c2e5a2dde09e03c)\nMessage, Swing, Hit, Kill, Gunshot, Empty, Groan, Door, Glass, Thump, Hurt, Bite, Death, Craft, Eat, Drink, LevelUp, Radio, Helicopter, Footstep, Shove, Break, Barricade, Evacuated, Fire, Rain, Engine, Crash,\n\nGame/Assets/Ashfall/Unity/AshfallAudio.cs:20 (SHA256 4cb706f233c9828123a130b070afdca5b29fcac23f56965691c53514b9fc9fc8)\nAudioSource music, musicNext, wind, crickets, rain, river, ui, engine;"
+        }
+      ]
+    },
+    {
+      "id": "dialogue",
+      "kind": "dialogue",
+      "title": "Dialogue",
+      "status": "unresolved",
+      "summary": "Candidate source matches for this concern; lexical matches alone do not establish a distinct active system or behavior. For example, a Save/WriteAllText match may be diagnostics rather than player persistence. Review ownership and native behavior before implementation changes.",
+      "parentId": "gameplay",
+      "tier": "secondary",
+      "dependencies": [],
+      "interfaces": [],
+      "events": [],
+      "assets": [],
+      "acceptance": [
+        {
+          "id": "native-dialogue",
+          "text": "Verify the documented behavior in the selected native development build; record build identity, expected/actual outcome and rejection cases before marking this system passed.",
+          "status": "pending",
+          "evidence": []
+        }
+      ],
+      "promptSections": [
+        {
+          "title": "Source observations, not runtime acceptance",
+          "body": "Game/Assets/Ashfall/Core/Humans.cs:56 (SHA256 15510e52c15bab758d9ecac52ac48f1c9b3e7fcbb97121f9725207842a8db90c)\npublic string[] lines = new string[0];           // talk lines (Greeting picks one by day)\n\nGame/Assets/Ashfall/Core/HumansTalk.cs:115 (SHA256 c3044760b85458d6f234a9f20b374f8d0f6fc8741158958ce5b08f3bf9755655)\ncase CommandKind.Talk:\n\nGame/Assets/Ashfall/Core/SimHumans.cs:229 (SHA256 609ef13f3175236dae6f2d1a7a0a1055f56a1ec064d1f080a559142e19124555)\nworld.Emit(EventKind.Talk, s.pos, s.id, s.name + \": \" + line);\n\nGame/Assets/Ashfall/Core/World.cs:41 (SHA256 959aa119660083055ccf47016f4dc1d79435e604cba97d910c2e5a2dde09e03c)\nRecruit, Facility, Mission, Morale, Influence, Switch, Talk, Trade, Siege, Legacy"
+        }
+      ]
+    }
+  ],
+  "connections": [],
+  "questions": [
+    "Which native build and source snapshot should provide acceptance evidence for the currently declared sections?",
+    "Which source-observed interfaces need explicit payload contracts before parallel implementation?",
+    "Which owned-asset candidates have current import, license and runtime binding checks, beyond selection evidence?"
+  ],
+  "releaseGates": [
+    {
+      "id": "originality-rights",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "complete-loop",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "controls-accessibility",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "save-migration",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "multiplayer",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "build-platform",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "quality-performance",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "steam-integration",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "store-review",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    },
+    {
+      "id": "privacy-security",
+      "status": "pending",
+      "notes": "",
+      "evidence": []
+    }
+  ]
+}
