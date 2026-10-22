@@ -1,0 +1,841 @@
+{
+  "schemaVersion": 1,
+  "gameId": "ashfall-county",
+  "canonicalGameIdentifier": "52ce9a56-648b-4c13-9b2e-1a90cffd0be0--ashfall-county",
+  "scope": "game:52ce9a56-648b-4c13-9b2e-1a90cffd0be0--ashfall-county",
+  "sourceIdentity": {
+    "repository": "securelyprogramming/unity-ashfall-county",
+    "head": "5251209fc79280f28151027f77ac8eab30893330",
+    "branch": "main",
+    "dirtyPaths": [
+      "M AGENTS.md",
+      " M CLAUDE.md",
+      " M Game/Assets/Ashfall/Unity/AshfallGame.Present.cs",
+      " M Game/Assets/Ashfall/Unity/AshfallGame.cs",
+      " M Game/Assets/Editor/Branding/GameAppIcon.png.meta",
+      " M Game/ProjectSettings/ProjectSettings.asset",
+      "?? Game/Assets/Ashfall/Core/Bestiary.cs.meta",
+      "?? Game/Assets/Ashfall/Core/BestiaryHordes.cs.meta",
+      "?? Game/Assets/Ashfall/Core/BestiarySetup.cs.meta",
+      "?? Game/Assets/Ashfall/Core/Community.cs.meta",
+      "?? Game/Assets/Ashfall/Core/CommunityMissions.cs.meta",
+      "?? Game/Assets/Ashfall/Core/Farming.cs.meta",
+      "?? Game/Assets/Ashfall/Core/GenLandmarks.cs.meta",
+      "?? Game/Assets/Ashfall/Core/Humans.cs.meta",
+      "?? Game/Assets/Ashfall/Core/HumansSetup.cs.meta",
+      "?? Game/Assets/Ashfall/Core/HumansTalk.cs.meta",
+      "?? Game/Assets/Ashfall/Core/SimCommunity.cs.meta",
+      "?? Game/Assets/Ashfall/Core/SimFreaks.cs.meta",
+      "?? Game/Assets/Ashfall/Core/SimHumans.cs.meta",
+      "?? Game/Assets/Ashfall/Core/SimSurvival.cs.meta",
+      "?? Game/Assets/Ashfall/Core/SimZombieCombat.cs.meta",
+      "?? Game/Assets/Ashfall/Core/Traits.cs.meta",
+      "?? Game/Assets/Ashfall/Core/Vehicles.cs.meta",
+      "?? Game/Assets/Ashfall/Core/WorldEvents.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/AshfallGame.Debug.cs",
+      "?? Game/Assets/Ashfall/Unity/AshfallGame.Debug.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/AshfallGame.Present.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/AshfallHud.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/AshfallHudPlates.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/AshfallPanelsCommunity.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/AshfallPanelsMissions.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/AshfallSurvivalActions.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/AshfallTraits.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/Fx.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/UiCommunityApi.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/UiData.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/UiEvents.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/UiFade.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/UiMapRender.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/UiNewGame.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/VehicleView.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/ViewGrade.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/ViewHearts.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/ViewPropMeshes.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/ViewWorldEvents.cs.meta",
+      "?? Game/Assets/Ashfall/Unity/WorkbenchDebug.cs",
+      "?? Game/Assets/Ashfall/Unity/WorkbenchDebug.cs.meta",
+      "?? Game/Assets/Resources/Ashfall/AshfallFxAdditive.shader.meta",
+      "?? Game/Assets/Resources/Ashfall/AshfallFxAlpha.shader.meta",
+      "?? Game/Assets/Resources/Ashfall/AshfallGrade.shader.meta",
+      "?? Game/Assets/Resources/Ashfall/AshfallZone.shader.meta",
+      "?? game-workbench.assets.json",
+      "?? game-workbench.builder.json"
+    ],
+    "sourceSnapshotAt": "2026-10-21T23:47:58.170Z"
+  },
+  "generatedFromCachedSnapshot": true,
+  "sourceFiles": [
+    {
+      "path": "game-workbench.json",
+      "sha256": "39d423553a3cb1f608928ab30450fd89611fc7fcc0117e5bc76f051f1847f7c0"
+    },
+    {
+      "path": "game-design.json",
+      "sha256": "ebecaa0f380c117564043e8a52d2bdad9bbbc0a4807dcb0abff41aadf1445e36"
+    },
+    {
+      "path": "stage-catalog.json",
+      "sha256": "e8c994c3d1c24125515d8e71b236795b27e3a559563156f601af86e2cf0934cb"
+    },
+    {
+      "path": "game-workbench.assets.json",
+      "sha256": "0909da6384a616bba92c3117756cae39cb6a95374d4b0ca5a23de2d65b30cbe5"
+    },
+    {
+      "path": "game-workbench.builder.json",
+      "sha256": "8789449c416dfd6ed2ece4f8f044723efa21b1bc7466c9e74989171c8d1bb3ae"
+    },
+    {
+      "path": "playtest.build.json",
+      "sha256": "01ee3d54088ee0d45ce3a568e066c15e5b9b13a299c71ce0705663929bf31264"
+    },
+    {
+      "path": "README.md",
+      "sha256": "b6a85e9b7bcb407c426735fae38b952cb884fd998511c98908a2e83967740df3"
+    },
+    {
+      "path": "ContentSource/campaign.json",
+      "sha256": "78325a97aaf4d360209aed58d3322702db05c48b24ba7c130e4b209f47ed24e1"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Actors.cs",
+      "sha256": "bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Bestiary.cs",
+      "sha256": "404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/BestiaryHordes.cs",
+      "sha256": "dd642e9b4fa311e68ad10ca768c43acb44def7d47639958b046f80c599f7450c"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/BestiarySetup.cs",
+      "sha256": "6e40b155f6c574dea83b6547d9685b3b957cc1548dae8477a41f12a5839c041a"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Community.cs",
+      "sha256": "f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/CommunityMissions.cs",
+      "sha256": "f65de3b7fd761520ce527d643327d6971a892995d9a1095e6c081bce42b14b03"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Crafting.cs",
+      "sha256": "d0ac3de00b23bce3aeeb0bbc40188a91e48e2b5864f409056477f56cb1c58178"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Farming.cs",
+      "sha256": "8e4f9584403d39eb261b2e00b832003b57f5e564c76cc4dfb33f5642f8b6c953"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/GenLandmarks.cs",
+      "sha256": "a5e6d92d6e0f415f4491fa85f607771eb7e15bb8e1403ded12fd0ec8cf18f196"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Humans.cs",
+      "sha256": "15510e52c15bab758d9ecac52ac48f1c9b3e7fcbb97121f9725207842a8db90c"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/HumansSetup.cs",
+      "sha256": "20343a61ef75c13116fe49b5c7dd44a79ff7dd2276c3b095d6e95b7864463e96"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/HumansTalk.cs",
+      "sha256": "c3044760b85458d6f234a9f20b374f8d0f6fc8741158958ce5b08f3bf9755655"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Items.cs",
+      "sha256": "795f530670814dc273e2e1174cad932f3391c8743964b6ae04fa46b9b97058ea"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Loot.cs",
+      "sha256": "5888eaa7b46ce2b7fda1a0899f550a736972c5958fb4c320dc0301beb9bf4777"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Map.cs",
+      "sha256": "ff4a16ec5b56632aa1501d04eaa7cde6c6061fdb95b29c90c6f5f5ba78478484"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Pathfinding.cs",
+      "sha256": "596bc3a96941cd0b15c0de2fd3f5f8e2d1d4dba16f494b0d4f8fbf0b86a0195c"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Primitives.cs",
+      "sha256": "4c3b1411e7327a277910d2fcc38baeae2aba3c1053dc09eedb3549809066f6ba"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SaveCodec.cs",
+      "sha256": "141a05955be06a035bf63ab5d4397c0d393e14f93214119ecb40cb204e006c9f"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimCombat.cs",
+      "sha256": "892660d0cff6a2a05955e327e5b06bd71fec8b078226c7c52d761b214043ae87"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimCommands.cs",
+      "sha256": "0ae86c5048e16673ee279043e5fd5cfd3c3b3488c58bfbd3d4ef5bba6d3566c9"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimCommunity.cs",
+      "sha256": "ccccc0a50843cb22285826e33c2a36394df4de59c74e962ac886f2cd16a0d556"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimFreaks.cs",
+      "sha256": "c8a3c8a648698ceb0d7d222c180325b3003792edf20fff78aacc0507af887909"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimHumans.cs",
+      "sha256": "609ef13f3175236dae6f2d1a7a0a1055f56a1ec064d1f080a559142e19124555"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimSurvival.cs",
+      "sha256": "a98c627914a8d587788112b48bf277908b7cd9445947b77291d94c48aaf47362"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimSurvivor.cs",
+      "sha256": "f64997ac0a3dbbb26ffaead80b7c5fecdd3a94d504dc978b1de7fc505a2f3ebc"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimZombieCombat.cs",
+      "sha256": "29b38b7ebfec2f07e867533e47ceea31d83dcbf7339265cd660c30470d3f25aa"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/SimZombies.cs",
+      "sha256": "20179f4a8b670e91b570f9ee6d86d4c59916741e918b533ab8f33377387788f2"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Simulation.cs",
+      "sha256": "e511c47455dac48dbe3ad5572afdfaa8baa770ba1d058d04069723607590333e"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Traits.cs",
+      "sha256": "4e9b1a848ec78aaeffcbf1d625526d53648e092a2b7e7e7946115e76a70f2e86"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/Vehicles.cs",
+      "sha256": "aae4bf6be6a16269d8abb19313260c63d150d0171d285e704e05d98626b63a07"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/World.cs",
+      "sha256": "959aa119660083055ccf47016f4dc1d79435e604cba97d910c2e5a2dde09e03c"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/WorldEvents.cs",
+      "sha256": "66c600ace8f9ba7ea588e13b1d35c5d5f5124c0b6b931a3e27e5ddef99f5510e"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Core/WorldGen.cs",
+      "sha256": "7726848b9ddcf17b6f48e93f57d3b2f5889d7be3f3f62b180ef390dcc2905a67"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/ActorView.cs",
+      "sha256": "ec539ea88008d63a438ef5772e629609e174c31713d7d5dc5fd41e5833b198ee"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/ArtLibrary.cs",
+      "sha256": "fe2dc9ad447711d93db5d537971882e735cc1c37de0c4964d1afa422886759f4"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallAudio.cs",
+      "sha256": "4cb706f233c9828123a130b070afdca5b29fcac23f56965691c53514b9fc9fc8"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallGame.Present.cs",
+      "sha256": "12badb635351aa0b8f1e460a7b0dae592a91015651e928e2fa3fefc5f3d0bc90"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallGame.cs",
+      "sha256": "673d6d129eb3eb2848487570b42a86b078a09666a8bfff3009b418e88c3b3852"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallHud.cs",
+      "sha256": "84ccc96b1b3e4bc0754a27cc95fbec3e513bbe74097df1a03f0edf7121af21d8"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallHudPlates.cs",
+      "sha256": "23fa704593342fb9ea943e7216dd34a2bf49d299d66ace37f5726a5a95e43403"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallInteract.cs",
+      "sha256": "282695887a0e5fdb15042eaf5466f83a94a8a6539a6795b91c0986bc53c521db"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallPanels.cs",
+      "sha256": "ca24354aa76fbdefe43395a7f369d59962e957f62c3d40897d5f927f5e5d1781"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallPanelsCommunity.cs",
+      "sha256": "154d116c48f93a055e91538ffda2b329e123bb040bae148c88b1d5ae0ccddaa4"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallPanelsMissions.cs",
+      "sha256": "36f67124471823292906a81e3f016eb9e785879ed8b4f57b1b89b965a170a925"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallQA.cs",
+      "sha256": "de2d00f882210b30801244b91a32c969c721a06b0eed687fa111dfcdfbed680f"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallSurvivalActions.cs",
+      "sha256": "434a3c75e9091515e558c89a3d885069601a6d396be4025a9c8a872566c12980"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallTraits.cs",
+      "sha256": "ef3de0f33c199aeab9d619ed0d43355c684f282529728a5bfe5df445aae237ce"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/AshfallUI.cs",
+      "sha256": "84b420708919cec225f8926390b55645b2748572f63e4f3dc2d8d965d2c255d4"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/Fx.cs",
+      "sha256": "1cfd314be73ba4f6e90cd67d17a53eca1062211c4ce6ef945faa54d50c3849ab"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/MeshKit.cs",
+      "sha256": "c68c16f400961ff1fca16053bc64cd1c5de1de6a9a234d221fb4c5e07cb94794"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/UIKit.cs",
+      "sha256": "a2b1d9f98d26c425f29c5be8b0512dab4ba8880f3f02496fd20adb36aeeeb2ff"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/UiCommunityApi.cs",
+      "sha256": "5a5235fd6a6b485ce751efdd883df4608bf66ad91fee3581d5881cac03d85208"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/UiData.cs",
+      "sha256": "e1405f903f32178be1345662146dc5e54f0396dbb4744cc48943cd3e7079a90c"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/UiEvents.cs",
+      "sha256": "367a793f7bd3e2c1d7b348aead7a19e0c23dd234280f4a97d20c783af1a309ce"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/UiFade.cs",
+      "sha256": "3f5db98ccc07d6906a9a9f33f34f507ad0639437219232743201435033563a0a"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/UiMapRender.cs",
+      "sha256": "9fd363cf67b4bbeb310b14817fc51e80e931cefa505bb4c91a87efc289a9ae58"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/UiNewGame.cs",
+      "sha256": "39135a9a6badd406e0758441aab89123b16d320d5159375683ec5463d8ed8006"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/VehicleView.cs",
+      "sha256": "b14201ca8eae4eb0561d28c3b34c643a5d607667f842609b1edf5e032d3d29ea"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/ViewGrade.cs",
+      "sha256": "1db42541b38ea53c391b79ee99b393719655564d1e1d6b29e26f15ece828a893"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/ViewHearts.cs",
+      "sha256": "d48c6419569fcb758867f916ec1631a37991152b2bd69e4a634427010dc5cf01"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/ViewPropMeshes.cs",
+      "sha256": "216798a46f9757657331bc46300434a8efa56a0c8d6815089ff28b5b6395613b"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/ViewWorldEvents.cs",
+      "sha256": "801f519c5d9e33d5bbef145038baa3b186b0d9a8f8d77514dd176dd0ca4a3a33"
+    },
+    {
+      "path": "Game/Assets/Ashfall/Unity/WorldView.cs",
+      "sha256": "cd266e53be1e34ca14c1ab12bffb194a09d1ffe26ec053faa79adc7487baf19a"
+    },
+    {
+      "path": "Game/Assets/Resources/FrontierDefault.txt",
+      "sha256": "d131dc6956fd982baccef68a49d95d88811e007d538df485cb856ef9903eaf60"
+    },
+    {
+      "path": "Game/Assets/Resources/FrontierProfiles.json",
+      "sha256": "22f9438021db0b8f6cefa7cd8b2297da439df23e9663500efe87874d661f859b"
+    },
+    {
+      "path": "AGENTS.md",
+      "sha256": "0ad3b90c78dc6d958ed25b2912213a347f3bb0950a6cd955a40bae43c476609a"
+    }
+  ],
+  "centralBaseline": {
+    "worldRevision": null,
+    "systemRevision": null,
+    "worldDocumentSha256": "fe4f1e2ecbe3b160ca224f67a85d1297c5cbcfbb874e61f6fd4ad952e5ad4bed",
+    "systemsDocumentSha256": "e59018c0138311d42fa2a4c08c7370c2361b23cad532bd04c22448ffe06af897"
+  },
+  "evidencePolicy": "Source observations and candidate lexical matches only. Existing central acceptance evidence is preserved, not rerun or promoted. No credentials or licensed payloads are included.",
+  "world": {
+    "levels": [
+      {
+        "levelId": "ashfall-county",
+        "path": "Game/Assets/Ashfall/Core/WorldGen.cs",
+        "sha256": "7726848b9ddcf17b6f48e93f57d3b2f5889d7be3f3f62b180ef390dcc2905a67",
+        "line": 47,
+        "evidenceKind": "source-definition",
+        "detail": "Current source/config declares this named section; geometry and native acceptance are separate."
+      }
+    ],
+    "geometry": "Empty unverified schematic containers; no fabricated spatial mapping."
+  },
+  "systems": [
+    {
+      "systemId": "input",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallGame.cs",
+          "sha256": "673d6d129eb3eb2848487570b42a86b078a09666a8bfff3009b418e88c3b3852",
+          "line": 71,
+          "excerpt": "InputAction move, look, run, sneak, aim, attack, shove, interact, context, inventory, community, mapKey, missions, companion, throwKey, pause, reload, light, zoomAxis, cancel;"
+        }
+      ]
+    },
+    {
+      "systemId": "locomotion",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/SaveCodec.cs",
+          "sha256": "141a05955be06a035bf63ab5d4397c0d393e14f93214119ecb40cb204e006c9f",
+          "line": 26,
+          "excerpt": "if (File.Exists(path)) File.Replace(temp, path, null); else File.Move(temp, path);"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/SimZombies.cs",
+          "sha256": "20179f4a8b670e91b570f9ee6d86d4c59916741e918b533ab8f33377387788f2",
+          "line": 47,
+          "excerpt": "if (MoveTo(z, z.target, z.speed * .45f, dt) || z.timer <= 0) { z.state = ZombieState.Idle; z.timer = world.rng.Range(4, 16); }"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Unity/ActorView.cs",
+          "sha256": "ec539ea88008d63a438ef5772e629609e174c31713d7d5dc5fd41e5833b198ee",
+          "line": 17,
+          "excerpt": "float phase, lying, swing; Vector3 velocity, ground; string heldId = \"\"; bool animated, wasAttacking;"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallGame.cs",
+          "sha256": "673d6d129eb3eb2848487570b42a86b078a09666a8bfff3009b418e88c3b3852",
+          "line": 131,
+          "excerpt": "try { Prefs.zoom = zoom; if (Gameplay != null) Prefs.bindings = Gameplay.SaveBindingOverridesAsJson(); File.WriteAllText(prefsPath + \".tmp\", JsonUtility.ToJson(Prefs, true)); if (File.Exists(prefsPath)) File.Delete(prefsPath); File.Move(prefsPath + \".tmp\", prefsPath); }"
+        }
+      ]
+    },
+    {
+      "systemId": "combat",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Actors.cs",
+          "sha256": "bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630",
+          "line": 129,
+          "excerpt": "public enum ZombieState : byte { Idle, Wander, Investigate, Chase, Attack, Thump, Climb, Knocked, Dead, Lunge, Eating }"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Bestiary.cs",
+          "sha256": "404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433",
+          "line": 16,
+          "excerpt": "public float hp = 1.2f, speedScale = 1, damageScale = 1, scale = 1;"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/BestiaryHordes.cs",
+          "sha256": "dd642e9b4fa311e68ad10ca768c43acb44def7d47639958b046f80c599f7450c",
+          "line": 75,
+          "excerpt": "static bool Busy(Zombie z) { return z.act != FreakAct.None || z.state == ZombieState.Chase || z.state == ZombieState.Attack || z.state == ZombieState.Thump || z.state == ZombieState.Climb || z.state == ZombieState.Knocked || z.state == ZombieState.Lunge; }"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/GenLandmarks.cs",
+          "sha256": "a5e6d92d6e0f415f4491fa85f607771eb7e15bb8e1403ded12fd0ec8cf18f196",
+          "line": 171,
+          "excerpt": "void Runners(List<Prop> cars) { foreach (var c in cars) c.hp = .45f + .55f * rng.Float(); }"
+        }
+      ]
+    },
+    {
+      "systemId": "inventory",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Actors.cs",
+          "sha256": "bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630",
+          "line": 84,
+          "excerpt": "public int kills, primary = -1, secondary = -1;   // item uids in inventory"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Bestiary.cs",
+          "sha256": "404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433",
+          "line": 352,
+          "excerpt": "if (ItemCatalog.Exists(\"plague_sample\"))"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Community.cs",
+          "sha256": "f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706",
+          "line": 39,
+          "excerpt": "public Resource resource; public int amount;                // Supply: stock delivered; Defend/Hunt: kills needed"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/CommunityMissions.cs",
+          "sha256": "f65de3b7fd761520ce527d643327d6971a892995d9a1095e6c081bce42b14b03",
+          "line": 88,
+          "excerpt": "w.community.stock[(int)m.resource] -= m.amount;"
+        }
+      ]
+    },
+    {
+      "systemId": "story",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Community.cs",
+          "sha256": "f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706",
+          "line": 330,
+          "excerpt": "void Story()"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/HumansSetup.cs",
+          "sha256": "20343a61ef75c13116fe49b5c7dd44a79ff7dd2276c3b095d6e95b7864463e96",
+          "line": 156,
+          "excerpt": "s.inventory.items.RemoveAll(i => i.def == \"county_map\" || i.def == \"radio\");   // the radio story is for the community"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Simulation.cs",
+          "sha256": "e511c47455dac48dbe3ad5572afdfaa8baa770ba1d058d04069723607590333e",
+          "line": 49,
+          "excerpt": "Story();"
+        }
+      ]
+    },
+    {
+      "systemId": "save-storage",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Bestiary.cs",
+          "sha256": "404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433",
+          "line": 141,
+          "excerpt": "if (version > BestiaryVersion) throw new InvalidDataException(\"Save bestiary section is newer than this build.\");"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Community.cs",
+          "sha256": "f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706",
+          "line": 320,
+          "excerpt": "n = b.ReadInt32(); if (n != survivors.Count) throw new InvalidDataException(\"Save community does not match its survivors.\");"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Humans.cs",
+          "sha256": "15510e52c15bab758d9ecac52ac48f1c9b3e7fcbb97121f9725207842a8db90c",
+          "line": 226,
+          "excerpt": "if (f.id != i) throw new InvalidDataException(\"Save factions are out of order.\");"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/SaveCodec.cs",
+          "sha256": "141a05955be06a035bf63ab5d4397c0d393e14f93214119ecb40cb204e006c9f",
+          "line": 19,
+          "excerpt": "public static void Save(World w, string path)"
+        }
+      ]
+    },
+    {
+      "systemId": "audio",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallAudio.cs",
+          "sha256": "4cb706f233c9828123a130b070afdca5b29fcac23f56965691c53514b9fc9fc8",
+          "line": 18,
+          "excerpt": "readonly Dictionary<string, AudioClip[]> clips = new Dictionary<string, AudioClip[]>();"
+        }
+      ]
+    },
+    {
+      "systemId": "ui",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallHud.cs",
+          "sha256": "84ccc96b1b3e4bc0754a27cc95fbec3e513bbe74097df1a03f0edf7121af21d8",
+          "line": 32,
+          "excerpt": "RectTransform card, plagueRow, mateCard, chipRow, zoneCard, bannerRoot, mini, miniMarkers, plateLayer, hotbar, actionBar, deathNotice, reticle;"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallHudPlates.cs",
+          "sha256": "23fa704593342fb9ea943e7216dd34a2bf49d299d66ace37f5726a5a95e43403",
+          "line": 15,
+          "excerpt": "public RectTransform r; public CanvasGroup group; public TextMeshProUGUI name, sub; public readonly Image[] skulls = new Image[5];"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallPanels.cs",
+          "sha256": "ca24354aa76fbdefe43395a7f369d59962e957f62c3d40897d5f927f5e5d1781",
+          "line": 17,
+          "excerpt": "RectTransform invPlayer, invLoot, invTabs, invActions, contextList, mapImageRoot, mapLegend;"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallPanelsCommunity.cs",
+          "sha256": "154d116c48f93a055e91538ffda2b329e123bb040bae148c88b1d5ae0ccddaa4",
+          "line": 15,
+          "excerpt": "RectTransform commTabs, commRoster, commDetail, commBase, commWorkshop, commMembersPage, commBasePage, commWorkshopPage;"
+        }
+      ]
+    },
+    {
+      "systemId": "menus",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallGame.cs",
+          "sha256": "673d6d129eb3eb2848487570b42a86b078a09666a8bfff3009b418e88c3b3852",
+          "line": 51,
+          "excerpt": "public bool Paused { get; set; }"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallSurvivalActions.cs",
+          "sha256": "434a3c75e9091515e558c89a3d885069601a6d396be4025a9c8a872566c12980",
+          "line": 58,
+          "excerpt": "else if (World.Hostile(s, o)) continue;   // no menu for people trying to kill you"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallUI.cs",
+          "sha256": "84b420708919cec225f8926390b55645b2748572f63e4f3dc2d8d965d2c255d4",
+          "line": 26,
+          "excerpt": "public bool BlocksGameplay { get { return open.Count > 0 || (pause != null && pause.gameObject.activeSelf) || game.Paused || (ending != null && ending.gameObject.activeSelf); } }"
+        }
+      ]
+    },
+    {
+      "systemId": "progression",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Actors.cs",
+          "sha256": "bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630",
+          "line": 89,
+          "excerpt": "public float[] xp = new float[Enum.GetValues(typeof(Skill)).Length];"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Crafting.cs",
+          "sha256": "d0ac3de00b23bce3aeeb0bbc40188a91e48e2b5864f409056477f56cb1c58178",
+          "line": 19,
+          "excerpt": "public float xp = 4; public Skill skill = Skill.Carpentry;"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/SaveCodec.cs",
+          "sha256": "141a05955be06a035bf63ab5d4397c0d393e14f93214119ecb40cb204e006c9f",
+          "line": 250,
+          "excerpt": "b.Write(s.xp.Length); for (int i = 0; i < s.xp.Length; i++) { b.Write(s.xp[i]); b.Write(s.level[i]); }"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/SimCommands.cs",
+          "sha256": "0ae86c5048e16673ee279043e5fd5cfd3c3b3488c58bfbd3d4ef5bba6d3566c9",
+          "line": 461,
+          "excerpt": "GainXp(s, r.skill, r.xp); world.Emit(EventKind.Craft, s.pos, s.id, r.name);"
+        }
+      ]
+    },
+    {
+      "systemId": "npc",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Actors.cs",
+          "sha256": "bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630",
+          "line": 69,
+          "excerpt": "public sealed partial class Survivor"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Bestiary.cs",
+          "sha256": "404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433",
+          "line": 105,
+          "excerpt": "public Vec2 actDir; public int grabbed = -1; // juggernaut: survivor held"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Community.cs",
+          "sha256": "f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706",
+          "line": 33,
+          "excerpt": "public string title = \"\", description = \"\", giver = \"\";   // giver: character key or faction name"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/CommunityMissions.cs",
+          "sha256": "f65de3b7fd761520ce527d643327d6971a892995d9a1095e6c081bce42b14b03",
+          "line": 48,
+          "excerpt": "void AcceptMission(Survivor s, int id)"
+        }
+      ]
+    },
+    {
+      "systemId": "vehicles",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Actors.cs",
+          "sha256": "bd223b071e48b01f9a194fbc80d58668bfe2c541305f7a37bedb546f3448f630",
+          "line": 95,
+          "excerpt": "public int vehicle = -1;        // vehicle the survivor is driving (inVehicle mirrors it)"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Bestiary.cs",
+          "sha256": "404eb0bd5e1bd8b0cda4a824ac1b59799452087a9eb5ec888cba8021e06f4433",
+          "line": 238,
+          "excerpt": "if (!s.alive || s.offscreen || s.vehicle >= 0 || Vec2.Distance(s.pos, h.pos) > h.radius) continue;"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Community.cs",
+          "sha256": "f2de12baadb5f5cda0da548cc3e83fcf108d2b746d8272451fdd983378677706",
+          "line": 334,
+          "excerpt": "Broadcast(\"radio-2\", since > 2, \"Ada again. Rucksacks of food, meds, ammo, materials and fuel keep a group alive. Carry them home or load a car trunk and park at your base. Build what you need: an infirmary, a workshop, a watchtower.\");"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/GenLandmarks.cs",
+          "sha256": "a5e6d92d6e0f415f4491fa85f607771eb7e15bb8e1403ded12fd0ec8cf18f196",
+          "line": 160,
+          "excerpt": "var cars = new List<Prop>();"
+        }
+      ]
+    },
+    {
+      "systemId": "weather",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Crafting.cs",
+          "sha256": "d0ac3de00b23bce3aeeb0bbc40188a91e48e2b5864f409056477f56cb1c58178",
+          "line": 103,
+          "excerpt": "Retired(\"rain_collector\", \"Rain Collector\", \"Water no longer needs collecting.\"),"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/Simulation.cs",
+          "sha256": "e511c47455dac48dbe3ad5572afdfaa8baa770ba1d058d04069723607590333e",
+          "line": 48,
+          "excerpt": "Weather(hours);"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/World.cs",
+          "sha256": "959aa119660083055ccf47016f4dc1d79435e604cba97d910c2e5a2dde09e03c",
+          "line": 38,
+          "excerpt": "Message, Swing, Hit, Kill, Gunshot, Empty, Groan, Door, Glass, Thump, Hurt, Bite, Death, Craft, Eat, Drink, LevelUp, Radio, Helicopter, Footstep, Shove, Break, Barricade, Evacuated, Fire, Rain, Engine, Crash,"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Unity/AshfallAudio.cs",
+          "sha256": "4cb706f233c9828123a130b070afdca5b29fcac23f56965691c53514b9fc9fc8",
+          "line": 20,
+          "excerpt": "AudioSource music, musicNext, wind, crickets, rain, river, ui, engine;"
+        }
+      ]
+    },
+    {
+      "systemId": "dialogue",
+      "classification": "candidate-source-matches-not-established-behavior",
+      "sources": [
+        {
+          "path": "Game/Assets/Ashfall/Core/Humans.cs",
+          "sha256": "15510e52c15bab758d9ecac52ac48f1c9b3e7fcbb97121f9725207842a8db90c",
+          "line": 56,
+          "excerpt": "public string[] lines = new string[0];           // talk lines (Greeting picks one by day)"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/HumansTalk.cs",
+          "sha256": "c3044760b85458d6f234a9f20b374f8d0f6fc8741158958ce5b08f3bf9755655",
+          "line": 115,
+          "excerpt": "case CommandKind.Talk:"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/SimHumans.cs",
+          "sha256": "609ef13f3175236dae6f2d1a7a0a1055f56a1ec064d1f080a559142e19124555",
+          "line": 229,
+          "excerpt": "world.Emit(EventKind.Talk, s.pos, s.id, s.name + \": \" + line);"
+        },
+        {
+          "path": "Game/Assets/Ashfall/Core/World.cs",
+          "sha256": "959aa119660083055ccf47016f4dc1d79435e604cba97d910c2e5a2dde09e03c",
+          "line": 41,
+          "excerpt": "Recruit, Facility, Mission, Morale, Influence, Switch, Talk, Trade, Siege, Legacy"
+        }
+      ]
+    }
+  ],
+  "conflicts": [
+    {
+      "kind": "stale-campaign",
+      "detail": "Current AshfallGame + Ashfall.Core.WorldGen own the open county. Legacy FrontierProfiles and three ContentSource chapters are not promoted to active playable levels."
+    }
+  ],
+  "limitations": [
+    "Source review only for this migration; no new native playtest was run. Existing saved acceptance evidence retains its original scope.",
+    "Empty layouts are explicitly unverified schematic containers. They contain no invented geometry, spawn locations, portals or population rates.",
+    "World editor bindings are planning references; none of these documents changes engine state, installs assets, or implements level launching.",
+    "WorldGen version 2 declares a 4–6 km seeded county. The empty canonical editor canvas does not represent its generated dimensions/landmarks. Export requires a future game-specific adapter."
+  ],
+  "authoredReviewRequired": [],
+  "excludedCatalogEntries": [
+    {
+      "id": "frontier-chapter-1",
+      "kind": "native-development-gameplay-capture",
+      "title": "Chapter 1: The Last Pharmacy",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-chapter-2",
+      "kind": "native-development-gameplay-capture",
+      "title": "Chapter 2: The Waterline",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-chapter-3",
+      "kind": "native-development-gameplay-capture",
+      "title": "Chapter 3: County Evacuation",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-menu",
+      "kind": "native-development-ui-capture",
+      "title": "Native campaign menu",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-story",
+      "kind": "native-development-ui-capture",
+      "title": "Story 1",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-victory1",
+      "kind": "native-development-ui-capture",
+      "title": "Chapter victory 1",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-story2",
+      "kind": "native-development-ui-capture",
+      "title": "Story 2",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-victory2",
+      "kind": "native-development-ui-capture",
+      "title": "Chapter victory 2",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-story3",
+      "kind": "native-development-ui-capture",
+      "title": "Story 3",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-victory3",
+      "kind": "native-development-ui-capture",
+      "title": "Chapter victory 3",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    },
+    {
+      "id": "frontier-finale",
+      "kind": "native-development-ui-capture",
+      "title": "Native campaign result",
+      "reason": "Not promoted automatically; capture/UI/story reference, inactive source, or mapped by current runtime catalog instead."
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "gameId": "game:52ce9a56-648b-4c13-9b2e-1a90cffd0be0--ashfall-county",
+  "title": "Ashfall County world and sections",
+  "topology": "finite",
+  "requirements": [
+    "Preserve current runtime behavior and authored source; these records document inspected code/configuration only.",
+    "Named sections and mode intent are separate from native verification, checkpoint support and geometry.",
+    "Source review only for this migration; no new native playtest was run. Existing saved acceptance evidence retains its original scope.",
+    "Empty layouts are explicitly unverified schematic containers. They contain no invented geometry, spawn locations, portals or population rates.",
+    "World editor bindings are planning references; none of these documents changes engine state, installs assets, or implements level launching.",
+    "WorldGen version 2 declares a 4–6 km seeded county. The empty canonical editor canvas does not represent its generated dimensions/landmarks. Export requires a future game-specific adapter."
+  ],
+  "restrictions": {
+    "notes": [
+      "No invented portals, spawn rates, coordinates or asset compatibility claims. Empty layouts must be replaced only by reviewed source-derived/captured geometry."
+    ],
+    "forbiddenNodeKinds": [],
+    "maxNodesPerLevel": 512
+  },
+  "levels": [
+    {
+      "id": "ashfall-county",
+      "title": "Ashfall open county",
+      "kind": "exterior",
+      "parentLevelId": null,
+      "layout": {
+        "schemaVersion": 1,
+        "id": "audit-ashfall-county-ashfall-county",
+        "name": "Ashfall open county — unverified schematic",
+        "gameId": "ashfall-county",
+        "engine": "Unity",
+        "plane": "XZ",
+        "units": "meters",
+        "halfWidth": 24,
+        "halfDepth": 24,
+        "seed": 6031,
+        "planningOnly": true,
+        "nodes": []
+      },
+      "role": "world",
+      "archetype": null,
+      "view": null,
+      "presentation": "3d",
+      "modeIds": [],
+      "description": "Named section from selected source. Source: Game/Assets/Ashfall/Core/WorldGen.cs:47. SHA256 7726848b9ddcf17b6f48e93f57d3b2f5889d7be3f3f62b180ef390dcc2905a67. This empty schematic has no verified spatial alignment with the runtime.",
+      "snapshot": null,
+      "systemIds": [
+        "world"
+      ],
+      "spawnRules": [],
+      "areas": [],
+      "objects": []
+    }
+  ],
+  "portals": [],
+  "assetBindings": [],
+  "streaming": {
+    "seed": 6031,
+    "chunkSize": 64,
+    "radius": 2,
+    "maxLoadedChunks": 25,
+    "notes": "No runtime streaming claim is made by this audit."
+  },
+  "archetype": "open-world",
+  "view": "top-down",
+  "modes": [
+    {
+      "id": "sandbox",
+      "title": "Open county survival",
+      "kind": "sandbox",
+      "minPlayers": 1,
+      "maxPlayers": 1,
+      "systemIds": [],
+      "description": "Current World.Create owns the county simulation; multiplayer settings in legacy Frontier metadata are not used as current network acceptance."
+    }
+  ],
+  "systemIds": [
+    "gameplay",
+    "presentation",
+    "persistence"
+  ],
+  "spawnRules": [],
+  "story": {
+    "arcs": [],
+    "beats": []
+  }
+}
